@@ -76,11 +76,11 @@ static BOOL CDSpotifyLowPowerMode(void) {
 }
 
 static BOOL CDSpotifyHomePreviewEnabled(void) {
-    return CDPremiumBool(CDSpotifyReframeDomain, @"homePreviewEnabled", NO);
+    return CDPremiumBool(CDSpotifyReframeDomain, @"homePreviewEnabled", YES);
 }
 
 static BOOL CDSpotifyHomePreviewLauncherEnabled(void) {
-    return CDPremiumBool(CDSpotifyReframeDomain, @"homePreviewLauncher", NO);
+    return CDPremiumBool(CDSpotifyReframeDomain, @"homePreviewLauncher", YES);
 }
 
 static void CDSpotifySynchronizePreferences(void) {
@@ -111,8 +111,8 @@ static NSDictionary<NSString *, id> *CDSpotifyCalmDefaults(void) {
         @"forceVisualMode": @NO,
         @"inAppSettings": @NO,
         @"launchBadge": @NO,
-        @"homePreviewEnabled": @NO,
-        @"homePreviewLauncher": @NO,
+        @"homePreviewEnabled": @YES,
+        @"homePreviewLauncher": @YES,
         @"palette": @0,
         @"backgroundWash": @0.0,
         @"glassCards": @NO,
@@ -368,7 +368,7 @@ static void CDSpotifyApplyHomePreviewLauncher(UIWindow *window) {
     if (!button) {
         button = [UIButton buttonWithType:UIButtonTypeSystem];
         button.accessibilityLabel = @"Open SpotifyReframe AI home preview";
-        [button setTitle:@"AI" forState:UIControlStateNormal];
+        [button setTitle:@"AI Home" forState:UIControlStateNormal];
         button.titleLabel.font = [UIFont systemFontOfSize:13.0 weight:UIFontWeightBlack];
         button.tintColor = [UIColor blackColor];
         button.backgroundColor = CDSpotifyTint();
@@ -386,8 +386,8 @@ static void CDSpotifyApplyHomePreviewLauncher(UIWindow *window) {
         objc_setAssociatedObject(window, &kCDSpotifyHomePreviewLauncherKey, button, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     }
 
-    CGFloat width = 44.0;
-    CGFloat height = 30.0;
+    CGFloat width = 76.0;
+    CGFloat height = 34.0;
     button.frame = CGRectMake(CGRectGetWidth(window.bounds) - width - 10.0, MAX(82.0, window.safeAreaInsets.top + 78.0), width, height);
     button.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin;
     button.backgroundColor = CDSpotifyTint();
@@ -574,8 +574,8 @@ static void CDSpotifyOpenSettingsPanel(UIWindow *window) {
     CDSpotifyAddSwitchRow(scrollView, &y, @"Force Visual Mode", @"Compatibility fallback; keep off unless normal styling is invisible.", @"forceVisualMode", NO);
     CDSpotifyAddSwitchRow(scrollView, &y, @"In-App Settings Button", @"Opt-in floating control. Off by default to avoid Spotify UI overlap.", @"inAppSettings", NO);
     CDSpotifyAddSwitchRow(scrollView, &y, @"Launch Badge", @"Debug-only load confirmation.", @"launchBadge", NO);
-    CDSpotifyAddSwitchRow(scrollView, &y, @"AI Home Preview", @"UIKit-only mockup. It never opens automatically.", @"homePreviewEnabled", NO);
-    CDSpotifyAddSwitchRow(scrollView, &y, @"Preview Launcher", @"Shows a small AI button only when the preview is enabled.", @"homePreviewLauncher", NO);
+    CDSpotifyAddSwitchRow(scrollView, &y, @"AI Home Preview", @"UIKit-only mockup. It never opens automatically.", @"homePreviewEnabled", YES);
+    CDSpotifyAddSwitchRow(scrollView, &y, @"Preview Launcher", @"Shows an AI Home button when the preview is enabled.", @"homePreviewLauncher", YES);
 
     UIView *previewRow = CDSpotifyAddSettingsRow(scrollView, &y, @"Open AI Home Preview", @"Turns the UIKit preview on and shows it now.", 74.0);
     UIButton *previewButton = [UIButton buttonWithType:UIButtonTypeSystem];
