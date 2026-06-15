@@ -63,7 +63,17 @@ forbidden_regex='password|credential|payment|purchase|receipt|drm|keychain|conta
           contents="review"
         fi
         if [[ "$prefs" == "missing" ]] && [[ -n "$data_archive" ]] && tar -tf "$data_archive" | grep -q "Library/PreferenceBundles/.*Prefs.bundle" && tar -tf "$data_archive" | grep -q "Library/PreferenceLoader/Preferences/.*Prefs.plist"; then
-          prefs="pass"
+          prefs="class-mismatch"
+          mkdir -p "$tmp/data"
+          tar -xf "$data_archive" -C "$tmp/data" 2>/dev/null || true
+          bundle_dir="$(find "$tmp/data/Library/PreferenceBundles" -maxdepth 1 -type d -name '*Prefs.bundle' 2>/dev/null | head -1)"
+          if [[ -n "$bundle_dir" && -f "$bundle_dir/Info.plist" ]]; then
+            principal="$(plutil -extract NSPrincipalClass raw -o - "$bundle_dir/Info.plist" 2>/dev/null || true)"
+            executable="$(plutil -extract CFBundleExecutable raw -o - "$bundle_dir/Info.plist" 2>/dev/null || basename "$bundle_dir" .bundle)"
+            if [[ -n "$principal" && -f "$bundle_dir/$executable" ]] && nm -gU "$bundle_dir/$executable" 2>/dev/null | grep -Fq "_OBJC_CLASS_\$_${principal}"; then
+              prefs="pass"
+            fi
+          fi
         fi
       else
         contents="review"

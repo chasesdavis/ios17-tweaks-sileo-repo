@@ -17,7 +17,7 @@ include $(THEOS_MAKE_PATH)/tweak.mk
 BUNDLE_NAME = DockShelfProPrefs
 
 DockShelfProPrefs_FILES = ../../shared/CDPremiumPrefsListController.m
-DockShelfProPrefs_CFLAGS = -fobjc-arc -DPREFS_CLASS=DockShelfProPrefsListController
+DockShelfProPrefs_CFLAGS = -fobjc-arc -DCDPREFS_CLASS=DockShelfProPrefsListController
 DockShelfProPrefs_FRAMEWORKS = UIKit Foundation
 DockShelfProPrefs_PRIVATE_FRAMEWORKS = Preferences
 DockShelfProPrefs_LDFLAGS = -F/Users/chase/theos/sdks/iPhoneOS17.0.sdk/System/Library/PrivateFrameworks

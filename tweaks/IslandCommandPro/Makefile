@@ -17,7 +17,7 @@ include $(THEOS_MAKE_PATH)/tweak.mk
 BUNDLE_NAME = IslandCommandProPrefs
 
 IslandCommandProPrefs_FILES = ../../shared/CDPremiumPrefsListController.m
-IslandCommandProPrefs_CFLAGS = -fobjc-arc -DPREFS_CLASS=IslandCommandProPrefsListController
+IslandCommandProPrefs_CFLAGS = -fobjc-arc -DCDPREFS_CLASS=IslandCommandProPrefsListController
 IslandCommandProPrefs_FRAMEWORKS = UIKit Foundation
 IslandCommandProPrefs_PRIVATE_FRAMEWORKS = Preferences
 IslandCommandProPrefs_LDFLAGS = -F/Users/chase/theos/sdks/iPhoneOS17.0.sdk/System/Library/PrivateFrameworks

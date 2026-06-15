@@ -17,7 +17,7 @@ include $(THEOS_MAKE_PATH)/tweak.mk
 BUNDLE_NAME = HomeScreenZenProPrefs
 
 HomeScreenZenProPrefs_FILES = ../../shared/CDPremiumPrefsListController.m
-HomeScreenZenProPrefs_CFLAGS = -fobjc-arc -DPREFS_CLASS=HomeScreenZenProPrefsListController
+HomeScreenZenProPrefs_CFLAGS = -fobjc-arc -DCDPREFS_CLASS=HomeScreenZenProPrefsListController
 HomeScreenZenProPrefs_FRAMEWORKS = UIKit Foundation
 HomeScreenZenProPrefs_PRIVATE_FRAMEWORKS = Preferences
 HomeScreenZenProPrefs_LDFLAGS = -F/Users/chase/theos/sdks/iPhoneOS17.0.sdk/System/Library/PrivateFrameworks

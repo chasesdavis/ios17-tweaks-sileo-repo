@@ -17,7 +17,7 @@ include $(THEOS_MAKE_PATH)/tweak.mk
 BUNDLE_NAME = FocusLensProPrefs
 
 FocusLensProPrefs_FILES = ../../shared/CDPremiumPrefsListController.m
-FocusLensProPrefs_CFLAGS = -fobjc-arc -DPREFS_CLASS=FocusLensProPrefsListController
+FocusLensProPrefs_CFLAGS = -fobjc-arc -DCDPREFS_CLASS=FocusLensProPrefsListController
 FocusLensProPrefs_FRAMEWORKS = UIKit Foundation
 FocusLensProPrefs_PRIVATE_FRAMEWORKS = Preferences
 FocusLensProPrefs_LDFLAGS = -F/Users/chase/theos/sdks/iPhoneOS17.0.sdk/System/Library/PrivateFrameworks

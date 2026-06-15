@@ -17,7 +17,7 @@ include $(THEOS_MAKE_PATH)/tweak.mk
 BUNDLE_NAME = StatusLabProPrefs
 
 StatusLabProPrefs_FILES = ../../shared/CDPremiumPrefsListController.m
-StatusLabProPrefs_CFLAGS = -fobjc-arc -DPREFS_CLASS=StatusLabProPrefsListController
+StatusLabProPrefs_CFLAGS = -fobjc-arc -DCDPREFS_CLASS=StatusLabProPrefsListController
 StatusLabProPrefs_FRAMEWORKS = UIKit Foundation
 StatusLabProPrefs_PRIVATE_FRAMEWORKS = Preferences
 StatusLabProPrefs_LDFLAGS = -F/Users/chase/theos/sdks/iPhoneOS17.0.sdk/System/Library/PrivateFrameworks

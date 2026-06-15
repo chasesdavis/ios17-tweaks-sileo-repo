@@ -17,7 +17,7 @@ include $(THEOS_MAKE_PATH)/tweak.mk
 BUNDLE_NAME = ControlCenterStudioPrefs
 
 ControlCenterStudioPrefs_FILES = ../../shared/CDPremiumPrefsListController.m
-ControlCenterStudioPrefs_CFLAGS = -fobjc-arc -DPREFS_CLASS=ControlCenterStudioPrefsListController
+ControlCenterStudioPrefs_CFLAGS = -fobjc-arc -DCDPREFS_CLASS=ControlCenterStudioPrefsListController
 ControlCenterStudioPrefs_FRAMEWORKS = UIKit Foundation
 ControlCenterStudioPrefs_PRIVATE_FRAMEWORKS = Preferences
 ControlCenterStudioPrefs_LDFLAGS = -F/Users/chase/theos/sdks/iPhoneOS17.0.sdk/System/Library/PrivateFrameworks

@@ -17,7 +17,7 @@ These packages are intended to be higher-value than the first visual tranches. T
 
 ## Settings And Defaults
 
-All premium tweaks are versioned `1.0.1-1`, include PreferenceLoader panes, and install disabled by default. Enable and respring one tweak at a time from Settings so a bad interaction does not immediately push SpringBoard back into a boot loop.
+All premium tweaks are versioned `1.0.2-1`, include PreferenceLoader panes, and install disabled by default. Enable and respring one tweak at a time from Settings so a bad interaction does not immediately push SpringBoard back into a boot loop.
 
 Every pane includes:
 

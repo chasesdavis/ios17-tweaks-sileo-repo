@@ -17,7 +17,7 @@ include $(THEOS_MAKE_PATH)/tweak.mk
 BUNDLE_NAME = ApertureFXPrefs
 
 ApertureFXPrefs_FILES = ../../shared/CDPremiumPrefsListController.m
-ApertureFXPrefs_CFLAGS = -fobjc-arc -DPREFS_CLASS=ApertureFXPrefsListController
+ApertureFXPrefs_CFLAGS = -fobjc-arc -DCDPREFS_CLASS=ApertureFXPrefsListController
 ApertureFXPrefs_FRAMEWORKS = UIKit Foundation
 ApertureFXPrefs_PRIVATE_FRAMEWORKS = Preferences
 ApertureFXPrefs_LDFLAGS = -F/Users/chase/theos/sdks/iPhoneOS17.0.sdk/System/Library/PrivateFrameworks

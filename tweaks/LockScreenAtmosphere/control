@@ -1,7 +1,7 @@
 Package: com.chasedavis.lockscreenatmosphere
 Name: LockScreen Atmosphere
 Depends: mobilesubstrate, preferenceloader
-Version: 1.0.1-1
+Version: 1.0.2-1
 Architecture: iphoneos-arm64
 Description: Premium lock screen visual engine with clock tinting, charging atmosphere, edge glows, and now-playing ambience.
 Maintainer: Chase Davis

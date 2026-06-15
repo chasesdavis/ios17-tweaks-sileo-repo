@@ -17,7 +17,7 @@ include $(THEOS_MAKE_PATH)/tweak.mk
 BUNDLE_NAME = SpringBoardAutomationsPrefs
 
 SpringBoardAutomationsPrefs_FILES = ../../shared/CDPremiumPrefsListController.m
-SpringBoardAutomationsPrefs_CFLAGS = -fobjc-arc -DPREFS_CLASS=SpringBoardAutomationsPrefsListController
+SpringBoardAutomationsPrefs_CFLAGS = -fobjc-arc -DCDPREFS_CLASS=SpringBoardAutomationsPrefsListController
 SpringBoardAutomationsPrefs_FRAMEWORKS = UIKit Foundation
 SpringBoardAutomationsPrefs_PRIVATE_FRAMEWORKS = Preferences
 SpringBoardAutomationsPrefs_LDFLAGS = -F/Users/chase/theos/sdks/iPhoneOS17.0.sdk/System/Library/PrivateFrameworks

@@ -17,7 +17,7 @@ include $(THEOS_MAKE_PATH)/tweak.mk
 BUNDLE_NAME = NotificationForgePrefs
 
 NotificationForgePrefs_FILES = ../../shared/CDPremiumPrefsListController.m
-NotificationForgePrefs_CFLAGS = -fobjc-arc -DPREFS_CLASS=NotificationForgePrefsListController
+NotificationForgePrefs_CFLAGS = -fobjc-arc -DCDPREFS_CLASS=NotificationForgePrefsListController
 NotificationForgePrefs_FRAMEWORKS = UIKit Foundation
 NotificationForgePrefs_PRIVATE_FRAMEWORKS = Preferences
 NotificationForgePrefs_LDFLAGS = -F/Users/chase/theos/sdks/iPhoneOS17.0.sdk/System/Library/PrivateFrameworks
