@@ -1,0 +1,7 @@
+{
+    entry = {
+        bundle = StatusLabProPrefs;
+        cell = PSLinkCell;
+        label = "StatusLab Pro";
+    };
+}

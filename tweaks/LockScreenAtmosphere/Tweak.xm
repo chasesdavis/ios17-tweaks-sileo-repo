@@ -14,7 +14,7 @@ static UIColor *CDLockAtmosphereTint(void) {
 }
 
 static void CDLockAtmosphereUpdateGlow(void) {
-    if (!CDPremiumBool(CDLockAtmosphereDomain, @"enabled", YES)) {
+    if (!CDPremiumBool(CDLockAtmosphereDomain, @"enabled", NO)) {
         return;
     }
     UIWindow *window = CDVTKeyWindow();
@@ -25,7 +25,7 @@ static void CDLockAtmosphereUpdateGlow(void) {
 }
 
 static void CDLockAtmosphereApplyLabel(UILabel *label) {
-    if (!label.window || !label.text.length || !CDVTClassChainContains(label, @[@"DateView", @"Clock", @"LockScreen", @"CoverSheet"])) {
+    if (!CDPremiumBool(CDLockAtmosphereDomain, @"enabled", NO) || !label.window || !label.text.length || !CDVTClassChainContains(label, @[@"DateView", @"Clock", @"LockScreen", @"CoverSheet"])) {
         return;
     }
     UIColor *tint = CDLockAtmosphereTint();

@@ -10,7 +10,7 @@ static BOOL CDControlStudioIsModule(UIView *view) {
 }
 
 static void CDControlStudioApplyModule(UIView *view) {
-    if (!CDPremiumBool(CDControlStudioDomain, @"enabled", YES) || !CDControlStudioIsModule(view)) {
+    if (!CDPremiumBool(CDControlStudioDomain, @"enabled", NO) || !CDControlStudioIsModule(view)) {
         return;
     }
     UIColor *tint = CDPremiumTint(CDControlStudioDomain, CDVTColor(112, 229, 168, 1.0));
@@ -20,7 +20,7 @@ static void CDControlStudioApplyModule(UIView *view) {
 }
 
 static void CDControlStudioApplyGlyph(UIImageView *imageView) {
-    if (!CDPremiumBool(CDControlStudioDomain, @"glyphsEnabled", YES) || !CDControlStudioIsModule(imageView)) {
+    if (!CDPremiumBool(CDControlStudioDomain, @"enabled", NO) || !CDPremiumBool(CDControlStudioDomain, @"glyphsEnabled", YES) || !CDControlStudioIsModule(imageView)) {
         return;
     }
     UIColor *tint = CDPremiumTint(CDControlStudioDomain, CDVTColor(112, 229, 168, 1.0));

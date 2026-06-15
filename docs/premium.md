@@ -1,6 +1,6 @@
 # Premium Tweak Suite
 
-These packages are intended to be higher-value than the first visual tranches. They combine multiple behaviors, preference-ready defaults, event handling, and polished surfaces.
+These packages are intended to be higher-value than the first visual tranches. They combine multiple behaviors, Settings controls, event handling, and polished surfaces.
 
 | Package | Value proposition |
 | --- | --- |
@@ -15,6 +15,13 @@ These packages are intended to be higher-value than the first visual tranches. T
 | LockScreen Atmosphere | Lock screen visual engine for clock tinting, charging glow, and ambience. |
 | SpringBoard Automations | Local trigger/action engine for charging, battery, ringer, network, and time modes. |
 
-## Defaults
+## Settings And Defaults
 
-All premium tweaks default to enabled and read optional preference values from their package domains, for example `com.chasedavis.islandcommandpro`. A future preference-pane pass should expose these keys in Settings.
+All premium tweaks are versioned `1.0.1-1`, include PreferenceLoader panes, and install disabled by default. Enable and respring one tweak at a time from Settings so a bad interaction does not immediately push SpringBoard back into a boot loop.
+
+Every pane includes:
+
+- `Enabled`: the main runtime gate.
+- `Palette`: shared premium color presets.
+- `Reset to Safe Defaults`: writes `enabled = false`.
+- `Apply with Respring`: runs `sbreload`, falling back to `killall SpringBoard`.

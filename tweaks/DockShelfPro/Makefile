@@ -13,3 +13,14 @@ DockShelfPro_CFLAGS = -fobjc-arc -Wno-deprecated-declarations -I../../shared
 DockShelfPro_FRAMEWORKS = UIKit Foundation QuartzCore CoreGraphics
 
 include $(THEOS_MAKE_PATH)/tweak.mk
+
+BUNDLE_NAME = DockShelfProPrefs
+
+DockShelfProPrefs_FILES = ../../shared/CDPremiumPrefsListController.m
+DockShelfProPrefs_CFLAGS = -fobjc-arc -DPREFS_CLASS=DockShelfProPrefsListController
+DockShelfProPrefs_FRAMEWORKS = UIKit Foundation
+DockShelfProPrefs_PRIVATE_FRAMEWORKS = Preferences
+DockShelfProPrefs_LDFLAGS = -F/Users/chase/theos/sdks/iPhoneOS17.0.sdk/System/Library/PrivateFrameworks
+DockShelfProPrefs_INSTALL_PATH = /Library/PreferenceBundles
+
+include $(THEOS_MAKE_PATH)/bundle.mk

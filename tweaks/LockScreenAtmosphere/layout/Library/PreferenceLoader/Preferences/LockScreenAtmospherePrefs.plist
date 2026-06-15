@@ -1,0 +1,7 @@
+{
+    entry = {
+        bundle = LockScreenAtmospherePrefs;
+        cell = PSLinkCell;
+        label = "LockScreen Atmosphere";
+    };
+}

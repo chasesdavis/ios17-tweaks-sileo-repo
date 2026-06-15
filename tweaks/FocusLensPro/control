@@ -1,7 +1,7 @@
 Package: com.chasedavis.focuslenspro
 Name: FocusLens Pro
-Depends: mobilesubstrate
-Version: 1.0.0-1
+Depends: mobilesubstrate, preferenceloader
+Version: 1.0.1-1
 Architecture: iphoneos-arm64
 Description: Premium per-context home screen focus lens with quiet-hours dimming, badge softening, and Focus visual profiles.
 Maintainer: Chase Davis

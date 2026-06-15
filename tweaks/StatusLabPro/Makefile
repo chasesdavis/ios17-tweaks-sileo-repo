@@ -13,3 +13,14 @@ StatusLabPro_CFLAGS = -fobjc-arc -Wno-deprecated-declarations -I../../shared
 StatusLabPro_FRAMEWORKS = UIKit Foundation QuartzCore CoreGraphics
 
 include $(THEOS_MAKE_PATH)/tweak.mk
+
+BUNDLE_NAME = StatusLabProPrefs
+
+StatusLabProPrefs_FILES = ../../shared/CDPremiumPrefsListController.m
+StatusLabProPrefs_CFLAGS = -fobjc-arc -DPREFS_CLASS=StatusLabProPrefsListController
+StatusLabProPrefs_FRAMEWORKS = UIKit Foundation
+StatusLabProPrefs_PRIVATE_FRAMEWORKS = Preferences
+StatusLabProPrefs_LDFLAGS = -F/Users/chase/theos/sdks/iPhoneOS17.0.sdk/System/Library/PrivateFrameworks
+StatusLabProPrefs_INSTALL_PATH = /Library/PreferenceBundles
+
+include $(THEOS_MAKE_PATH)/bundle.mk

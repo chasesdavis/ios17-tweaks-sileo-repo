@@ -14,8 +14,8 @@ forbidden_regex='password|credential|payment|purchase|receipt|drm|keychain|conta
   echo
   echo "## Static Tweak Checks"
   echo
-  echo "| Tweak | Roothide | Filter | Package | UI boundary | Deb | Deb contents | Arch |"
-  echo "| --- | --- | --- | --- | --- | --- | --- | --- |"
+  echo "| Tweak | Roothide | Filter | Package | UI boundary | Deb | Deb contents | Prefs | Arch |"
+  echo "| --- | --- | --- | --- | --- | --- | --- | --- | --- |"
 
   for tweak_dir in "$ROOT"/tweaks/*; do
     [[ -d "$tweak_dir" ]] || continue
@@ -26,12 +26,16 @@ forbidden_regex='password|credential|payment|purchase|receipt|drm|keychain|conta
     boundary="pass"
     deb="missing"
     contents="missing"
+    prefs="n/a"
     arch="n/a"
     lower="$(printf "%s" "$name" | tr '[:upper:]' '[:lower:]')"
 
     grep -q 'THEOS_PACKAGE_SCHEME = roothide' "$tweak_dir/Makefile" && roothide="pass"
     [[ -f "$tweak_dir/$name.plist" ]] && grep -q 'com.apple.springboard' "$tweak_dir/$name.plist" && filter="pass"
     [[ -f "$tweak_dir/control" ]] && grep -q "Package: com.chasedavis." "$tweak_dir/control" && package="pass"
+    if grep -q 'Prefs_INSTALL_PATH = /Library/PreferenceBundles' "$tweak_dir/Makefile" 2>/dev/null; then
+      prefs="missing"
+    fi
     if grep -Eiq "$forbidden_regex" "$tweak_dir/Tweak.xm" "$tweak_dir/control" "$tweak_dir/README.md" 2>/dev/null; then
       boundary="review"
     fi
@@ -58,13 +62,16 @@ forbidden_regex='password|credential|payment|purchase|receipt|drm|keychain|conta
         else
           contents="review"
         fi
+        if [[ "$prefs" == "missing" ]] && [[ -n "$data_archive" ]] && tar -tf "$data_archive" | grep -q "Library/PreferenceBundles/.*Prefs.bundle" && tar -tf "$data_archive" | grep -q "Library/PreferenceLoader/Preferences/.*Prefs.plist"; then
+          prefs="pass"
+        fi
       else
         contents="review"
       fi
       rm -rf "$tmp"
     fi
 
-    echo "| $name | $roothide | $filter | $package | $boundary | $deb | $contents | $arch |"
+    echo "| $name | $roothide | $filter | $package | $boundary | $deb | $contents | $prefs | $arch |"
   done
 
   echo

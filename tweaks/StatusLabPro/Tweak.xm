@@ -6,7 +6,7 @@
 static NSString *const CDStatusLabDomain = @"com.chasedavis.statuslabpro";
 
 static void CDStatusLabApplyView(UIView *view) {
-    if (!CDPremiumBool(CDStatusLabDomain, @"enabled", YES) || !CDVTLooksLikeSurface(view, @[@"StatusBar", @"Signal", @"Cellular", @"Battery", @"WiFi", @"Indicator"], 3.0, 3.0, 110.0, 44.0)) {
+    if (!CDPremiumBool(CDStatusLabDomain, @"enabled", NO) || !CDVTLooksLikeSurface(view, @[@"StatusBar", @"Signal", @"Cellular", @"Battery", @"WiFi", @"Indicator"], 3.0, 3.0, 110.0, 44.0)) {
         return;
     }
     UIColor *tint = CDPremiumTint(CDStatusLabDomain, CDVTColor(126, 220, 255, 1.0));
@@ -18,7 +18,7 @@ static void CDStatusLabApplyView(UIView *view) {
 }
 
 static void CDStatusLabApplyLabel(UILabel *label) {
-    if (!label.window || !label.text.length || !CDVTClassChainContains(label, @[@"StatusBar", @"Time", @"Battery"])) {
+    if (!CDPremiumBool(CDStatusLabDomain, @"enabled", NO) || !label.window || !label.text.length || !CDVTClassChainContains(label, @[@"StatusBar", @"Time", @"Battery"])) {
         return;
     }
     UIColor *tint = CDPremiumTint(CDStatusLabDomain, CDVTColor(126, 220, 255, 1.0));

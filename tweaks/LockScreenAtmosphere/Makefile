@@ -13,3 +13,14 @@ LockScreenAtmosphere_CFLAGS = -fobjc-arc -Wno-deprecated-declarations -I../../sh
 LockScreenAtmosphere_FRAMEWORKS = UIKit Foundation QuartzCore CoreGraphics
 
 include $(THEOS_MAKE_PATH)/tweak.mk
+
+BUNDLE_NAME = LockScreenAtmospherePrefs
+
+LockScreenAtmospherePrefs_FILES = ../../shared/CDPremiumPrefsListController.m
+LockScreenAtmospherePrefs_CFLAGS = -fobjc-arc -DPREFS_CLASS=LockScreenAtmospherePrefsListController
+LockScreenAtmospherePrefs_FRAMEWORKS = UIKit Foundation
+LockScreenAtmospherePrefs_PRIVATE_FRAMEWORKS = Preferences
+LockScreenAtmospherePrefs_LDFLAGS = -F/Users/chase/theos/sdks/iPhoneOS17.0.sdk/System/Library/PrivateFrameworks
+LockScreenAtmospherePrefs_INSTALL_PATH = /Library/PreferenceBundles
+
+include $(THEOS_MAKE_PATH)/bundle.mk

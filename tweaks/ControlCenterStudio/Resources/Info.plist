@@ -1,0 +1,11 @@
+{
+    CFBundleDevelopmentRegion = en;
+    CFBundleExecutable = ControlCenterStudioPrefs;
+    CFBundleIdentifier = "com.chasedavis.controlcenterstudio.preferences";
+    CFBundleInfoDictionaryVersion = "6.0";
+    CFBundleName = "ControlCenter Studio";
+    CFBundlePackageType = BNDL;
+    CFBundleShortVersionString = "1.0.1";
+    CFBundleVersion = "1";
+    NSPrincipalClass = ControlCenterStudioPrefsListController;
+}

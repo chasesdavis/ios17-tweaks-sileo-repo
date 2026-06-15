@@ -1,0 +1,11 @@
+{
+    CFBundleDevelopmentRegion = en;
+    CFBundleExecutable = SpringBoardAutomationsPrefs;
+    CFBundleIdentifier = "com.chasedavis.springboardautomations.preferences";
+    CFBundleInfoDictionaryVersion = "6.0";
+    CFBundleName = "SpringBoard Automations";
+    CFBundlePackageType = BNDL;
+    CFBundleShortVersionString = "1.0.1";
+    CFBundleVersion = "1";
+    NSPrincipalClass = SpringBoardAutomationsPrefsListController;
+}

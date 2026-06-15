@@ -1,0 +1,7 @@
+{
+    entry = {
+        bundle = IslandCommandProPrefs;
+        cell = PSLinkCell;
+        label = "IslandCommand Pro";
+    };
+}

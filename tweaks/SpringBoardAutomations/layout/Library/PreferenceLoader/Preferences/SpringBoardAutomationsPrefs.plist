@@ -1,0 +1,7 @@
+{
+    entry = {
+        bundle = SpringBoardAutomationsPrefs;
+        cell = PSLinkCell;
+        label = "SpringBoard Automations";
+    };
+}

@@ -6,7 +6,7 @@
 static NSString *const CDZenDomain = @"com.chasedavis.homescreenzenpro";
 
 static BOOL CDZenEnabled(void) {
-    if (!CDPremiumBool(CDZenDomain, @"enabled", YES)) {
+    if (!CDPremiumBool(CDZenDomain, @"enabled", NO)) {
         return NO;
     }
     NSInteger hour = [[NSCalendar currentCalendar] component:NSCalendarUnitHour fromDate:[NSDate date]];

@@ -26,6 +26,8 @@ Premium suite:
 - LockScreen Atmosphere
 - SpringBoard Automations
 
+The premium packages are versioned `1.0.1-1` and include PreferenceLoader panes in Settings. They install disabled by default so they can be enabled and tested one at a time.
+
 ## Build All
 
 ```bash

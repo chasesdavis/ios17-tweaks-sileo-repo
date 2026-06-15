@@ -1,0 +1,7 @@
+{
+    entry = {
+        bundle = ApertureFXPrefs;
+        cell = PSLinkCell;
+        label = ApertureFX;
+    };
+}

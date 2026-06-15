@@ -1,0 +1,11 @@
+{
+    CFBundleDevelopmentRegion = en;
+    CFBundleExecutable = StatusLabProPrefs;
+    CFBundleIdentifier = "com.chasedavis.statuslabpro.preferences";
+    CFBundleInfoDictionaryVersion = "6.0";
+    CFBundleName = "StatusLab Pro";
+    CFBundlePackageType = BNDL;
+    CFBundleShortVersionString = "1.0.1";
+    CFBundleVersion = "1";
+    NSPrincipalClass = StatusLabProPrefsListController;
+}

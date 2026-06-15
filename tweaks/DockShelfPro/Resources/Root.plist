@@ -1,0 +1,47 @@
+{
+    title = "DockShelf Pro";
+    items = (
+        {
+            cell = PSGroupCell;
+            label = "Safety";
+            footerText = "Disabled by default in 1.0.1. Enable, respring, then double-tap the dock to reveal the shelf.";
+        },
+        {
+            cell = PSSwitchCell;
+            default = 0;
+            defaults = "com.chasedavis.dockshelfpro";
+            key = enabled;
+            label = "Enabled";
+            PostNotification = "com.chasedavis.dockshelfpro/preferences.changed";
+        },
+        {
+            cell = PSGroupCell;
+            label = "Look";
+        },
+        {
+            cell = PSLinkListCell;
+            default = 0;
+            defaults = "com.chasedavis.dockshelfpro";
+            detail = PSListItemsController;
+            key = palette;
+            label = "Palette";
+            validTitles = (Aqua, Coral, Mint, Gold, Violet);
+            validValues = (0, 1, 2, 3, 4);
+            PostNotification = "com.chasedavis.dockshelfpro/preferences.changed";
+        },
+        {
+            cell = PSGroupCell;
+            footerText = "Use Safe Defaults if the dock does not settle correctly after testing.";
+        },
+        {
+            action = setSafeDefaults;
+            cell = PSButtonCell;
+            label = "Reset to Safe Defaults";
+        },
+        {
+            action = respring;
+            cell = PSButtonCell;
+            label = "Apply with Respring";
+        }
+    );
+}

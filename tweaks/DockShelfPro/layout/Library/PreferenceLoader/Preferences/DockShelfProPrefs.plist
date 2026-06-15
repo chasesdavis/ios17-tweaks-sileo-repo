@@ -1,0 +1,7 @@
+{
+    entry = {
+        bundle = DockShelfProPrefs;
+        cell = PSLinkCell;
+        label = "DockShelf Pro";
+    };
+}

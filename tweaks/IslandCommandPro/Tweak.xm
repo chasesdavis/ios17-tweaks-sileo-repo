@@ -17,7 +17,7 @@ static NSString *CDIslandCommandSubtitle(void) {
 }
 
 static void CDIslandCommandShow(void) {
-    if (!CDPremiumBool(CDIslandCommandDomain, @"enabled", YES)) {
+    if (!CDPremiumBool(CDIslandCommandDomain, @"enabled", NO)) {
         return;
     }
     UIWindow *window = CDVTKeyWindow();
@@ -42,6 +42,9 @@ static void CDIslandCommandAutoHide(void) {
 }
 
 static void CDIslandCommandStyleAperture(UIView *view) {
+    if (!CDPremiumBool(CDIslandCommandDomain, @"enabled", NO)) {
+        return;
+    }
     if (!CDVTLooksLikeSurface(view, @[@"SystemAperture", @"Island", @"Aperture"], 60.0, 20.0, 420.0, 180.0)) {
         return;
     }
@@ -65,7 +68,9 @@ static void CDIslandCommandNotify(CFNotificationCenterRef center, void *observer
         CDIslandCommandShow();
     }];
     [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationUserDidTakeScreenshotNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(__unused NSNotification *note) {
-        CDPremiumToast(@"Island Command", @"Screenshot captured", CDPremiumTint(CDIslandCommandDomain, nil));
+        if (CDPremiumBool(CDIslandCommandDomain, @"enabled", NO)) {
+            CDPremiumToast(@"Island Command", @"Screenshot captured", CDPremiumTint(CDIslandCommandDomain, nil));
+        }
     }];
     CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, CDIslandCommandNotify, CFSTR("com.apple.springboard.ringerstate"), NULL, CFNotificationSuspensionBehaviorDeliverImmediately);
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.4 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{

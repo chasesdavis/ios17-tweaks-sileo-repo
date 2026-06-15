@@ -1,0 +1,55 @@
+{
+    title = "HomeScreenZen Pro";
+    items = (
+        {
+            cell = PSGroupCell;
+            label = "Safety";
+            footerText = "Disabled by default in 1.0.1. Enable after install, then respring.";
+        },
+        {
+            cell = PSSwitchCell;
+            default = 0;
+            defaults = "com.chasedavis.homescreenzenpro";
+            key = enabled;
+            label = "Enabled";
+            PostNotification = "com.chasedavis.homescreenzenpro/preferences.changed";
+        },
+        {
+            cell = PSSwitchCell;
+            default = 0;
+            defaults = "com.chasedavis.homescreenzenpro";
+            key = alwaysOn;
+            label = "Always On";
+            PostNotification = "com.chasedavis.homescreenzenpro/preferences.changed";
+        },
+        {
+            cell = PSGroupCell;
+            label = "Look";
+        },
+        {
+            cell = PSLinkListCell;
+            default = 4;
+            defaults = "com.chasedavis.homescreenzenpro";
+            detail = PSListItemsController;
+            key = palette;
+            label = "Palette";
+            validTitles = (Aqua, Coral, Mint, Gold, Violet);
+            validValues = (0, 1, 2, 3, 4);
+            PostNotification = "com.chasedavis.homescreenzenpro/preferences.changed";
+        },
+        {
+            cell = PSGroupCell;
+            footerText = "Use Safe Defaults if Home Screen labels or badges do not restore cleanly.";
+        },
+        {
+            action = setSafeDefaults;
+            cell = PSButtonCell;
+            label = "Reset to Safe Defaults";
+        },
+        {
+            action = respring;
+            cell = PSButtonCell;
+            label = "Apply with Respring";
+        }
+    );
+}

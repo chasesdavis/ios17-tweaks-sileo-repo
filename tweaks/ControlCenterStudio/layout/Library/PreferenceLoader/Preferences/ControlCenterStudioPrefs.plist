@@ -1,0 +1,7 @@
+{
+    entry = {
+        bundle = ControlCenterStudioPrefs;
+        cell = PSLinkCell;
+        label = "ControlCenter Studio";
+    };
+}

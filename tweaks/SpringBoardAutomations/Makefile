@@ -13,3 +13,14 @@ SpringBoardAutomations_CFLAGS = -fobjc-arc -Wno-deprecated-declarations -I../../
 SpringBoardAutomations_FRAMEWORKS = UIKit Foundation QuartzCore CoreGraphics
 
 include $(THEOS_MAKE_PATH)/tweak.mk
+
+BUNDLE_NAME = SpringBoardAutomationsPrefs
+
+SpringBoardAutomationsPrefs_FILES = ../../shared/CDPremiumPrefsListController.m
+SpringBoardAutomationsPrefs_CFLAGS = -fobjc-arc -DPREFS_CLASS=SpringBoardAutomationsPrefsListController
+SpringBoardAutomationsPrefs_FRAMEWORKS = UIKit Foundation
+SpringBoardAutomationsPrefs_PRIVATE_FRAMEWORKS = Preferences
+SpringBoardAutomationsPrefs_LDFLAGS = -F/Users/chase/theos/sdks/iPhoneOS17.0.sdk/System/Library/PrivateFrameworks
+SpringBoardAutomationsPrefs_INSTALL_PATH = /Library/PreferenceBundles
+
+include $(THEOS_MAKE_PATH)/bundle.mk

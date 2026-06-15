@@ -1,0 +1,11 @@
+{
+    CFBundleDevelopmentRegion = en;
+    CFBundleExecutable = LockScreenAtmospherePrefs;
+    CFBundleIdentifier = "com.chasedavis.lockscreenatmosphere.preferences";
+    CFBundleInfoDictionaryVersion = "6.0";
+    CFBundleName = "LockScreen Atmosphere";
+    CFBundlePackageType = BNDL;
+    CFBundleShortVersionString = "1.0.1";
+    CFBundleVersion = "1";
+    NSPrincipalClass = LockScreenAtmospherePrefsListController;
+}

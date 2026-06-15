@@ -1,0 +1,11 @@
+{
+    CFBundleDevelopmentRegion = en;
+    CFBundleExecutable = FocusLensProPrefs;
+    CFBundleIdentifier = "com.chasedavis.focuslenspro.preferences";
+    CFBundleInfoDictionaryVersion = "6.0";
+    CFBundleName = "FocusLens Pro";
+    CFBundlePackageType = BNDL;
+    CFBundleShortVersionString = "1.0.1";
+    CFBundleVersion = "1";
+    NSPrincipalClass = FocusLensProPrefsListController;
+}

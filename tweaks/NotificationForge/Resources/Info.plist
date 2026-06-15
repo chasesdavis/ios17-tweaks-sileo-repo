@@ -1,0 +1,11 @@
+{
+    CFBundleDevelopmentRegion = en;
+    CFBundleExecutable = NotificationForgePrefs;
+    CFBundleIdentifier = "com.chasedavis.notificationforge.preferences";
+    CFBundleInfoDictionaryVersion = "6.0";
+    CFBundleName = NotificationForge;
+    CFBundlePackageType = BNDL;
+    CFBundleShortVersionString = "1.0.1";
+    CFBundleVersion = "1";
+    NSPrincipalClass = NotificationForgePrefsListController;
+}

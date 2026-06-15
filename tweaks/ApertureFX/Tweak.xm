@@ -6,7 +6,7 @@
 static NSString *const CDApertureFXDomain = @"com.chasedavis.aperturefx";
 
 static void CDApertureFXApply(UIView *view) {
-    if (!CDPremiumBool(CDApertureFXDomain, @"enabled", YES) || UIAccessibilityIsReduceMotionEnabled()) {
+    if (!CDPremiumBool(CDApertureFXDomain, @"enabled", NO) || UIAccessibilityIsReduceMotionEnabled()) {
         return;
     }
     UIColor *tint = CDPremiumTint(CDApertureFXDomain, CDVTColor(184, 118, 255, 1.0));
@@ -20,7 +20,7 @@ static void CDApertureFXApply(UIView *view) {
 }
 
 static void CDApertureFXIconEcho(UIView *view) {
-    if (!CDPremiumBool(CDApertureFXDomain, @"launchEcho", YES) || !CDVTClassChainContains(view, @[@"IconView"])) {
+    if (!CDPremiumBool(CDApertureFXDomain, @"enabled", NO) || !CDPremiumBool(CDApertureFXDomain, @"launchEcho", YES) || !CDVTClassChainContains(view, @[@"IconView"])) {
         return;
     }
     CDVTAddPop(view.layer, @"cd.aperturefx.iconPop");

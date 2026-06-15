@@ -1,0 +1,55 @@
+{
+    title = ApertureFX;
+    items = (
+        {
+            cell = PSGroupCell;
+            label = "Safety";
+            footerText = "Disabled by default in 1.0.1. Enable after install, then respring.";
+        },
+        {
+            cell = PSSwitchCell;
+            default = 0;
+            defaults = "com.chasedavis.aperturefx";
+            key = enabled;
+            label = "Enabled";
+            PostNotification = "com.chasedavis.aperturefx/preferences.changed";
+        },
+        {
+            cell = PSSwitchCell;
+            default = 1;
+            defaults = "com.chasedavis.aperturefx";
+            key = launchEcho;
+            label = "Icon Launch Echo";
+            PostNotification = "com.chasedavis.aperturefx/preferences.changed";
+        },
+        {
+            cell = PSGroupCell;
+            label = "Look";
+        },
+        {
+            cell = PSLinkListCell;
+            default = 4;
+            defaults = "com.chasedavis.aperturefx";
+            detail = PSListItemsController;
+            key = palette;
+            label = "Palette";
+            validTitles = (Aqua, Coral, Mint, Gold, Violet);
+            validValues = (0, 1, 2, 3, 4);
+            PostNotification = "com.chasedavis.aperturefx/preferences.changed";
+        },
+        {
+            cell = PSGroupCell;
+            footerText = "Use Safe Defaults if animations feel unstable.";
+        },
+        {
+            action = setSafeDefaults;
+            cell = PSButtonCell;
+            label = "Reset to Safe Defaults";
+        },
+        {
+            action = respring;
+            cell = PSButtonCell;
+            label = "Apply with Respring";
+        }
+    );
+}

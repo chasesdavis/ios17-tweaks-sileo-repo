@@ -44,7 +44,7 @@ static UILabel *CDDockShelfLane(NSString *text, UIColor *tint, CGFloat x, CGFloa
 }
 
 static void CDDockShelfInstall(UIView *dock) {
-    if (!CDDockShelfIsDock(dock) || !CDPremiumBool(CDDockShelfDomain, @"enabled", YES)) {
+    if (!CDDockShelfIsDock(dock) || !CDPremiumBool(CDDockShelfDomain, @"enabled", NO)) {
         return;
     }
     UIColor *tint = CDPremiumTint(CDDockShelfDomain, CDVTColor(126, 220, 255, 1.0));

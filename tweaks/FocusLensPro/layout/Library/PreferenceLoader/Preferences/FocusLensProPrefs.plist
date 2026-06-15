@@ -1,0 +1,7 @@
+{
+    entry = {
+        bundle = FocusLensProPrefs;
+        cell = PSLinkCell;
+        label = "FocusLens Pro";
+    };
+}

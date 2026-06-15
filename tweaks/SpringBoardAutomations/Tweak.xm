@@ -36,7 +36,7 @@ static UIColor *CDAutomationsTint(void) {
 }
 
 static void CDAutomationsRun(NSString *reason) {
-    if (!CDPremiumBool(CDAutomationsDomain, @"enabled", YES)) {
+    if (!CDPremiumBool(CDAutomationsDomain, @"enabled", NO)) {
         return;
     }
     UIWindow *window = CDVTKeyWindow();

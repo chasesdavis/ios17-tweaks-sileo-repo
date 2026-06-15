@@ -13,7 +13,7 @@ static BOOL CDNotificationForgeQuietHours(void) {
 }
 
 static void CDNotificationForgeApply(UIView *view) {
-    if (!CDPremiumBool(CDNotificationForgeDomain, @"enabled", YES) || !CDVTLooksLikeSurface(view, @[@"Notification", @"Banner", @"ShortLook", @"Platter"], 120.0, 34.0, 520.0, 260.0)) {
+    if (!CDPremiumBool(CDNotificationForgeDomain, @"enabled", NO) || !CDVTLooksLikeSurface(view, @[@"Notification", @"Banner", @"ShortLook", @"Platter"], 120.0, 34.0, 520.0, 260.0)) {
         return;
     }
     UIColor *tint = CDPremiumTint(CDNotificationForgeDomain, CDVTColor(255, 110, 146, 1.0));

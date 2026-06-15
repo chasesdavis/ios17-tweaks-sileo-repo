@@ -13,3 +13,14 @@ NotificationForge_CFLAGS = -fobjc-arc -Wno-deprecated-declarations -I../../share
 NotificationForge_FRAMEWORKS = UIKit Foundation QuartzCore CoreGraphics
 
 include $(THEOS_MAKE_PATH)/tweak.mk
+
+BUNDLE_NAME = NotificationForgePrefs
+
+NotificationForgePrefs_FILES = ../../shared/CDPremiumPrefsListController.m
+NotificationForgePrefs_CFLAGS = -fobjc-arc -DPREFS_CLASS=NotificationForgePrefsListController
+NotificationForgePrefs_FRAMEWORKS = UIKit Foundation
+NotificationForgePrefs_PRIVATE_FRAMEWORKS = Preferences
+NotificationForgePrefs_LDFLAGS = -F/Users/chase/theos/sdks/iPhoneOS17.0.sdk/System/Library/PrivateFrameworks
+NotificationForgePrefs_INSTALL_PATH = /Library/PreferenceBundles
+
+include $(THEOS_MAKE_PATH)/bundle.mk

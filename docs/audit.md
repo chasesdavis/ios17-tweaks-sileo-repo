@@ -1,47 +1,47 @@
 # Audit
 
-Generated: 2026-06-15T09:35:48Z
+Generated: 2026-06-15T11:12:18Z
 
 ## Static Tweak Checks
 
-| Tweak | Roothide | Filter | Package | UI boundary | Deb | Deb contents | Arch |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| AirplaneComet | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
-| AmbientBattery | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
-| ApertureFX | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
-| AppLaunchEcho | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
-| AuraDock | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
-| ChargingAurora | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
-| ControlCenterStudio | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
-| ControlGlyphs | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
-| DimInactivePages | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
-| DockBadgesOnly | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
-| DockShelfPro | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
-| FocusLensPro | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
-| GhostDock | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
-| HaloTouches | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
-| HomeScreenZenPro | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
-| IconLabelPro | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
-| IslandCommandPro | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
-| KineticBadges | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
-| LiquidFolders | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
-| LockGlyph | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
-| LockScreenAtmosphere | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
-| MinimalCC | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
-| NotificationForge | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
-| PrismStatus | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
-| QuietBadges | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
-| ScreenshotFlashPlus | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
-| SignalBloom | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
-| SilentToast | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
-| SleepySpringBoard | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
-| SnapGrid | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
-| SpringBoardAutomations | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
-| SpringTrails | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
-| StatusLabPro | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
-| VelvetAlerts | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
-| VolumeRibbon | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
-| WallpaperDepthTint | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
+| Tweak | Roothide | Filter | Package | UI boundary | Deb | Deb contents | Prefs | Arch |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| AirplaneComet | pass | pass | pass | pass | present | pass | n/a | iphoneos-arm64e |
+| AmbientBattery | pass | pass | pass | pass | present | pass | n/a | iphoneos-arm64e |
+| ApertureFX | pass | pass | pass | pass | present | pass | pass | iphoneos-arm64e |
+| AppLaunchEcho | pass | pass | pass | pass | present | pass | n/a | iphoneos-arm64e |
+| AuraDock | pass | pass | pass | pass | present | pass | n/a | iphoneos-arm64e |
+| ChargingAurora | pass | pass | pass | pass | present | pass | n/a | iphoneos-arm64e |
+| ControlCenterStudio | pass | pass | pass | pass | present | pass | pass | iphoneos-arm64e |
+| ControlGlyphs | pass | pass | pass | pass | present | pass | n/a | iphoneos-arm64e |
+| DimInactivePages | pass | pass | pass | pass | present | pass | n/a | iphoneos-arm64e |
+| DockBadgesOnly | pass | pass | pass | pass | present | pass | n/a | iphoneos-arm64e |
+| DockShelfPro | pass | pass | pass | pass | present | pass | pass | iphoneos-arm64e |
+| FocusLensPro | pass | pass | pass | pass | present | pass | pass | iphoneos-arm64e |
+| GhostDock | pass | pass | pass | pass | present | pass | n/a | iphoneos-arm64e |
+| HaloTouches | pass | pass | pass | pass | present | pass | n/a | iphoneos-arm64e |
+| HomeScreenZenPro | pass | pass | pass | pass | present | pass | pass | iphoneos-arm64e |
+| IconLabelPro | pass | pass | pass | pass | present | pass | n/a | iphoneos-arm64e |
+| IslandCommandPro | pass | pass | pass | pass | present | pass | pass | iphoneos-arm64e |
+| KineticBadges | pass | pass | pass | pass | present | pass | n/a | iphoneos-arm64e |
+| LiquidFolders | pass | pass | pass | pass | present | pass | n/a | iphoneos-arm64e |
+| LockGlyph | pass | pass | pass | pass | present | pass | n/a | iphoneos-arm64e |
+| LockScreenAtmosphere | pass | pass | pass | pass | present | pass | pass | iphoneos-arm64e |
+| MinimalCC | pass | pass | pass | pass | present | pass | n/a | iphoneos-arm64e |
+| NotificationForge | pass | pass | pass | pass | present | pass | pass | iphoneos-arm64e |
+| PrismStatus | pass | pass | pass | pass | present | pass | n/a | iphoneos-arm64e |
+| QuietBadges | pass | pass | pass | pass | present | pass | n/a | iphoneos-arm64e |
+| ScreenshotFlashPlus | pass | pass | pass | pass | present | pass | n/a | iphoneos-arm64e |
+| SignalBloom | pass | pass | pass | pass | present | pass | n/a | iphoneos-arm64e |
+| SilentToast | pass | pass | pass | pass | present | pass | n/a | iphoneos-arm64e |
+| SleepySpringBoard | pass | pass | pass | pass | present | pass | n/a | iphoneos-arm64e |
+| SnapGrid | pass | pass | pass | pass | present | pass | n/a | iphoneos-arm64e |
+| SpringBoardAutomations | pass | pass | pass | pass | present | pass | pass | iphoneos-arm64e |
+| SpringTrails | pass | pass | pass | pass | present | pass | n/a | iphoneos-arm64e |
+| StatusLabPro | pass | pass | pass | pass | present | pass | pass | iphoneos-arm64e |
+| VelvetAlerts | pass | pass | pass | pass | present | pass | n/a | iphoneos-arm64e |
+| VolumeRibbon | pass | pass | pass | pass | present | pass | n/a | iphoneos-arm64e |
+| WallpaperDepthTint | pass | pass | pass | pass | present | pass | n/a | iphoneos-arm64e |
 
 ## Repo Checks
 

@@ -7,7 +7,7 @@ static NSString *const CDFocusLensDomain = @"com.chasedavis.focuslenspro";
 static char kCDFocusLensPanelKey;
 
 static BOOL CDFocusLensActive(void) {
-    if (!CDPremiumBool(CDFocusLensDomain, @"enabled", YES)) {
+    if (!CDPremiumBool(CDFocusLensDomain, @"enabled", NO)) {
         return NO;
     }
     NSInteger hour = [[NSCalendar currentCalendar] component:NSCalendarUnitHour fromDate:[NSDate date]];

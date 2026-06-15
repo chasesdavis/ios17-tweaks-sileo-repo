@@ -1,0 +1,7 @@
+{
+    entry = {
+        bundle = HomeScreenZenProPrefs;
+        cell = PSLinkCell;
+        label = "HomeScreenZen Pro";
+    };
+}

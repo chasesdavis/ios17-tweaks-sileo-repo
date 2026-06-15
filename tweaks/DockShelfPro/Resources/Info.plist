@@ -1,0 +1,11 @@
+{
+    CFBundleDevelopmentRegion = en;
+    CFBundleExecutable = DockShelfProPrefs;
+    CFBundleIdentifier = "com.chasedavis.dockshelfpro.preferences";
+    CFBundleInfoDictionaryVersion = "6.0";
+    CFBundleName = "DockShelf Pro";
+    CFBundlePackageType = BNDL;
+    CFBundleShortVersionString = "1.0.1";
+    CFBundleVersion = "1";
+    NSPrincipalClass = DockShelfProPrefsListController;
+}
