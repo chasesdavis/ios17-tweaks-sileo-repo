@@ -481,18 +481,18 @@ SHA256: 6d82420860b598da1f5b88e7de0fab369ebbefbfdf6b7ab0f62793f31f64389b
 Package: com.chasedavis.spotifyreframe
 Name: SpotifyReframe
 Depends: mobilesubstrate, preferenceloader
-Description: Low-power Spotify UI refinement with calm defaults, in-app controls, subtle cards, artwork polish, and restrained chrome.
+Description: Native-first Spotify refinement with safe defaults, minimal artwork polish, and opt-in experimental styling.
 Maintainer: Chase Davis
 Author: Chase Davis
 Section: Tweaks
 Architecture: iphoneos-arm64e
-Version: 1.0.2-1
+Version: 1.0.3-1
 Installed-Size: 444
-Filename: debs/com.chasedavis.spotifyreframe_1.0.2-1_iphoneos-arm64e.deb
-Size: 41436
-MD5sum: 57cf7bc51e75762c4a17ff9c800fe515
-SHA1: 0642aa9281f0df1904991113f354a097d9fc835f
-SHA256: 116fcdb71bcacdec4fdf06aa815807e428e58bd09a4b7ed5bf76c47923e535e4
+Filename: debs/com.chasedavis.spotifyreframe_1.0.3-1_iphoneos-arm64e.deb
+Size: 41586
+MD5sum: 5f9a0860869ce676c6543cb5cc793efe
+SHA1: 5c930ef65328e2dc7b15b7816e42b1f7f3b38d48
+SHA256: d55dce2fcbba8c77529a9a6ba1a9c01f6cc13e60000d5801f8fd18c1b13520b5
 
 Package: com.chasedavis.springboardautomations
 Name: SpringBoard Automations

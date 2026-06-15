@@ -62,7 +62,7 @@ static BOOL CDSpotifyLaunchBadgeEnabled(void) {
 }
 
 static BOOL CDSpotifyInAppSettingsEnabled(void) {
-    return CDPremiumBool(CDSpotifyReframeDomain, @"inAppSettings", YES);
+    return CDPremiumBool(CDSpotifyReframeDomain, @"inAppSettings", NO);
 }
 
 static BOOL CDSpotifyLowPowerMode(void) {
@@ -95,33 +95,33 @@ static NSDictionary<NSString *, id> *CDSpotifyCalmDefaults(void) {
         @"enabled": @YES,
         @"lowPowerMode": @YES,
         @"forceVisualMode": @NO,
-        @"inAppSettings": @YES,
+        @"inAppSettings": @NO,
         @"launchBadge": @NO,
         @"palette": @0,
-        @"backgroundWash": @0.06,
-        @"glassCards": @YES,
+        @"backgroundWash": @0.0,
+        @"glassCards": @NO,
         @"cardDensity": @0,
-        @"cardFill": @0.08,
-        @"cardRadius": @12.0,
+        @"cardFill": @0.0,
+        @"cardRadius": @8.0,
         @"cardShadow": @0.0,
         @"styleArtwork": @YES,
-        @"artworkRadius": @8.0,
-        @"artworkGlow": @0.06,
-        @"nowPlayingGlass": @YES,
+        @"artworkRadius": @4.0,
+        @"artworkGlow": @0.0,
+        @"nowPlayingGlass": @NO,
         @"controlTint": @NO,
-        @"playerGlow": @0.06,
+        @"playerGlow": @0.0,
         @"tintPrimaryLabels": @NO,
         @"labelTintStrength": @0.0,
-        @"tabBarGlass": @YES,
+        @"tabBarGlass": @NO,
         @"navBarGlass": @NO,
-        @"chromeFill": @0.12,
-        @"profileVersion": @2
+        @"chromeFill": @0.0,
+        @"profileVersion": @3
     };
 }
 
 static void CDSpotifyMigrateCalmDefaultsIfNeeded(void) {
     CDSpotifySynchronizePreferences();
-    if (CDPremiumInteger(CDSpotifyReframeDomain, @"profileVersion", 0) >= 2) {
+    if (CDPremiumInteger(CDSpotifyReframeDomain, @"profileVersion", 0) >= 3) {
         return;
     }
     NSDictionary<NSString *, id> *defaults = CDSpotifyCalmDefaults();
@@ -465,23 +465,23 @@ static void CDSpotifyOpenSettingsPanel(UIWindow *window) {
     CDSpotifyAddSwitchRow(scrollView, &y, @"Enabled", @"Master switch for all SpotifyReframe visuals.", @"enabled", YES);
     CDSpotifyAddSwitchRow(scrollView, &y, @"Low Power Mode", @"Avoids repeated glow work while scrolling.", @"lowPowerMode", YES);
     CDSpotifyAddSwitchRow(scrollView, &y, @"Force Visual Mode", @"Compatibility fallback; keep off unless normal styling is invisible.", @"forceVisualMode", NO);
-    CDSpotifyAddSwitchRow(scrollView, &y, @"In-App Settings Button", @"Show the floating Reframe control inside Spotify.", @"inAppSettings", YES);
+    CDSpotifyAddSwitchRow(scrollView, &y, @"In-App Settings Button", @"Opt-in floating control. Off by default to avoid Spotify UI overlap.", @"inAppSettings", NO);
     CDSpotifyAddSwitchRow(scrollView, &y, @"Launch Badge", @"Debug-only load confirmation.", @"launchBadge", NO);
     CDSpotifyAddSegmentRow(scrollView, &y, @"Accent Palette", @"palette", @[@"Green", @"Coral", @"Mint", @"Gold", @"Violet"], 0);
-    CDSpotifyAddSliderRow(scrollView, &y, @"Background Wash", @"backgroundWash", 0.06, 0.0, 0.30, NO);
-    CDSpotifyAddSwitchRow(scrollView, &y, @"Glass Cards", @"Style list and grid cells.", @"glassCards", YES);
-    CDSpotifyAddSliderRow(scrollView, &y, @"Card Fill", @"cardFill", 0.08, 0.0, 0.26, NO);
-    CDSpotifyAddSliderRow(scrollView, &y, @"Card Radius", @"cardRadius", 12.0, 6.0, 20.0, YES);
+    CDSpotifyAddSliderRow(scrollView, &y, @"Background Wash", @"backgroundWash", 0.0, 0.0, 0.30, NO);
+    CDSpotifyAddSwitchRow(scrollView, &y, @"Glass Cards", @"Experimental. Off by default because Spotify cells vary by feed.", @"glassCards", NO);
+    CDSpotifyAddSliderRow(scrollView, &y, @"Card Fill", @"cardFill", 0.0, 0.0, 0.26, NO);
+    CDSpotifyAddSliderRow(scrollView, &y, @"Card Radius", @"cardRadius", 8.0, 0.0, 20.0, YES);
     CDSpotifyAddSwitchRow(scrollView, &y, @"Album Art Styling", @"Round covers and add a subtle accent stroke.", @"styleArtwork", YES);
-    CDSpotifyAddSliderRow(scrollView, &y, @"Artwork Radius", @"artworkRadius", 8.0, 0.0, 18.0, YES);
-    CDSpotifyAddSwitchRow(scrollView, &y, @"Now Playing Glass", @"Accent mini-player and playback surfaces.", @"nowPlayingGlass", YES);
+    CDSpotifyAddSliderRow(scrollView, &y, @"Artwork Radius", @"artworkRadius", 4.0, 0.0, 18.0, YES);
+    CDSpotifyAddSwitchRow(scrollView, &y, @"Now Playing Glass", @"Experimental. Off by default to avoid video and mini-player blocks.", @"nowPlayingGlass", NO);
     CDSpotifyAddSwitchRow(scrollView, &y, @"Tint Controls", @"Apply the palette to playback controls and icons.", @"controlTint", NO);
-    CDSpotifyAddSliderRow(scrollView, &y, @"Player Accent", @"playerGlow", 0.06, 0.0, 0.30, NO);
+    CDSpotifyAddSliderRow(scrollView, &y, @"Player Accent", @"playerGlow", 0.0, 0.0, 0.30, NO);
     CDSpotifyAddSwitchRow(scrollView, &y, @"Tint Key Labels", @"Accent headings and primary Spotify labels.", @"tintPrimaryLabels", NO);
     CDSpotifyAddSliderRow(scrollView, &y, @"Label Tint", @"labelTintStrength", 0.0, 0.0, 0.35, NO);
-    CDSpotifyAddSwitchRow(scrollView, &y, @"Tab Bar Glass", @"Apply tint and shadow to UIKit tab bars when present.", @"tabBarGlass", YES);
+    CDSpotifyAddSwitchRow(scrollView, &y, @"Tab Bar Glass", @"Experimental. Off by default for native Spotify tabs.", @"tabBarGlass", NO);
     CDSpotifyAddSwitchRow(scrollView, &y, @"Navigation Glass", @"Apply tint and shadow to UIKit navigation bars when present.", @"navBarGlass", NO);
-    CDSpotifyAddSliderRow(scrollView, &y, @"Chrome Fill", @"chromeFill", 0.12, 0.0, 0.32, NO);
+    CDSpotifyAddSliderRow(scrollView, &y, @"Chrome Fill", @"chromeFill", 0.0, 0.0, 0.32, NO);
 
     UIView *buttonRow = CDSpotifyAddSettingsRow(scrollView, &y, @"", @"", 58.0);
     UIButton *disableButton = [UIButton buttonWithType:UIButtonTypeSystem];

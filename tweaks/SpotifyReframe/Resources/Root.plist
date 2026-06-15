@@ -4,7 +4,7 @@
         {
             cell = PSGroupCell;
             label = "Power";
-            footerText = "Spotify-only visual redesign. Enable, force quit Spotify, then reopen the app.";
+            footerText = "Native-first Spotify refinement. Experimental broad styling is off by default for better appearance and battery life.";
         },
         {
             cell = PSSwitchCell;
@@ -32,7 +32,7 @@
         },
         {
             cell = PSSwitchCell;
-            default = 1;
+            default = 0;
             defaults = "com.chasedavis.spotifyreframe";
             key = inAppSettings;
             label = "In-App Settings Button";
@@ -63,7 +63,7 @@
         },
         {
             cell = PSSliderCell;
-            default = 0.06;
+            default = 0;
             defaults = "com.chasedavis.spotifyreframe";
             key = backgroundWash;
             label = "Background Wash";
@@ -97,7 +97,7 @@
         },
         {
             cell = PSSwitchCell;
-            default = 1;
+            default = 0;
             defaults = "com.chasedavis.spotifyreframe";
             key = glassCards;
             label = "Glass Cards";
@@ -116,7 +116,7 @@
         },
         {
             cell = PSSliderCell;
-            default = 0.08;
+            default = 0;
             defaults = "com.chasedavis.spotifyreframe";
             key = cardFill;
             label = "Card Fill";
@@ -127,11 +127,11 @@
         },
         {
             cell = PSSliderCell;
-            default = 12;
+            default = 8;
             defaults = "com.chasedavis.spotifyreframe";
             key = cardRadius;
             label = "Card Radius";
-            min = 6;
+            min = 0;
             max = 20;
             showValue = 1;
             PostNotification = "com.chasedavis.spotifyreframe/preferences.changed";
@@ -161,7 +161,7 @@
         },
         {
             cell = PSSliderCell;
-            default = 8;
+            default = 4;
             defaults = "com.chasedavis.spotifyreframe";
             key = artworkRadius;
             label = "Artwork Radius";
@@ -172,7 +172,7 @@
         },
         {
             cell = PSSliderCell;
-            default = 0.06;
+            default = 0;
             defaults = "com.chasedavis.spotifyreframe";
             key = artworkGlow;
             label = "Artwork Glow";
@@ -187,7 +187,7 @@
         },
         {
             cell = PSSwitchCell;
-            default = 1;
+            default = 0;
             defaults = "com.chasedavis.spotifyreframe";
             key = nowPlayingGlass;
             label = "Now Playing Glass";
@@ -203,7 +203,7 @@
         },
         {
             cell = PSSliderCell;
-            default = 0.06;
+            default = 0;
             defaults = "com.chasedavis.spotifyreframe";
             key = playerGlow;
             label = "Player Accent";
@@ -218,7 +218,7 @@
         },
         {
             cell = PSSwitchCell;
-            default = 1;
+            default = 0;
             defaults = "com.chasedavis.spotifyreframe";
             key = tabBarGlass;
             label = "Tab Bar Glass";
@@ -234,7 +234,7 @@
         },
         {
             cell = PSSliderCell;
-            default = 0.12;
+            default = 0;
             defaults = "com.chasedavis.spotifyreframe";
             key = chromeFill;
             label = "Chrome Fill";
