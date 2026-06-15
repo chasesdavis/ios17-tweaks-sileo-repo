@@ -7,6 +7,7 @@ extern "C" {
 BOOL CDPremiumBool(NSString *domain, NSString *key, BOOL fallback);
 NSInteger CDPremiumInteger(NSString *domain, NSString *key, NSInteger fallback);
 CGFloat CDPremiumFloat(NSString *domain, NSString *key, CGFloat fallback);
+CGFloat CDPremiumClampedFloat(NSString *domain, NSString *key, CGFloat fallback, CGFloat minimum, CGFloat maximum);
 UIColor *CDPremiumTint(NSString *domain, UIColor *fallback);
 UIVisualEffectView *CDPremiumPanel(UIWindow *window, const void *key, NSString *title, NSString *subtitle, UIColor *tint, CGFloat y, CGFloat width);
 void CDPremiumDismissPanel(UIWindow *window, const void *key);

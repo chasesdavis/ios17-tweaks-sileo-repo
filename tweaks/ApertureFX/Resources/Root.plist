@@ -3,8 +3,8 @@
     items = (
         {
             cell = PSGroupCell;
-            label = "Safety";
-            footerText = "Disabled by default in 1.0.3. Enable after install, then respring.";
+            label = "Power";
+            footerText = "Disabled by default in 1.0.4. Enable after install, then respring.";
         },
         {
             cell = PSSwitchCell;
@@ -18,13 +18,72 @@
             cell = PSSwitchCell;
             default = 1;
             defaults = "com.chasedavis.aperturefx";
+            key = respectReduceMotion;
+            label = "Respect Reduce Motion";
+            PostNotification = "com.chasedavis.aperturefx/preferences.changed";
+        },
+        {
+            cell = PSGroupCell;
+            label = "Targets";
+        },
+        {
+            cell = PSSwitchCell;
+            default = 1;
+            defaults = "com.chasedavis.aperturefx";
+            key = styleIsland;
+            label = "Dynamic Island";
+            PostNotification = "com.chasedavis.aperturefx/preferences.changed";
+        },
+        {
+            cell = PSSwitchCell;
+            default = 1;
+            defaults = "com.chasedavis.aperturefx";
+            key = styleFolders;
+            label = "Folders";
+            PostNotification = "com.chasedavis.aperturefx/preferences.changed";
+        },
+        {
+            cell = PSSwitchCell;
+            default = 1;
+            defaults = "com.chasedavis.aperturefx";
+            key = styleBanners;
+            label = "Banners";
+            PostNotification = "com.chasedavis.aperturefx/preferences.changed";
+        },
+        {
+            cell = PSSwitchCell;
+            default = 1;
+            defaults = "com.chasedavis.aperturefx";
             key = launchEcho;
             label = "Icon Launch Echo";
             PostNotification = "com.chasedavis.aperturefx/preferences.changed";
         },
         {
             cell = PSGroupCell;
-            label = "Look";
+            label = "Motion";
+        },
+        {
+            cell = PSSwitchCell;
+            default = 1;
+            defaults = "com.chasedavis.aperturefx";
+            key = surfacePulse;
+            label = "Surface Pulse";
+            PostNotification = "com.chasedavis.aperturefx/preferences.changed";
+        },
+        {
+            cell = PSSliderCell;
+            default = 2.6;
+            defaults = "com.chasedavis.aperturefx";
+            key = pulseSeconds;
+            label = "Pulse Speed";
+            min = 1;
+            max = 8;
+            showValue = 1;
+            PostNotification = "com.chasedavis.aperturefx/preferences.changed";
+        },
+        {
+            cell = PSGroupCell;
+            label = "Glow";
         },
         {
             cell = PSLinkListCell;
@@ -38,13 +97,40 @@
             PostNotification = "com.chasedavis.aperturefx/preferences.changed";
         },
         {
+            cell = PSSliderCell;
+            default = 0.36;
+            defaults = "com.chasedavis.aperturefx";
+            key = glowStrength;
+            label = "Glow Strength";
+            min = 0;
+            max = 1;
+            showValue = 1;
+            PostNotification = "com.chasedavis.aperturefx/preferences.changed";
+        },
+        {
+            cell = PSSliderCell;
+            default = 13;
+            defaults = "com.chasedavis.aperturefx";
+            key = shadowRadius;
+            label = "Glow Radius";
+            min = 0;
+            max = 32;
+            showValue = 1;
+            PostNotification = "com.chasedavis.aperturefx/preferences.changed";
+        },
+        {
             cell = PSGroupCell;
-            footerText = "Use Safe Defaults if animations feel unstable.";
+            footerText = "If animations feel heavy, disable Surface Pulse or enable Respect Reduce Motion.";
+        },
+        {
+            action = resetTweakSettings;
+            cell = PSButtonCell;
+            label = "Reset Settings";
         },
         {
             action = setSafeDefaults;
             cell = PSButtonCell;
-            label = "Reset to Safe Defaults";
+            label = "Disable Safely";
         },
         {
             action = respring;

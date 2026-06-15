@@ -7,33 +7,40 @@ static NSString *const CDLockAtmosphereDomain = @"com.chasedavis.lockscreenatmos
 static char kCDLockAtmosphereGlowKey;
 
 static UIColor *CDLockAtmosphereTint(void) {
-    if ([UIDevice currentDevice].batteryState == UIDeviceBatteryStateCharging) {
+    if (CDPremiumBool(CDLockAtmosphereDomain, @"chargingOverride", YES) && [UIDevice currentDevice].batteryState == UIDeviceBatteryStateCharging) {
         return CDVTColor(112, 229, 168, 0.82);
     }
     return CDPremiumTint(CDLockAtmosphereDomain, CDVTColor(142, 205, 255, 0.72));
 }
 
 static void CDLockAtmosphereUpdateGlow(void) {
-    if (!CDPremiumBool(CDLockAtmosphereDomain, @"enabled", NO)) {
+    UIWindow *window = CDVTKeyWindow();
+    if (!CDPremiumBool(CDLockAtmosphereDomain, @"enabled", NO) || !CDPremiumBool(CDLockAtmosphereDomain, @"edgeGlow", YES)) {
+        if (window) {
+            CDVTRemoveAssociatedView(window, &kCDLockAtmosphereGlowKey);
+        }
         return;
     }
-    UIWindow *window = CDVTKeyWindow();
     if (!window) {
         return;
     }
-    CDVTAddEdgeGlow(window, &kCDLockAtmosphereGlowKey, CDLockAtmosphereTint(), @"cd.lockatmosphere.glow", 0.44);
+    CGFloat opacity = CDPremiumClampedFloat(CDLockAtmosphereDomain, @"glowOpacity", 0.44, 0.05, 0.95);
+    CDVTAddEdgeGlow(window, &kCDLockAtmosphereGlowKey, CDLockAtmosphereTint(), @"cd.lockatmosphere.glow", opacity);
 }
 
 static void CDLockAtmosphereApplyLabel(UILabel *label) {
-    if (!CDPremiumBool(CDLockAtmosphereDomain, @"enabled", NO) || !label.window || !label.text.length || !CDVTClassChainContains(label, @[@"DateView", @"Clock", @"LockScreen", @"CoverSheet"])) {
+    if (!CDPremiumBool(CDLockAtmosphereDomain, @"enabled", NO) || !CDPremiumBool(CDLockAtmosphereDomain, @"tintLabels", YES) || !label.window || !label.text.length || !CDVTClassChainContains(label, @[@"DateView", @"Clock", @"LockScreen", @"CoverSheet"])) {
         return;
     }
     UIColor *tint = CDLockAtmosphereTint();
-    label.textColor = tint;
-    label.layer.shadowColor = tint.CGColor;
-    label.layer.shadowOffset = CGSizeZero;
-    label.layer.shadowRadius = 8.0;
-    label.layer.shadowOpacity = 0.54;
+    CGFloat labelAlpha = CDPremiumClampedFloat(CDLockAtmosphereDomain, @"labelAlpha", 0.92, 0.25, 1.0);
+    label.textColor = [tint colorWithAlphaComponent:labelAlpha];
+    if (CDPremiumBool(CDLockAtmosphereDomain, @"labelGlow", YES)) {
+        label.layer.shadowColor = tint.CGColor;
+        label.layer.shadowOffset = CGSizeZero;
+        label.layer.shadowRadius = CDPremiumClampedFloat(CDLockAtmosphereDomain, @"labelRadius", 8.0, 0.0, 22.0);
+        label.layer.shadowOpacity = CDPremiumClampedFloat(CDLockAtmosphereDomain, @"labelGlowOpacity", 0.54, 0.0, 1.0);
+    }
 }
 
 %hook SpringBoard

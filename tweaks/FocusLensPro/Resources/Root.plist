@@ -3,8 +3,8 @@
     items = (
         {
             cell = PSGroupCell;
-            label = "Safety";
-            footerText = "Disabled by default in 1.0.3. Enable after install, then respring.";
+            label = "Power";
+            footerText = "Disabled by default in 1.0.4. Enable after install, then respring.";
         },
         {
             cell = PSSwitchCell;
@@ -12,6 +12,14 @@
             defaults = "com.chasedavis.focuslenspro";
             key = enabled;
             label = "Enabled";
+            PostNotification = "com.chasedavis.focuslenspro/preferences.changed";
+        },
+        {
+            cell = PSSwitchCell;
+            default = 0;
+            defaults = "com.chasedavis.focuslenspro";
+            key = alwaysOn;
+            label = "Always Active";
             PostNotification = "com.chasedavis.focuslenspro/preferences.changed";
         },
         {
@@ -42,7 +50,102 @@
         },
         {
             cell = PSGroupCell;
-            label = "Look";
+            label = "Surfaces";
+        },
+        {
+            cell = PSSwitchCell;
+            default = 1;
+            defaults = "com.chasedavis.focuslenspro";
+            key = dimWidgets;
+            label = "Dim Widgets";
+            PostNotification = "com.chasedavis.focuslenspro/preferences.changed";
+        },
+        {
+            cell = PSSwitchCell;
+            default = 1;
+            defaults = "com.chasedavis.focuslenspro";
+            key = dimBadges;
+            label = "Dim Badges";
+            PostNotification = "com.chasedavis.focuslenspro/preferences.changed";
+        },
+        {
+            cell = PSSwitchCell;
+            default = 1;
+            defaults = "com.chasedavis.focuslenspro";
+            key = styleDock;
+            label = "Style Dock";
+            PostNotification = "com.chasedavis.focuslenspro/preferences.changed";
+        },
+        {
+            cell = PSSwitchCell;
+            default = 1;
+            defaults = "com.chasedavis.focuslenspro";
+            key = statusPanel;
+            label = "Status Panel";
+            PostNotification = "com.chasedavis.focuslenspro/preferences.changed";
+        },
+        {
+            cell = PSGroupCell;
+            label = "Tuning";
+        },
+        {
+            cell = PSSliderCell;
+            default = 0.72;
+            defaults = "com.chasedavis.focuslenspro";
+            key = widgetAlpha;
+            label = "Widget Opacity";
+            min = 0.25;
+            max = 1;
+            showValue = 1;
+            PostNotification = "com.chasedavis.focuslenspro/preferences.changed";
+        },
+        {
+            cell = PSSliderCell;
+            default = 0.68;
+            defaults = "com.chasedavis.focuslenspro";
+            key = badgeAlpha;
+            label = "Badge Opacity";
+            min = 0.20;
+            max = 1;
+            showValue = 1;
+            PostNotification = "com.chasedavis.focuslenspro/preferences.changed";
+        },
+        {
+            cell = PSSliderCell;
+            default = 0.26;
+            defaults = "com.chasedavis.focuslenspro";
+            key = dockFill;
+            label = "Dock Fill";
+            min = 0.06;
+            max = 0.58;
+            showValue = 1;
+            PostNotification = "com.chasedavis.focuslenspro/preferences.changed";
+        },
+        {
+            cell = PSSliderCell;
+            default = 0.55;
+            defaults = "com.chasedavis.focuslenspro";
+            key = dockShadow;
+            label = "Dock Shadow";
+            min = 0;
+            max = 1;
+            showValue = 1;
+            PostNotification = "com.chasedavis.focuslenspro/preferences.changed";
+        },
+        {
+            cell = PSLinkListCell;
+            default = 3;
+            defaults = "com.chasedavis.focuslenspro";
+            detail = PSListItemsController;
+            key = statusSeconds;
+            label = "Status Duration";
+            validTitles = ("Off", "2 Seconds", "3 Seconds", "5 Seconds");
+            validValues = (0, 2, 3, 5);
+            PostNotification = "com.chasedavis.focuslenspro/preferences.changed";
+        },
+        {
+            cell = PSGroupCell;
+            label = "Color";
         },
         {
             cell = PSLinkListCell;
@@ -57,12 +160,17 @@
         },
         {
             cell = PSGroupCell;
-            footerText = "Use Safe Defaults if quiet-hour styling causes instability.";
+            footerText = "Always Active bypasses quiet hours.";
+        },
+        {
+            action = resetTweakSettings;
+            cell = PSButtonCell;
+            label = "Reset Settings";
         },
         {
             action = setSafeDefaults;
             cell = PSButtonCell;
-            label = "Reset to Safe Defaults";
+            label = "Disable Safely";
         },
         {
             action = respring;

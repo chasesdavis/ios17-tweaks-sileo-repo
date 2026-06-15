@@ -10,11 +10,15 @@ static void CDStatusLabApplyView(UIView *view) {
         return;
     }
     UIColor *tint = CDPremiumTint(CDStatusLabDomain, CDVTColor(126, 220, 255, 1.0));
-    view.tintColor = tint;
-    view.layer.shadowColor = tint.CGColor;
-    view.layer.shadowOffset = CGSizeZero;
-    view.layer.shadowRadius = 4.2;
-    view.layer.shadowOpacity = 0.64;
+    if (CDPremiumBool(CDStatusLabDomain, @"tintSymbols", YES)) {
+        view.tintColor = tint;
+    }
+    if (CDPremiumBool(CDStatusLabDomain, @"glowSymbols", YES)) {
+        view.layer.shadowColor = tint.CGColor;
+        view.layer.shadowOffset = CGSizeZero;
+        view.layer.shadowRadius = CDPremiumClampedFloat(CDStatusLabDomain, @"symbolRadius", 4.2, 0.0, 14.0);
+        view.layer.shadowOpacity = CDPremiumClampedFloat(CDStatusLabDomain, @"symbolGlow", 0.64, 0.0, 1.0);
+    }
 }
 
 static void CDStatusLabApplyLabel(UILabel *label) {
@@ -22,11 +26,16 @@ static void CDStatusLabApplyLabel(UILabel *label) {
         return;
     }
     UIColor *tint = CDPremiumTint(CDStatusLabDomain, CDVTColor(126, 220, 255, 1.0));
-    label.textColor = tint;
-    label.layer.shadowColor = tint.CGColor;
-    label.layer.shadowOffset = CGSizeZero;
-    label.layer.shadowRadius = 3.0;
-    label.layer.shadowOpacity = 0.48;
+    if (CDPremiumBool(CDStatusLabDomain, @"tintText", YES)) {
+        CGFloat textAlpha = CDPremiumClampedFloat(CDStatusLabDomain, @"textAlpha", 1.0, 0.2, 1.0);
+        label.textColor = [tint colorWithAlphaComponent:textAlpha];
+    }
+    if (CDPremiumBool(CDStatusLabDomain, @"glowText", YES)) {
+        label.layer.shadowColor = tint.CGColor;
+        label.layer.shadowOffset = CGSizeZero;
+        label.layer.shadowRadius = CDPremiumClampedFloat(CDStatusLabDomain, @"textRadius", 3.0, 0.0, 12.0);
+        label.layer.shadowOpacity = CDPremiumClampedFloat(CDStatusLabDomain, @"textGlow", 0.48, 0.0, 1.0);
+    }
 }
 
 %hook UIView

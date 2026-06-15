@@ -63,6 +63,32 @@ static void CDPremiumPrefsPostChange(NSString *domain) {
     [self presentViewController:alert animated:YES completion:nil];
 }
 
+- (void)resetTweakSettings {
+    NSString *domain = nil;
+    for (PSSpecifier *specifier in [self specifiers]) {
+        domain = CDPremiumPrefsDomainFromSpecifier(specifier);
+        if (domain.length) {
+            break;
+        }
+    }
+    if (!domain.length) {
+        return;
+    }
+
+    CFStringRef cfDomain = (__bridge CFStringRef)domain;
+    NSArray *keys = (__bridge_transfer NSArray *)CFPreferencesCopyKeyList(cfDomain, kCFPreferencesCurrentUser, kCFPreferencesAnyHost);
+    for (NSString *key in keys) {
+        CFPreferencesSetAppValue((__bridge CFStringRef)key, NULL, cfDomain);
+    }
+    CFPreferencesAppSynchronize(cfDomain);
+    CDPremiumPrefsPostChange(domain);
+    [self reloadSpecifiers];
+
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Settings Reset" message:@"This tweak is back to its built-in defaults. Respring before testing again." preferredStyle:UIAlertControllerStyleAlert];
+    [alert addAction:[UIAlertAction actionWithTitle:@"Done" style:UIAlertActionStyleDefault handler:nil]];
+    [self presentViewController:alert animated:YES completion:nil];
+}
+
 - (void)respring {
     pid_t pid = 0;
     char *sbreloadArgs[] = {"sbreload", NULL};

@@ -17,11 +17,13 @@ These packages are intended to be higher-value than the first visual tranches. T
 
 ## Settings And Defaults
 
-All premium tweaks are versioned `1.0.3-1`, include PreferenceLoader panes, and install disabled by default. Enable and respring one tweak at a time from Settings so a bad interaction does not immediately push SpringBoard back into a boot loop.
+All premium tweaks are versioned `1.0.4-1`, include PreferenceLoader panes, and install disabled by default. Enable and respring one tweak at a time from Settings so a bad interaction does not immediately push SpringBoard back into a boot loop.
 
 Every pane includes:
 
 - `Enabled`: the main runtime gate.
 - `Palette`: shared premium color presets.
-- `Reset to Safe Defaults`: writes `enabled = false`.
+- Feature-specific trigger, layout, opacity, timing, glow, and behavior controls.
+- `Reset Settings`: clears that tweak's saved preferences so built-in defaults apply again.
+- `Disable Safely`: writes `enabled = false`.
 - `Apply with Respring`: runs `sbreload`, falling back to `killall SpringBoard`.

@@ -24,6 +24,16 @@ CGFloat CDPremiumFloat(NSString *domain, NSString *key, CGFloat fallback) {
     return value ? [value doubleValue] : fallback;
 }
 
+CGFloat CDPremiumClampedFloat(NSString *domain, NSString *key, CGFloat fallback, CGFloat minimum, CGFloat maximum) {
+    CGFloat value = CDPremiumFloat(domain, key, fallback);
+    if (minimum > maximum) {
+        CGFloat swap = minimum;
+        minimum = maximum;
+        maximum = swap;
+    }
+    return MIN(MAX(value, minimum), maximum);
+}
+
 UIColor *CDPremiumTint(NSString *domain, UIColor *fallback) {
     NSInteger palette = CDPremiumInteger(domain, @"palette", 0);
     switch (palette) {
