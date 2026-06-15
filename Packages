@@ -9,10 +9,10 @@ Architecture: iphoneos-arm64e
 Version: 1.0.0-1
 Installed-Size: 172
 Filename: debs/com.chasedavis.airplanecomet_1.0.0-1_iphoneos-arm64e.deb
-Size: 9322
-MD5sum: 272291c41f223b8b52775ec03b4411be
-SHA1: ac6673cbd30535962999ba508199a4b22f838a58
-SHA256: 189e064b936d16b7cb9cd9b70f5e81940f533dfc7b4dc3ffd75635b48e0ce6e6
+Size: 9324
+MD5sum: 14cf081f2ee3b1ad49bfe35b761048a9
+SHA1: f9b7a6f9d7f7454a098faf5d3de63ba2588aa041
+SHA256: e053ced44843490e1ee46ecb2f1c3d5cdf0043c354e933c5db5987e9269d3010
 
 Package: com.chasedavis.ambientbattery
 Name: AmbientBattery
@@ -25,10 +25,10 @@ Architecture: iphoneos-arm64e
 Version: 1.0.0-1
 Installed-Size: 172
 Filename: debs/com.chasedavis.ambientbattery_1.0.0-1_iphoneos-arm64e.deb
-Size: 10002
-MD5sum: e88f18de889652433f5c7f1eda2c3e82
-SHA1: b7addd61f77698c68926b9a207c6877365b8ae91
-SHA256: 5c4a659ebf6da86d610ec51eb0e7869e5403dfc84501e2417bfdf1488eb76d17
+Size: 10008
+MD5sum: e3cf91affdd613a0a2ca9ca1e5ceb5ef
+SHA1: 2a88ca63e8d3f6fa1fa78322623d483e7cbae58c
+SHA256: 622edd60fac09a51dc711f04f63ff86e0ab1366630738dddd7d1643e56f15b4d
 
 Package: com.chasedavis.aperturefx
 Name: ApertureFX
@@ -38,13 +38,13 @@ Maintainer: Chase Davis
 Author: Chase Davis
 Section: Tweaks
 Architecture: iphoneos-arm64e
-Version: 1.0.1-1
+Version: 1.0.2-1
 Installed-Size: 348
-Filename: debs/com.chasedavis.aperturefx_1.0.1-1_iphoneos-arm64e.deb
-Size: 16398
-MD5sum: 0a5b64492b612c54f31727d9b9d499b7
-SHA1: f2f334b68d51969aaaaf24c58981703e46e8a39c
-SHA256: 2e2686b8694ba7cf2f1d5b355b1e2a61f0659f00d2b7462be1d654e3f6155e42
+Filename: debs/com.chasedavis.aperturefx_1.0.2-1_iphoneos-arm64e.deb
+Size: 16384
+MD5sum: 5d2e22eceadcc99deb7cc6ae07d32e88
+SHA1: 2555451009acb7fb2cd36f89f54e3ec5dd55f495
+SHA256: 0fa78cafeab07ad26716db3b505aea096952ed711ed9d7d1182b7dddcd445f22
 
 Package: com.chasedavis.applaunchecho
 Name: AppLaunchEcho
@@ -57,10 +57,10 @@ Architecture: iphoneos-arm64e
 Version: 1.0.0-1
 Installed-Size: 172
 Filename: debs/com.chasedavis.applaunchecho_1.0.0-1_iphoneos-arm64e.deb
-Size: 9798
-MD5sum: 6cf98fc894e5756080cf190f240bd71b
-SHA1: 3f82bb5a3ae2daa8a54ae8ef9ef45bf9d2721b5a
-SHA256: 4c1b5553bef3b326d5a41f26f654d20482a31da8b8670432d6dbea718360874a
+Size: 9796
+MD5sum: b1292300ab331dafa31db16624cc2441
+SHA1: a82aca4d4ecb740e3e001c0d7a22d7297080cf14
+SHA256: e46200994957c690d0627d758fc74ae5a54c1ce67d255b70866af2a7452c6e34
 
 Package: com.chasedavis.auradock
 Name: AuraDock
@@ -74,9 +74,9 @@ Version: 1.0.0-1
 Installed-Size: 168
 Filename: debs/com.chasedavis.auradock_1.0.0-1_iphoneos-arm64e.deb
 Size: 6620
-MD5sum: 909ff0699cf27575f084b3c94ae0df14
-SHA1: 0a28ff4abccf4d25b0d65f3f1c54fe8d87e8811a
-SHA256: 545e1af15ce6b3a52ec3a721e3dc9fa6a8c823c1f380f27332ece49eaa035b27
+MD5sum: eb78eeb17c7047c5fe48b333c74698db
+SHA1: 34a205de72f637191635cc76427693762ace967a
+SHA256: 0149fd183eb8f75a9451f7034b0529c79f9d11bbc6b77757f22fae4d0d746c8b
 
 Package: com.chasedavis.chargingaurora
 Name: ChargingAurora
@@ -89,10 +89,10 @@ Architecture: iphoneos-arm64e
 Version: 1.0.0-1
 Installed-Size: 172
 Filename: debs/com.chasedavis.chargingaurora_1.0.0-1_iphoneos-arm64e.deb
-Size: 6876
-MD5sum: 5add0a732517007e0803c7c81ad60f15
-SHA1: d060fff55d7900c0e283814f497b8c574b6c7e7c
-SHA256: 1cf0b206c785ca853b86ee75ec8d8e74ae8aa09d9f40910f51c68840dcc0fb4d
+Size: 6854
+MD5sum: 75e723ef634bbe565ffb8470b74620e8
+SHA1: a4804d3c62a65adb4e09c330f6e679b6d9a876c0
+SHA256: f7f8981d9d41ffa4854053b16cf57e900732d4a5fbe9817eed6904cbc08ccd1c
 
 Package: com.chasedavis.controlcenterstudio
 Name: ControlCenter Studio
@@ -102,13 +102,13 @@ Maintainer: Chase Davis
 Author: Chase Davis
 Section: Tweaks
 Architecture: iphoneos-arm64e
-Version: 1.0.1-1
+Version: 1.0.2-1
 Installed-Size: 348
-Filename: debs/com.chasedavis.controlcenterstudio_1.0.1-1_iphoneos-arm64e.deb
-Size: 16708
-MD5sum: 19278ca23c4dcd60c50e3f326345bc70
-SHA1: 1ce2844cbb2ee45c8aa8e328706a5e54b74aa349
-SHA256: 3a3b35763f1ed2f76955722c62716d408650b4206767b30214997ab2d827b583
+Filename: debs/com.chasedavis.controlcenterstudio_1.0.2-1_iphoneos-arm64e.deb
+Size: 16688
+MD5sum: 0fdb15729c660f76a459f4eeff0d8449
+SHA1: ecaef87f2e08fec3d201051259af3e974563578d
+SHA256: 49d43fce24793dc79396f18b0c9fe06c64980170a6621e9d50953049953f0dc3
 
 Package: com.chasedavis.controlglyphs
 Name: ControlGlyphs
@@ -121,10 +121,10 @@ Architecture: iphoneos-arm64e
 Version: 1.0.0-1
 Installed-Size: 172
 Filename: debs/com.chasedavis.controlglyphs_1.0.0-1_iphoneos-arm64e.deb
-Size: 9604
-MD5sum: aa8f0acdf5aabf5b4ac863514a2d35bb
-SHA1: 73cd1212b487064e43346977e57f7e6dbf9dfa7f
-SHA256: 656ef4fa034bd5581fc48d7acf1c69ada01c35803b80a925a4cfe762a9510067
+Size: 9592
+MD5sum: 7b1e3e05b0f4313b17189a5ff70d7dc2
+SHA1: 0ce4afe0cef1bcbd411d2d574f9f1bc3f0de9af6
+SHA256: eae865e0ebe51c1e82b2cab76e41509402a80ed2f5d7eca9cd1c795b4c20ee31
 
 Package: com.chasedavis.diminactivepages
 Name: DimInactivePages
@@ -137,10 +137,10 @@ Architecture: iphoneos-arm64e
 Version: 1.0.0-1
 Installed-Size: 172
 Filename: debs/com.chasedavis.diminactivepages_1.0.0-1_iphoneos-arm64e.deb
-Size: 9666
-MD5sum: 958499db41cf981faf49c3ad2a90394d
-SHA1: 869b317028e2030b381dc347d51638a4df263e89
-SHA256: fd7256ea0ba6a9afbe588a351c9f0200ac1bd73ad4d27c6d8ede0ba594cabff2
+Size: 9654
+MD5sum: e4f5de3b0546f76bde56a0eed2195131
+SHA1: afe1d1f04078fed99cf60dcac1677df65287200b
+SHA256: 6d746bfccd7835c70eb5f9bba748e1f539e1f9a5e51065c9c0cbe4d69e56fe5b
 
 Package: com.chasedavis.dockbadgesonly
 Name: DockBadgesOnly
@@ -153,10 +153,10 @@ Architecture: iphoneos-arm64e
 Version: 1.0.0-1
 Installed-Size: 172
 Filename: debs/com.chasedavis.dockbadgesonly_1.0.0-1_iphoneos-arm64e.deb
-Size: 9558
-MD5sum: 8f5f699fe6a3c98b73a7296b9bbaa34d
-SHA1: 4b8ef124a0e75dd2e2eeb3f374d2cb6646d533da
-SHA256: 99910d4f3e3d6a217d5d466cb9d6f2d4416cb141c44abcfe8a6409fe304d27f3
+Size: 9582
+MD5sum: dd7bf3d86740f3e5cb61bb0a6bf32e7b
+SHA1: ea860dfcc3b39fcc66fdea76db2e6228debff746
+SHA256: bf29fa661a925d262b48df922b649bfdbd3803299cd08c728643a79a24d3fbc8
 
 Package: com.chasedavis.dockshelfpro
 Name: DockShelf Pro
@@ -166,13 +166,13 @@ Maintainer: Chase Davis
 Author: Chase Davis
 Section: Tweaks
 Architecture: iphoneos-arm64e
-Version: 1.0.1-1
+Version: 1.0.2-1
 Installed-Size: 348
-Filename: debs/com.chasedavis.dockshelfpro_1.0.1-1_iphoneos-arm64e.deb
-Size: 17880
-MD5sum: 6dbec57cebc3c26a05fa996ff7971da2
-SHA1: 5ade2054dacabae1bf8ef1a2e0a969c457976592
-SHA256: 8065659ad54858b77e89f4aff005a61fb454406ff7d92192d3522a064dfea3ca
+Filename: debs/com.chasedavis.dockshelfpro_1.0.2-1_iphoneos-arm64e.deb
+Size: 17884
+MD5sum: 07cfe9b59f95c19737b252f845d0656c
+SHA1: c0665920b7d430f61e6ffa9c16c063f33ac279d5
+SHA256: 1a6bb1a933bd0f0511b18c2ec6090fff6622090bce7295eb2c0122362fe3c08b
 
 Package: com.chasedavis.focuslenspro
 Name: FocusLens Pro
@@ -182,13 +182,13 @@ Maintainer: Chase Davis
 Author: Chase Davis
 Section: Tweaks
 Architecture: iphoneos-arm64e
-Version: 1.0.1-1
+Version: 1.0.2-1
 Installed-Size: 348
-Filename: debs/com.chasedavis.focuslenspro_1.0.1-1_iphoneos-arm64e.deb
-Size: 17268
-MD5sum: c1439902bf6a733f77cf404b2dadb1f4
-SHA1: b2de6cf45e66e9412d2f30124206745f508319f8
-SHA256: 2c8470dfa228db1b33700b9496324c7dd56cb6e3c0a0608007e80042e99566c9
+Filename: debs/com.chasedavis.focuslenspro_1.0.2-1_iphoneos-arm64e.deb
+Size: 17282
+MD5sum: c2958a8f002c5392936aa53d64d03bb3
+SHA1: b8c4bdcda678e42103db9bf081705bb6cb33de70
+SHA256: 60dc6f4eea4be578d1b381b584657f99c49e7851c29df1c240ea4657c65514b3
 
 Package: com.chasedavis.ghostdock
 Name: GhostDock
@@ -201,10 +201,10 @@ Architecture: iphoneos-arm64e
 Version: 1.0.0-1
 Installed-Size: 172
 Filename: debs/com.chasedavis.ghostdock_1.0.0-1_iphoneos-arm64e.deb
-Size: 6290
-MD5sum: 58157eeaf77fa5731b1f0ce4effed28a
-SHA1: 081dc05bb1573a1d9fefcb53ab7c38344c69dc0b
-SHA256: c0de3aa268fed08b6e2883d79dcf8e53fa823cff96214482d2160aa439f8e8fc
+Size: 6292
+MD5sum: 0bd95aed692a6f3fb85facfb49b031bd
+SHA1: 1d68c3345500401e5a6c19dd239e9346eceba29c
+SHA256: aa883a3915c2d3b03cc4f1a830ddd90883a7210498dbf4f0c26f3c5fa99bb2c1
 
 Package: com.chasedavis.halotouches
 Name: HaloTouches
@@ -217,10 +217,10 @@ Architecture: iphoneos-arm64e
 Version: 1.0.0-1
 Installed-Size: 172
 Filename: debs/com.chasedavis.halotouches_1.0.0-1_iphoneos-arm64e.deb
-Size: 10336
-MD5sum: a7167ae837b97e1f2c0ad38f16e2c7e6
-SHA1: 3f3cbaffde3ddf8fba9c9753edce9b3e9605e9da
-SHA256: 12edb6d0393e823424d0554e5fb3d61f2f2eb9b5fac3c609ab6eb687f9b61b4a
+Size: 10330
+MD5sum: 3a0c1c6cb385c1b08ccac25888e52688
+SHA1: 25f0abe32394c0abeaea9ea6b6cd356369b002de
+SHA256: a310612a7607fddb83b93c114125e8d87fa2a888ebce96e005253d177b8ef9dd
 
 Package: com.chasedavis.homescreenzenpro
 Name: HomeScreenZen Pro
@@ -230,13 +230,13 @@ Maintainer: Chase Davis
 Author: Chase Davis
 Section: Tweaks
 Architecture: iphoneos-arm64e
-Version: 1.0.1-1
+Version: 1.0.2-1
 Installed-Size: 348
-Filename: debs/com.chasedavis.homescreenzenpro_1.0.1-1_iphoneos-arm64e.deb
-Size: 16710
-MD5sum: f7bf9d662ad13be854fc744825e707c4
-SHA1: d4cb36444468ad02216dbb03d048f43de02dffd8
-SHA256: a4975dc7130b4296502d09beaa3881f2db83bfabd4fdb493fbf7e04bbc78c76a
+Filename: debs/com.chasedavis.homescreenzenpro_1.0.2-1_iphoneos-arm64e.deb
+Size: 16700
+MD5sum: e52f247a227fb8c73609460a6193c384
+SHA1: 43c42123ad75872660725c2e0f58252c7ff0f4e1
+SHA256: a6b67a750c9653a0685acd5dd964d2533236bb554e35be4c43b5d3139d0d3d32
 
 Package: com.chasedavis.iconlabelpro
 Name: IconLabelPro
@@ -249,10 +249,10 @@ Architecture: iphoneos-arm64e
 Version: 1.0.0-1
 Installed-Size: 168
 Filename: debs/com.chasedavis.iconlabelpro_1.0.0-1_iphoneos-arm64e.deb
-Size: 5310
-MD5sum: 49ed658a373e59e9c793439d537ce709
-SHA1: 3c40a4e0c85e6b4f00c0375b81acc8d7f4f519aa
-SHA256: 198dccc7bdab626f314b410577991c99adb8511ae15ccdac02583e241485e55c
+Size: 5312
+MD5sum: 746d693e4040a38b8fa72194faf6d88e
+SHA1: b54ed6baf41c6c0136335ba97b80c52912ebcf1f
+SHA256: e2fbdf8dbf30b173bed93f88ba9ee2b9d2349fe4db6e7ca1aa06974ee0094d9c
 
 Package: com.chasedavis.islandcommandpro
 Name: IslandCommand Pro
@@ -262,13 +262,13 @@ Maintainer: Chase Davis
 Author: Chase Davis
 Section: Tweaks
 Architecture: iphoneos-arm64e
-Version: 1.0.1-1
+Version: 1.0.2-1
 Installed-Size: 364
-Filename: debs/com.chasedavis.islandcommandpro_1.0.1-1_iphoneos-arm64e.deb
-Size: 18672
-MD5sum: 9ed94a5f4dc2e41cdedf729c3ff7f5d8
-SHA1: 18ab287d907089795004a812e23e304976796926
-SHA256: 260a579ebe3a0b93b8d19b95bfc1bf9299500bd2475115cc13b8aa66184d1b2b
+Filename: debs/com.chasedavis.islandcommandpro_1.0.2-1_iphoneos-arm64e.deb
+Size: 18686
+MD5sum: f31b7573112fa72baa3990b65f923094
+SHA1: 009b5930470b2c0a0fcdc8869f7530ec2a099851
+SHA256: 3be216fbb9e72916f724ce635b7f91861a086668acc0cd317021317c7733d276
 
 Package: com.chasedavis.kineticbadges
 Name: KineticBadges
@@ -281,10 +281,10 @@ Architecture: iphoneos-arm64e
 Version: 1.0.0-1
 Installed-Size: 168
 Filename: debs/com.chasedavis.kineticbadges_1.0.0-1_iphoneos-arm64e.deb
-Size: 5308
-MD5sum: 4905b6f99d70bca6e2b8e8123b97bfea
-SHA1: ed159b9188f9a514c40ff4fba1ff0589a27161e5
-SHA256: 58fc95d1e1a87111aa206b3c7d9f75145c1db042affa6f64f4938e9aa53fc988
+Size: 5312
+MD5sum: 075be4371d7d7a41d15e77fa43bf91dc
+SHA1: c69adfcc0512044f5798250e411db5337c9ad60e
+SHA256: 58dd3a9ab83f3f99c0f62add063d67b4fd95657cd46a0e0284aea3a100fe9ad5
 
 Package: com.chasedavis.liquidfolders
 Name: LiquidFolders
@@ -297,10 +297,10 @@ Architecture: iphoneos-arm64e
 Version: 1.0.0-1
 Installed-Size: 172
 Filename: debs/com.chasedavis.liquidfolders_1.0.0-1_iphoneos-arm64e.deb
-Size: 9406
-MD5sum: 5bb2c4c9a9786bb14d761c3889681abf
-SHA1: d5272acfae81be63529ceee19e26d58ede939d11
-SHA256: bff4a7da1b21d04c0a8235e90c0e6a49ee8ce80e434d0cfa52ee4d51b5c0cc63
+Size: 9404
+MD5sum: 2a8bc5d3d93d56a75146720a948891a1
+SHA1: 57203d19db055e1df9352e5031fd14a18968469b
+SHA256: 8f40733a8956de6792c23df817b7f33064c6aca8267c45c8e7729320e0643f17
 
 Package: com.chasedavis.lockglyph
 Name: LockGlyph
@@ -314,9 +314,9 @@ Version: 1.0.0-1
 Installed-Size: 172
 Filename: debs/com.chasedavis.lockglyph_1.0.0-1_iphoneos-arm64e.deb
 Size: 9560
-MD5sum: b325bfe88f76668bb44e4cd8e35475f8
-SHA1: dea0adbe8e9eca92ea9e3af99a92218c5201c14a
-SHA256: 9d471fa4a9015d8e9acd95828d8de5c66a5b172a90b68e34e66ad43c8b54da23
+MD5sum: 673091758e5e4edbcdd4edc21d813551
+SHA1: 476f6c8b641215aeec8c875c69d071fb04611a51
+SHA256: 886f925ab6606bc392a740957ef694ac1865c1361384f71f074196d637fd920a
 
 Package: com.chasedavis.lockscreenatmosphere
 Name: LockScreen Atmosphere
@@ -326,13 +326,13 @@ Maintainer: Chase Davis
 Author: Chase Davis
 Section: Tweaks
 Architecture: iphoneos-arm64e
-Version: 1.0.1-1
+Version: 1.0.2-1
 Installed-Size: 348
-Filename: debs/com.chasedavis.lockscreenatmosphere_1.0.1-1_iphoneos-arm64e.deb
-Size: 17218
-MD5sum: 490a54e737c225fca3ecb67a3c9c4e2d
-SHA1: 15430b5b8fc618f0e7e1a173d1c9f84aab04e311
-SHA256: 6fad2874d3266ecf8dae7f855fb8b07a9fa4d75c48a14c86c741a3b25ed8d1f4
+Filename: debs/com.chasedavis.lockscreenatmosphere_1.0.2-1_iphoneos-arm64e.deb
+Size: 17212
+MD5sum: 7004b4520fb8d332b68b0f89698c7b0b
+SHA1: c43b2a548f0706eb5848b08c2fa3eae7d65fb691
+SHA256: 52320034a390ac8d2316fa8a452cf4825699fe68a65a76f9010ad042e1905f31
 
 Package: com.chasedavis.minimalcc
 Name: MinimalCC
@@ -345,10 +345,10 @@ Architecture: iphoneos-arm64e
 Version: 1.0.0-1
 Installed-Size: 172
 Filename: debs/com.chasedavis.minimalcc_1.0.0-1_iphoneos-arm64e.deb
-Size: 9378
-MD5sum: 20d7498bff0619d9e589bfcfe9984663
-SHA1: 045ca4c58ca32e49a2ea0baeff4cf40d1d4099cf
-SHA256: 8a92de1efee38a970023e13b0004a82b01dfbcfd69594983cafdb1aafe4a491c
+Size: 9368
+MD5sum: 6a188c18f61fcaa4d88b510d0afb9c7b
+SHA1: 6f33d3be28e8e5cc70936d9043c6d6db8e6bfe27
+SHA256: 2b087a975c74426b88bd099b7f2f2bb0c022af37c78367609072f20bb462376e
 
 Package: com.chasedavis.notificationforge
 Name: NotificationForge
@@ -358,13 +358,13 @@ Maintainer: Chase Davis
 Author: Chase Davis
 Section: Tweaks
 Architecture: iphoneos-arm64e
-Version: 1.0.1-1
+Version: 1.0.2-1
 Installed-Size: 348
-Filename: debs/com.chasedavis.notificationforge_1.0.1-1_iphoneos-arm64e.deb
-Size: 16596
-MD5sum: 4c1f34eb9c57eda2968a48e039134732
-SHA1: a67864591e2e775e4cc07f0bc24ede5eebc84c5f
-SHA256: 8b08988703df966c5a6ab403dcc6b1f584f51f8f32a71295010d40be2cd11729
+Filename: debs/com.chasedavis.notificationforge_1.0.2-1_iphoneos-arm64e.deb
+Size: 16594
+MD5sum: 76df5c344f21df1afac3eb2e1c7cfe0b
+SHA1: 72143ccc1de63385b35b37e85eb8d398175457f0
+SHA256: 77be484d24d00babf4a56efef74a82713f24abd4dc975ccfe2fc6e9b055c161b
 
 Package: com.chasedavis.prismstatus
 Name: PrismStatus
@@ -377,10 +377,10 @@ Architecture: iphoneos-arm64e
 Version: 1.0.0-1
 Installed-Size: 172
 Filename: debs/com.chasedavis.prismstatus_1.0.0-1_iphoneos-arm64e.deb
-Size: 9750
-MD5sum: f887acecde89d463be881b7ef5b768dc
-SHA1: 166e5a07aa37fd783991686c47918135c7ae34ca
-SHA256: 4625dca277a17bf0ada148d01aa0b5960a02261f6117c2acb587629d3e4ee121
+Size: 9730
+MD5sum: 1ba3b305343bc393c905e8d804e34050
+SHA1: 073b7c6bcc57f1895893d376ec5162bc982f636d
+SHA256: 9320fbd9a34fcc9495dda44580c9333def03547486aaf71ad6885e4f41019c19
 
 Package: com.chasedavis.quietbadges
 Name: QuietBadges
@@ -393,10 +393,10 @@ Architecture: iphoneos-arm64e
 Version: 1.0.0-1
 Installed-Size: 172
 Filename: debs/com.chasedavis.quietbadges_1.0.0-1_iphoneos-arm64e.deb
-Size: 9470
-MD5sum: 471f164e135ab61ecdca8713547e685b
-SHA1: fcb5d2b1a9731e7544f27fbbad61d67edb11f910
-SHA256: 37bea5481b82105971251702183b8e7ee661ed87753c681199071ecfc8643c91
+Size: 9484
+MD5sum: d24a92f930d342a8ba65ba97e44a50c5
+SHA1: 8282e2e7a104fb50422cf34483cd89509d62c905
+SHA256: ede45c07be350534cbd21bcc698eb50ba20c2f99652ef6fd66e051a2cc950552
 
 Package: com.chasedavis.screenshotflashplus
 Name: ScreenshotFlashPlus
@@ -409,10 +409,10 @@ Architecture: iphoneos-arm64e
 Version: 1.0.0-1
 Installed-Size: 172
 Filename: debs/com.chasedavis.screenshotflashplus_1.0.0-1_iphoneos-arm64e.deb
-Size: 10432
-MD5sum: 9bb4a08057095f2c8310848c0cfcdf0b
-SHA1: 96cedff02d2a09b5d8f4f8577b87f4994483d16c
-SHA256: 90491c46640632b4289781bc748b1bf94f19908a906b206e5cd451f4324bd1ed
+Size: 10434
+MD5sum: 0548cc5cc7d1b554e96be72ad5da5098
+SHA1: 7b79d0090cc669a81577cd4996026c56c228ef16
+SHA256: f181be72143546dec1cceda6c0dce7ccdf2bd2a9b1d93e770c5b8d59cb258ab1
 
 Package: com.chasedavis.signalbloom
 Name: SignalBloom
@@ -425,10 +425,10 @@ Architecture: iphoneos-arm64e
 Version: 1.0.0-1
 Installed-Size: 172
 Filename: debs/com.chasedavis.signalbloom_1.0.0-1_iphoneos-arm64e.deb
-Size: 9560
-MD5sum: 3a5a70592c9c226a66ed552b75b331a5
-SHA1: 2a06f3b3d20c3a8b0b02e990071339cfd5326e25
-SHA256: 84cc91d8eaff687643194954e8dcf5d89b345ad1f48b4724fa54c691dfeb5fcd
+Size: 9552
+MD5sum: edac5d3435e8c95799c48ca336b3cbf0
+SHA1: a67d7b6f00e490c8264f33f0659924c837cff83a
+SHA256: 413fe4eafc17f1294dd5784be4122b8b55b36d84f66928dd0051a8afee78c82f
 
 Package: com.chasedavis.silenttoast
 Name: SilentToast
@@ -441,10 +441,10 @@ Architecture: iphoneos-arm64e
 Version: 1.0.0-1
 Installed-Size: 172
 Filename: debs/com.chasedavis.silenttoast_1.0.0-1_iphoneos-arm64e.deb
-Size: 6870
-MD5sum: dd257a9f553159235d428eb6112b7cf5
-SHA1: 14cd7d9c354eccbd2e09739a06856316cb91ede1
-SHA256: 4ad9627bda6533ccb4628e40053a5ab011ade10f5ba1c0fc27f6ab62b0aeadc8
+Size: 6866
+MD5sum: 5f1734dc4516fa97aef6a46a263cd73b
+SHA1: 1a96010d4a666c4950b3f852e87d761eb6ab94b9
+SHA256: 4ecd160313dbf45d42860313aea66a2d62c45ad27d8724cfc23cea2915e45708
 
 Package: com.chasedavis.sleepyspringboard
 Name: SleepySpringBoard
@@ -457,10 +457,10 @@ Architecture: iphoneos-arm64e
 Version: 1.0.0-1
 Installed-Size: 172
 Filename: debs/com.chasedavis.sleepyspringboard_1.0.0-1_iphoneos-arm64e.deb
-Size: 9368
-MD5sum: ba74f9fd44c4d4d588a6686845b64288
-SHA1: 51b5a4c5250ff8e10f99157f8b283af587306df1
-SHA256: c103fdecba7ac9797d7c29e30ffc3eeb0f4f339cc325cf54f5166da2db9e81a1
+Size: 9370
+MD5sum: 378099d258b447762038a444ff1dac04
+SHA1: 202e89b7036b06332e176ae5d75004d3d7f0754c
+SHA256: 96222b15db7c501af4083d49e892d35134a0166085210ca6af005920ddd81a67
 
 Package: com.chasedavis.snapgrid
 Name: SnapGrid
@@ -473,10 +473,10 @@ Architecture: iphoneos-arm64e
 Version: 1.0.0-1
 Installed-Size: 172
 Filename: debs/com.chasedavis.snapgrid_1.0.0-1_iphoneos-arm64e.deb
-Size: 10478
-MD5sum: 3f6cdeaa978d0fe8b8066969c052b33a
-SHA1: 0010cf85f7631e70224dcc9ef9122b64d32b2a5c
-SHA256: 3e2d18f48f18418aa7d180ffa6b1b5e87e7970d0320f73682d507639cec87c22
+Size: 10474
+MD5sum: 4283ed7cf30db9e01fd3fd72b91521ad
+SHA1: 97c6a7d934610bbf651708dc9cbafe66a039ca95
+SHA256: 19e2e1148353fefca2ce3bbd3979d2903f355d50ce9aa911550c9b24c8618164
 
 Package: com.chasedavis.springboardautomations
 Name: SpringBoard Automations
@@ -486,13 +486,13 @@ Maintainer: Chase Davis
 Author: Chase Davis
 Section: Tweaks
 Architecture: iphoneos-arm64e
-Version: 1.0.1-1
+Version: 1.0.2-1
 Installed-Size: 348
-Filename: debs/com.chasedavis.springboardautomations_1.0.1-1_iphoneos-arm64e.deb
+Filename: debs/com.chasedavis.springboardautomations_1.0.2-1_iphoneos-arm64e.deb
 Size: 17502
-MD5sum: 57e9322adcdccd203e16511a0f6ff692
-SHA1: da54aad14cf57e540d8c8aed824d3e1100209657
-SHA256: b6a675f1d0fa75cac09c9c8bc1240f0922d3bfaf658f43f4cb49c28daf172358
+MD5sum: 9ed8e042c874d951d3df8c0d43c28df0
+SHA1: 702acfbac46f7c80efc43e5e3f3c9de2049d16e7
+SHA256: a902308a16b3fde0d920608969d696745ceeb8a172aabe1cacdbc458de3d41bd
 
 Package: com.chasedavis.springtrails
 Name: SpringTrails
@@ -505,10 +505,10 @@ Architecture: iphoneos-arm64e
 Version: 1.0.0-1
 Installed-Size: 172
 Filename: debs/com.chasedavis.springtrails_1.0.0-1_iphoneos-arm64e.deb
-Size: 9936
-MD5sum: 5c00604f4cae6a8690a307e63374da07
-SHA1: d0b43a49d05859205ce1f3f360182ba42f802c78
-SHA256: 448676737784477f70b5991ac3c28ce909d9c29bda8c52ab37a4a8064ce0373f
+Size: 9928
+MD5sum: 24a95a0f602f74be59aa8f9e2ed1479b
+SHA1: 1e74d35a954e91ad130bcd49ce686f837d32d830
+SHA256: b3d83d99fe95a0f89a0d70ca13082926555322ecc173654b69fad94837b40720
 
 Package: com.chasedavis.statuslabpro
 Name: StatusLab Pro
@@ -518,13 +518,13 @@ Maintainer: Chase Davis
 Author: Chase Davis
 Section: Tweaks
 Architecture: iphoneos-arm64e
-Version: 1.0.1-1
+Version: 1.0.2-1
 Installed-Size: 348
-Filename: debs/com.chasedavis.statuslabpro_1.0.1-1_iphoneos-arm64e.deb
-Size: 16792
-MD5sum: 116523a81ab4d1f86b2b5c366fbf65a0
-SHA1: 9d92c02c642182db63f2617b809a8bb8a75d24ea
-SHA256: c1faa6492f98a24f265cb5e3caed9246927c7461cb5d5c2bca336ac2ff069b3c
+Filename: debs/com.chasedavis.statuslabpro_1.0.2-1_iphoneos-arm64e.deb
+Size: 16790
+MD5sum: 8f7765c8cca1426a5fd810da5284f5e9
+SHA1: 2d3b2c57e8c8628677ae8b0cc1f5710a981a560e
+SHA256: 5062cc8971c66df3a483bfaac72f1451186394ffc7779c07939182a744db1e48
 
 Package: com.chasedavis.velvetalerts
 Name: VelvetAlerts
@@ -537,10 +537,10 @@ Architecture: iphoneos-arm64e
 Version: 1.0.0-1
 Installed-Size: 168
 Filename: debs/com.chasedavis.velvetalerts_1.0.0-1_iphoneos-arm64e.deb
-Size: 5776
-MD5sum: de61f665274247abb70c075f56f892a0
-SHA1: f993a35d846fce73056d251d3636fdd0d106aebf
-SHA256: 75b623d2bf0017e87ea8da89b0ef191771d7561fda39612083d899d44a75e7a5
+Size: 5782
+MD5sum: 319d15e5b9624ff95d1f6867e4b605cc
+SHA1: ee5d310a1d71e15c628250f34be1c22a0a00385b
+SHA256: 8bcb560467274e7fb6b06dd2af4067dc25396c46e4885165ccada9df3d1783ee
 
 Package: com.chasedavis.volumeribbon
 Name: VolumeRibbon
@@ -553,10 +553,10 @@ Architecture: iphoneos-arm64e
 Version: 1.0.0-1
 Installed-Size: 168
 Filename: debs/com.chasedavis.volumeribbon_1.0.0-1_iphoneos-arm64e.deb
-Size: 5738
-MD5sum: 484b9f914100462f80331d769f6d18f1
-SHA1: ae15057c02b91f42a4628077e1f83c2e520d354d
-SHA256: cb56d71798fd691439fecd832fb601a1d4342aef58dc8c664ece9a2178b02a69
+Size: 5740
+MD5sum: 2e84a4006be65ed248562e719cab5899
+SHA1: f97d6e5b91600a386378f99aa18558a0dee304b7
+SHA256: 010df36e740692715b7bbe32c4b069e205714377e9f8fe1f27ad68bce6d9395f
 
 Package: com.chasedavis.wallpaperdepthtint
 Name: WallpaperDepthTint
@@ -569,8 +569,8 @@ Architecture: iphoneos-arm64e
 Version: 1.0.0-1
 Installed-Size: 172
 Filename: debs/com.chasedavis.wallpaperdepthtint_1.0.0-1_iphoneos-arm64e.deb
-Size: 9852
-MD5sum: 5c62ca103a4293259321991910292a94
-SHA1: f322480f02150ff20615ca2935a8884330c4804c
-SHA256: 4be7bc676e3e3cf263037eb5f0f1025757ae767a9aaec314ea68e37ded4d4e77
+Size: 9850
+MD5sum: f9bafb0eb0f76d3a5fc9297445ecf34d
+SHA1: fa661acc4768b24a7df40d49a7f14acc2ac91319
+SHA256: e94d9593370875ff92a2db5c2df0828a3e06f41227d15ef60078bde60646fc2f
 
