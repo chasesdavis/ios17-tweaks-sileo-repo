@@ -8,10 +8,34 @@
         },
         {
             cell = PSSwitchCell;
-            default = 0;
+            default = 1;
             defaults = "com.chasedavis.spotifyreframe";
             key = enabled;
             label = "Enabled";
+            PostNotification = "com.chasedavis.spotifyreframe/preferences.changed";
+        },
+        {
+            cell = PSSwitchCell;
+            default = 1;
+            defaults = "com.chasedavis.spotifyreframe";
+            key = forceVisualMode;
+            label = "Force Visual Mode";
+            PostNotification = "com.chasedavis.spotifyreframe/preferences.changed";
+        },
+        {
+            cell = PSSwitchCell;
+            default = 1;
+            defaults = "com.chasedavis.spotifyreframe";
+            key = inAppSettings;
+            label = "In-App Settings Button";
+            PostNotification = "com.chasedavis.spotifyreframe/preferences.changed";
+        },
+        {
+            cell = PSSwitchCell;
+            default = 1;
+            defaults = "com.chasedavis.spotifyreframe";
+            key = launchBadge;
+            label = "Launch Badge";
             PostNotification = "com.chasedavis.spotifyreframe/preferences.changed";
         },
         {
