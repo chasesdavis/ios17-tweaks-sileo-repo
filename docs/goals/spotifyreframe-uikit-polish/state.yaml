@@ -1,0 +1,164 @@
+version: 2
+
+goal:
+  title: "SpotifyReframe UIKit Polish"
+  slug: "spotifyreframe-uikit-polish"
+  kind: specific
+  tranche: "Stabilize the visible UIKit AI Home launcher, ship a polished 1.3.0 preview pass, and leave a safe 1.4.0 integration plan."
+  status: active
+
+rules:
+  pm_owns_state: true
+  one_active_task: true
+  max_write_workers: 1
+  no_implementation_without_worker_or_pm_task: true
+  no_completion_without_judge_or_pm_audit: true
+
+agents:
+  scout: installed
+  worker: installed
+  judge: installed
+
+active_task: T001
+
+tasks:
+  - id: T001
+    type: scout
+    assignee: Scout
+    status: active
+    objective: "Audit SpotifyReframe 1.2.1 launcher and preview implementation, verification commands, and remaining device-test risks."
+    inputs:
+      - ../../../tweaks/SpotifyReframe
+      - ../../../repo/Packages
+      - ../../audit.md
+    constraints:
+      - "Read-only."
+      - "Do not edit implementation files."
+      - "Report concrete file paths, package versions, and command evidence."
+      - "Call out any possible reason the AI Home launcher might still not appear."
+    expected_output:
+      - "Implementation map for the launcher and preview."
+      - "Verification command list."
+      - "Device-test checklist."
+      - "Candidate 1.3.0 polish tasks."
+    receipt: null
+
+  - id: T002
+    type: judge
+    assignee: Judge
+    status: queued
+    objective: "Choose the 1.3.0 polish scope by impact, crash risk, reversibility, and verification strength."
+    inputs:
+      - "T001 receipt"
+    constraints:
+      - "Read-only."
+      - "Prefer UIKit-only visual improvements."
+      - "Reject work that requires SwiftUI, auto-open behavior, or private data scraping."
+    expected_output:
+      - "Selected 1.3.0 scope."
+      - "Deferred items."
+      - "Exact Worker allowed_files and verification commands."
+    receipt: null
+
+  - id: T003
+    type: worker
+    assignee: Worker
+    status: queued
+    objective: "Implement the approved SpotifyReframe 1.3.0 UIKit polish scope and update the local Sileo repo."
+    allowed_files:
+      - ../../../tweaks/SpotifyReframe
+      - ../../../repo
+      - ../../audit.md
+    verify:
+      - "plutil -lint tweaks/SpotifyReframe/Resources/Root.plist tweaks/SpotifyReframe/Resources/Info.plist"
+      - "THEOS=/Users/chase/theos make clean package THEOS_PACKAGE_SCHEME=roothide FINALPACKAGE=1 DEBUG=0"
+      - "./scripts/package-repo.sh"
+      - "./scripts/audit-tweaks.sh"
+      - "Inspect packaged SpotifyReframe.dylib with otool -L and confirm no SwiftUI/libswift linkage."
+      - "Inspect packaged SpotifyReframe.plist and confirm filter remains com.spotify.client."
+      - "Inspect repo/Packages and confirm the new SpotifyReframe version, filename, and SHA256."
+    stop_if:
+      - "The chosen work requires SwiftUI or libswift in the Spotify dylib."
+      - "The chosen work requires auto-opening the preview on launch."
+      - "The chosen work requires credentials, account scraping, DRM/payment bypass, or non-UI behavior."
+      - "Need files outside allowed_files."
+      - "Build or audit fails twice."
+    receipt: null
+
+  - id: T004
+    type: judge
+    assignee: Judge
+    status: queued
+    objective: "Audit the 1.3.0 release candidate and decide whether it is publishable to gh-pages."
+    inputs:
+      - "T003 receipt"
+      - ../../../repo/Packages
+      - ../../audit.md
+    constraints:
+      - "Read-only."
+      - "Require package inspection evidence, not just a successful build."
+      - "Block publication if the dylib links SwiftUI/libswift or if package filter changes."
+    expected_output:
+      - "Publish or block decision."
+      - "Required fixes if blocked."
+      - "Device-test instructions if publishable."
+    receipt: null
+
+  - id: T005
+    type: worker
+    assignee: Worker
+    status: queued
+    objective: "Publish the approved 1.3.0 package to gh-pages and verify the live Sileo repo serves the matching package."
+    allowed_files:
+      - ../../../repo
+    verify:
+      - "git push origin main"
+      - "Publish repo/ to gh-pages using a detached worktree."
+      - "curl live Packages until the new SpotifyReframe version appears."
+      - "Download the live .deb and compare SHA256 with the local repo package."
+    stop_if:
+      - "T004 does not explicitly approve publication."
+      - "GitHub Pages does not serve the new metadata after repeated polling."
+      - "Live package hash differs from the local package."
+    receipt: null
+
+  - id: T006
+    type: scout
+    assignee: Scout
+    status: queued
+    objective: "Draft a safe 1.4.0 integration plan for feeding visible Spotify content into the UIKit preview."
+    inputs:
+      - "../../../tweaks/SpotifyReframe"
+      - "Device feedback from 1.3.0"
+    constraints:
+      - "Read-only."
+      - "Plan only; do not implement."
+      - "Avoid private account data, credentials, DRM/payment behavior, or hidden scraping."
+      - "Prefer visible on-screen labels/artwork already rendered by Spotify."
+    expected_output:
+      - "Safe integration candidates."
+      - "Risks and fallback behavior."
+      - "Proposed 1.4.0 task board additions."
+    receipt: null
+
+  - id: T007
+    type: pm
+    assignee: PM
+    status: queued
+    objective: "Close the tranche with a compact release and handoff summary."
+    inputs:
+      - "T001-T006 receipts"
+    constraints:
+      - "Do not mark the goal done unless audit, publish, and live repo verification are complete or explicitly blocked."
+    expected_output:
+      - "Release summary."
+      - "Remaining risks."
+      - "Next recommended /goal."
+    receipt: null
+
+checks:
+  dirty_fingerprint: unknown
+  last_verification:
+    result: unknown
+    task: null
+    commands: []
