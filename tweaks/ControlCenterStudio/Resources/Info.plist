@@ -1,11 +1,26 @@
-{
-    CFBundleDevelopmentRegion = en;
-    CFBundleExecutable = ControlCenterStudioPrefs;
-    CFBundleIdentifier = "com.chasedavis.controlcenterstudio.preferences";
-    CFBundleInfoDictionaryVersion = "6.0";
-    CFBundleName = "ControlCenter Studio";
-    CFBundlePackageType = BNDL;
-    CFBundleShortVersionString = "1.0.2";
-    CFBundleVersion = "1";
-    NSPrincipalClass = ControlCenterStudioPrefsListController;
-}
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
+	<key>CFBundleExecutable</key>
+	<string>ControlCenterStudioPrefs</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.chasedavis.controlcenterstudio.preferences</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>ControlCenter Studio</string>
+	<key>CFBundlePackageType</key>
+	<string>BNDL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0.3</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>NSPrincipalClass</key>
+	<string>ControlCenterStudioPrefsListController</string>
+</dict>
+</plist>

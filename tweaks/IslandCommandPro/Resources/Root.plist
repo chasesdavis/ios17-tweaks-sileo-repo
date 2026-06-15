@@ -4,7 +4,7 @@
         {
             cell = PSGroupCell;
             label = "Safety";
-            footerText = "Disabled by default in 1.0.2 so the tweak cannot auto-run after install. Enable it here, then respring.";
+            footerText = "Disabled by default in 1.0.3 so the tweak cannot auto-run after install. Enable it here, then respring.";
         },
         {
             cell = PSSwitchCell;

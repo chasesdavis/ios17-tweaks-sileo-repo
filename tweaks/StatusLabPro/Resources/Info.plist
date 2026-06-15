@@ -1,11 +1,26 @@
-{
-    CFBundleDevelopmentRegion = en;
-    CFBundleExecutable = StatusLabProPrefs;
-    CFBundleIdentifier = "com.chasedavis.statuslabpro.preferences";
-    CFBundleInfoDictionaryVersion = "6.0";
-    CFBundleName = "StatusLab Pro";
-    CFBundlePackageType = BNDL;
-    CFBundleShortVersionString = "1.0.2";
-    CFBundleVersion = "1";
-    NSPrincipalClass = StatusLabProPrefsListController;
-}
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
+	<key>CFBundleExecutable</key>
+	<string>StatusLabProPrefs</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.chasedavis.statuslabpro.preferences</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>StatusLab Pro</string>
+	<key>CFBundlePackageType</key>
+	<string>BNDL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0.3</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>NSPrincipalClass</key>
+	<string>StatusLabProPrefsListController</string>
+</dict>
+</plist>

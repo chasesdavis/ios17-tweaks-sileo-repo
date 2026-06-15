@@ -1,7 +1,7 @@
 Package: com.chasedavis.notificationforge
 Name: NotificationForge
 Depends: mobilesubstrate, preferenceloader
-Version: 1.0.2-1
+Version: 1.0.3-1
 Architecture: iphoneos-arm64
 Description: Premium notification redesign with priority lane accents, compact platter styling, and quiet-hours visuals.
 Maintainer: Chase Davis
