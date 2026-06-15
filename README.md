@@ -13,6 +13,19 @@ This repo contains a first tranche of Bootstrap-compatible, roothide Theos tweak
 - SilentToast: small toast when silent mode changes.
 - ChargingAurora: charging edge glow on SpringBoard.
 
+Premium suite:
+
+- IslandCommand Pro
+- DockShelf Pro
+- FocusLens Pro
+- NotificationForge
+- ControlCenter Studio
+- HomeScreenZen Pro
+- ApertureFX
+- StatusLab Pro
+- LockScreen Atmosphere
+- SpringBoard Automations
+
 ## Build All
 
 ```bash

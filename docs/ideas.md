@@ -56,3 +56,18 @@ First tranche choices are marked with `v1`.
 ## Tranche Policy
 
 Tranche 1 stays UI/UX-only and favors reversible presentational changes. Tranche 2 should be selected after device testing and audit receipts are reviewed.
+
+## Premium Suite
+
+| # | Premium tweak | Notes | Tranche |
+| --- | --- | --- | --- |
+| P1 | IslandCommand Pro | Dynamic Island-style command/status panel and event surface. | premium |
+| P2 | DockShelf Pro | Expanding dock shelf with quick lanes and gesture reveal. | premium |
+| P3 | FocusLens Pro | Context-aware quiet-hours home screen profiles. | premium |
+| P4 | NotificationForge | Premium notification stack and banner redesign. | premium |
+| P5 | ControlCenter Studio | Control Center module and glyph theme engine. | premium |
+| P6 | HomeScreenZen Pro | Home screen declutter and quieting suite. | premium |
+| P7 | ApertureFX | SpringBoard animation pack for launch, folder, banner, and island surfaces. | premium |
+| P8 | StatusLab Pro | Status bar customization suite. | premium |
+| P9 | LockScreen Atmosphere | Lock screen clock, glow, and charging visual engine. | premium |
+| P10 | SpringBoard Automations | Local trigger/action engine for SpringBoard visual profiles. | premium |

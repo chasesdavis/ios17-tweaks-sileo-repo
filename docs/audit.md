@@ -1,6 +1,6 @@
 # Audit
 
-Generated: 2026-06-15T06:29:25Z
+Generated: 2026-06-15T09:35:48Z
 
 ## Static Tweak Checks
 
@@ -8,19 +8,27 @@ Generated: 2026-06-15T06:29:25Z
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | AirplaneComet | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
 | AmbientBattery | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
+| ApertureFX | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
 | AppLaunchEcho | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
 | AuraDock | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
 | ChargingAurora | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
+| ControlCenterStudio | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
 | ControlGlyphs | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
 | DimInactivePages | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
 | DockBadgesOnly | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
+| DockShelfPro | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
+| FocusLensPro | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
 | GhostDock | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
 | HaloTouches | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
+| HomeScreenZenPro | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
 | IconLabelPro | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
+| IslandCommandPro | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
 | KineticBadges | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
 | LiquidFolders | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
 | LockGlyph | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
+| LockScreenAtmosphere | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
 | MinimalCC | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
+| NotificationForge | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
 | PrismStatus | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
 | QuietBadges | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
 | ScreenshotFlashPlus | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
@@ -28,7 +36,9 @@ Generated: 2026-06-15T06:29:25Z
 | SilentToast | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
 | SleepySpringBoard | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
 | SnapGrid | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
+| SpringBoardAutomations | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
 | SpringTrails | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
+| StatusLabPro | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
 | VelvetAlerts | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
 | VolumeRibbon | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
 | WallpaperDepthTint | pass | pass | pass | pass | present | pass | iphoneos-arm64e |
@@ -52,21 +62,31 @@ Generated: 2026-06-15T06:29:25Z
 8. GhostDock
 9. AirplaneComet
 10. AmbientBattery
-11. AppLaunchEcho
-12. ControlGlyphs
-13. DimInactivePages
-14. DockBadgesOnly
-15. HaloTouches
-16. LiquidFolders
-17. LockGlyph
-18. MinimalCC
-19. PrismStatus
-20. QuietBadges
-21. ScreenshotFlashPlus
-22. SignalBloom
-23. SleepySpringBoard
-24. SnapGrid
-25. SpringTrails
-26. WallpaperDepthTint
+11. ApertureFX
+12. AppLaunchEcho
+13. ControlCenterStudio
+14. ControlGlyphs
+15. DimInactivePages
+16. DockBadgesOnly
+17. DockShelfPro
+18. FocusLensPro
+19. HaloTouches
+20. HomeScreenZenPro
+21. IslandCommandPro
+22. LiquidFolders
+23. LockGlyph
+24. LockScreenAtmosphere
+25. MinimalCC
+26. NotificationForge
+27. PrismStatus
+28. QuietBadges
+29. ScreenshotFlashPlus
+30. SignalBloom
+31. SleepySpringBoard
+32. SnapGrid
+33. SpringBoardAutomations
+34. SpringTrails
+35. StatusLabPro
+36. WallpaperDepthTint
 
 Install one tweak at a time, respring, verify SpringBoard stability, then proceed.

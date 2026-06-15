@@ -1,0 +1,9 @@
+Package: com.chasedavis.aperturefx
+Name: ApertureFX
+Depends: mobilesubstrate
+Version: 1.0.0-1
+Architecture: iphoneos-arm64
+Description: Premium SpringBoard animation pack for app launches, folders, banners, lock glyphs, and island surfaces.
+Maintainer: Chase Davis
+Author: Chase Davis
+Section: Tweaks

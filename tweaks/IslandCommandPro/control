@@ -1,0 +1,9 @@
+Package: com.chasedavis.islandcommandpro
+Name: IslandCommand Pro
+Depends: mobilesubstrate
+Version: 1.0.0-1
+Architecture: iphoneos-arm64
+Description: Premium Dynamic Island command surface with live status, quick-state styling, and SpringBoard command panels.
+Maintainer: Chase Davis
+Author: Chase Davis
+Section: Tweaks
