@@ -1,0 +1,5 @@
+.DS_Store
+.theos/
+tweaks/*/.theos/
+tweaks/*/packages/
+/tmp/

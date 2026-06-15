@@ -1,0 +1,20 @@
+Origin: Chase Davis
+Label: iOS 17 Roothide Tweak Lab
+Suite: stable
+Codename: ios17
+Architectures: iphoneos-arm64 iphoneos-arm64e
+Components: main
+Description: Local roothide Bootstrap tweak repo
+Date: Mon, 15 Jun 2026 06:28:43 UTC
+MD5Sum:
+ a1cc4a04d74a94a4c701529a98f8dae5            14082 Packages
+ 3ac3ab30c2974f048e8039873b45aa12             4221 Packages.gz
+ 92dca49495b00fd4b73be0a5f8189589             3996 Packages.xz
+SHA1:
+ 2b6005afbdb6782af7b8d596e348c9ef0f5426bc            14082 Packages
+ 874ad52fbe2223fb445b3c70d484b3a39c56de3e             4221 Packages.gz
+ 12b6a143dc6d0d6819c46a6b2813c7e7b0de7982             3996 Packages.xz
+SHA256:
+ e53f68379328086b5799e5877bdacedda9770658afbf8af5057fb77a35d8dd09            14082 Packages
+ 10a307054b7c488e61279d597cc90b7865d51370fb2e8c34f1dfc9d475b80251             4221 Packages.gz
+ 0de9cff2cea09dccf20c04311d74bcef0361201dedbba9566b41c22e0c4d29bc             3996 Packages.xz
