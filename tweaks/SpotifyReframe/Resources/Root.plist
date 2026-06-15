@@ -48,6 +48,27 @@
         },
         {
             cell = PSGroupCell;
+            label = "AI Home Preview";
+            footerText = "UIKit-only mockup inspired by the Spotify AI home concept. It is off by default and never auto-opens.";
+        },
+        {
+            cell = PSSwitchCell;
+            default = 0;
+            defaults = "com.chasedavis.spotifyreframe";
+            key = homePreviewEnabled;
+            label = "Enable Preview";
+            PostNotification = "com.chasedavis.spotifyreframe/preferences.changed";
+        },
+        {
+            cell = PSSwitchCell;
+            default = 0;
+            defaults = "com.chasedavis.spotifyreframe";
+            key = homePreviewLauncher;
+            label = "Show AI Launcher";
+            PostNotification = "com.chasedavis.spotifyreframe/preferences.changed";
+        },
+        {
+            cell = PSGroupCell;
             label = "Theme";
         },
         {

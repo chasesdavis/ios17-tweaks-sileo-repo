@@ -3,6 +3,7 @@
 #import <objc/runtime.h>
 #import "CDVisualTweakKit.h"
 #import "CDPremiumTweakKit.h"
+#import "SpotifyUIKitHomePreview.h"
 
 static NSString *const CDSpotifyReframeDomain = @"com.chasedavis.spotifyreframe";
 static char kCDSpotifyBackgroundLayerKey;
@@ -11,6 +12,8 @@ static char kCDSpotifyWindowGradientKey;
 static char kCDSpotifyLaunchBadgeKey;
 static char kCDSpotifySettingsButtonKey;
 static char kCDSpotifySettingsPanelKey;
+static char kCDSpotifyHomePreviewKey;
+static char kCDSpotifyHomePreviewLauncherKey;
 static char kCDSpotifyControlProxyKey;
 static char kCDSpotifyCardStyleKey;
 static char kCDSpotifyArtworkStyleKey;
@@ -23,6 +26,9 @@ static NSInteger kCDSpotifyStyleGeneration = 1;
 static CFTimeInterval kCDSpotifyLastWindowRefresh = 0.0;
 
 static void CDSpotifyReapplyAllWindows(void);
+static void CDSpotifyOpenSettingsPanel(UIWindow *window);
+static void CDSpotifyShowHomePreview(UIWindow *window, BOOL userInitiated);
+static void CDSpotifyDismissHomePreview(UIWindow *window);
 
 @interface CDSpotifyReframeControlProxy : NSObject
 @property (nonatomic, copy) void (^handler)(id sender);
@@ -69,6 +75,14 @@ static BOOL CDSpotifyLowPowerMode(void) {
     return CDPremiumBool(CDSpotifyReframeDomain, @"lowPowerMode", YES);
 }
 
+static BOOL CDSpotifyHomePreviewEnabled(void) {
+    return CDPremiumBool(CDSpotifyReframeDomain, @"homePreviewEnabled", NO);
+}
+
+static BOOL CDSpotifyHomePreviewLauncherEnabled(void) {
+    return CDPremiumBool(CDSpotifyReframeDomain, @"homePreviewLauncher", NO);
+}
+
 static void CDSpotifySynchronizePreferences(void) {
     CFPreferencesAppSynchronize((__bridge CFStringRef)CDSpotifyReframeDomain);
 }
@@ -97,6 +111,8 @@ static NSDictionary<NSString *, id> *CDSpotifyCalmDefaults(void) {
         @"forceVisualMode": @NO,
         @"inAppSettings": @NO,
         @"launchBadge": @NO,
+        @"homePreviewEnabled": @NO,
+        @"homePreviewLauncher": @NO,
         @"palette": @0,
         @"backgroundWash": @0.0,
         @"glassCards": @NO,
@@ -288,6 +304,97 @@ static void CDSpotifyShowLaunchBadge(UIWindow *window) {
     }];
 }
 
+static void CDSpotifyDismissHomePreview(UIWindow *window) {
+    if (!window) {
+        window = CDVTKeyWindow();
+    }
+    UIView *preview = objc_getAssociatedObject(window, &kCDSpotifyHomePreviewKey);
+    if (!preview) {
+        return;
+    }
+    [UIView animateWithDuration:0.18 animations:^{
+        preview.alpha = 0.0;
+        preview.transform = CGAffineTransformMakeTranslation(0.0, 14.0);
+    } completion:^(__unused BOOL finished) {
+        [preview removeFromSuperview];
+        objc_setAssociatedObject(window, &kCDSpotifyHomePreviewKey, nil, OBJC_ASSOCIATION_ASSIGN);
+    }];
+}
+
+static void CDSpotifyShowHomePreview(UIWindow *window, BOOL userInitiated) {
+    if (!userInitiated || !CDSpotifyEnabled() || !CDSpotifyHomePreviewEnabled() || !CDSpotifyWindowIsAppWindow(window)) {
+        return;
+    }
+
+    UIView *existing = objc_getAssociatedObject(window, &kCDSpotifyHomePreviewKey);
+    if (existing) {
+        existing.frame = window.bounds;
+        [window bringSubviewToFront:existing];
+        return;
+    }
+
+    __weak UIWindow *weakWindow = window;
+    UIView *preview = CDSpotifyCreateUIKitHomePreviewView(^{
+        CDSpotifyDismissHomePreview(weakWindow ?: CDVTKeyWindow());
+    }, ^{
+        UIWindow *targetWindow = weakWindow ?: CDVTKeyWindow();
+        CDSpotifyDismissHomePreview(targetWindow);
+        CDSpotifyOpenSettingsPanel(targetWindow);
+    });
+    preview.frame = window.bounds;
+    preview.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    preview.alpha = 0.0;
+    preview.transform = CGAffineTransformMakeTranslation(0.0, 18.0);
+    [window addSubview:preview];
+    objc_setAssociatedObject(window, &kCDSpotifyHomePreviewKey, preview, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+
+    [UIView animateWithDuration:0.22 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+        preview.alpha = 1.0;
+        preview.transform = CGAffineTransformIdentity;
+    } completion:nil];
+}
+
+static void CDSpotifyApplyHomePreviewLauncher(UIWindow *window) {
+    UIButton *button = objc_getAssociatedObject(window, &kCDSpotifyHomePreviewLauncherKey);
+    if (!CDSpotifyIsTarget() || !CDSpotifyEnabled() || !CDSpotifyHomePreviewEnabled() || !CDSpotifyHomePreviewLauncherEnabled() || !CDSpotifyWindowIsAppWindow(window)) {
+        [button removeFromSuperview];
+        objc_setAssociatedObject(window, &kCDSpotifyHomePreviewLauncherKey, nil, OBJC_ASSOCIATION_ASSIGN);
+        if (!CDSpotifyHomePreviewEnabled()) {
+            CDSpotifyDismissHomePreview(window);
+        }
+        return;
+    }
+
+    if (!button) {
+        button = [UIButton buttonWithType:UIButtonTypeSystem];
+        button.accessibilityLabel = @"Open SpotifyReframe AI home preview";
+        [button setTitle:@"AI" forState:UIControlStateNormal];
+        button.titleLabel.font = [UIFont systemFontOfSize:13.0 weight:UIFontWeightBlack];
+        button.tintColor = [UIColor blackColor];
+        button.backgroundColor = CDSpotifyTint();
+        button.layer.cornerCurve = kCACornerCurveContinuous;
+        button.layer.cornerRadius = 15.0;
+        button.layer.borderWidth = 1.0;
+        button.layer.shadowColor = CDSpotifyTint().CGColor;
+        button.layer.shadowOpacity = 0.18;
+        button.layer.shadowRadius = 8.0;
+        button.layer.shadowOffset = CGSizeZero;
+        CDSpotifyAddControlHandler(button, UIControlEventTouchUpInside, ^(__unused id sender) {
+            CDSpotifyShowHomePreview(window, YES);
+        });
+        [window addSubview:button];
+        objc_setAssociatedObject(window, &kCDSpotifyHomePreviewLauncherKey, button, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    }
+
+    CGFloat width = 44.0;
+    CGFloat height = 30.0;
+    button.frame = CGRectMake(CGRectGetWidth(window.bounds) - width - 10.0, MAX(82.0, window.safeAreaInsets.top + 78.0), width, height);
+    button.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin;
+    button.backgroundColor = CDSpotifyTint();
+    button.layer.borderColor = [[UIColor whiteColor] colorWithAlphaComponent:0.16].CGColor;
+    [window bringSubviewToFront:button];
+}
+
 static UILabel *CDSpotifyMakeSettingsLabel(NSString *text, UIFont *font, UIColor *color) {
     UILabel *label = [[UILabel alloc] initWithFrame:CGRectZero];
     label.text = text;
@@ -467,6 +574,27 @@ static void CDSpotifyOpenSettingsPanel(UIWindow *window) {
     CDSpotifyAddSwitchRow(scrollView, &y, @"Force Visual Mode", @"Compatibility fallback; keep off unless normal styling is invisible.", @"forceVisualMode", NO);
     CDSpotifyAddSwitchRow(scrollView, &y, @"In-App Settings Button", @"Opt-in floating control. Off by default to avoid Spotify UI overlap.", @"inAppSettings", NO);
     CDSpotifyAddSwitchRow(scrollView, &y, @"Launch Badge", @"Debug-only load confirmation.", @"launchBadge", NO);
+    CDSpotifyAddSwitchRow(scrollView, &y, @"AI Home Preview", @"UIKit-only mockup. It never opens automatically.", @"homePreviewEnabled", NO);
+    CDSpotifyAddSwitchRow(scrollView, &y, @"Preview Launcher", @"Shows a small AI button only when the preview is enabled.", @"homePreviewLauncher", NO);
+
+    UIView *previewRow = CDSpotifyAddSettingsRow(scrollView, &y, @"Open AI Home Preview", @"Turns the UIKit preview on and shows it now.", 74.0);
+    UIButton *previewButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    [previewButton setTitle:@"Open Preview" forState:UIControlStateNormal];
+    previewButton.titleLabel.font = [UIFont systemFontOfSize:14.0 weight:UIFontWeightBlack];
+    previewButton.tintColor = [UIColor blackColor];
+    previewButton.backgroundColor = tint;
+    previewButton.layer.cornerCurve = kCACornerCurveContinuous;
+    previewButton.layer.cornerRadius = 16.0;
+    previewButton.frame = CGRectMake(14.0, 34.0, CGRectGetWidth(previewRow.bounds) - 28.0, 32.0);
+    previewButton.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    CDSpotifyAddControlHandler(previewButton, UIControlEventTouchUpInside, ^(__unused id sender) {
+        CDSpotifySetPreference(@"homePreviewEnabled", @YES);
+        CDSpotifyDismissSettingsPanel(window);
+        CDSpotifyShowHomePreview(window, YES);
+        CDSpotifyReapplyAllWindows();
+    });
+    [previewRow addSubview:previewButton];
+
     CDSpotifyAddSegmentRow(scrollView, &y, @"Accent Palette", @"palette", @[@"Green", @"Coral", @"Mint", @"Gold", @"Violet"], 0);
     CDSpotifyAddSliderRow(scrollView, &y, @"Background Wash", @"backgroundWash", 0.0, 0.0, 0.30, NO);
     CDSpotifyAddSwitchRow(scrollView, &y, @"Glass Cards", @"Experimental. Off by default because Spotify cells vary by feed.", @"glassCards", NO);
@@ -631,6 +759,10 @@ static void CDSpotifyReapplyAllWindows(void) {
     for (UIWindow *window in [UIApplication sharedApplication].windows) {
         CDSpotifyApplyWindowOverlay(window);
         CDSpotifyApplyInAppSettingsButton(window);
+        CDSpotifyApplyHomePreviewLauncher(window);
+        if (!CDSpotifyHomePreviewEnabled()) {
+            CDSpotifyDismissHomePreview(window);
+        }
     }
 }
 
@@ -821,6 +953,7 @@ static void CDSpotifyApplyControlTint(UIView *view) {
         CDSpotifyApplyWindowOverlay(self.view.window);
     }
     CDSpotifyApplyInAppSettingsButton(self.view.window);
+    CDSpotifyApplyHomePreviewLauncher(self.view.window);
 }
 %end
 
@@ -831,6 +964,7 @@ static void CDSpotifyApplyControlTint(UIView *view) {
         CDSpotifyApplyWindowOverlay(self);
     }
     CDSpotifyApplyInAppSettingsButton(self);
+    CDSpotifyApplyHomePreviewLauncher(self);
 }
 - (void)layoutSubviews {
     %orig;
@@ -839,6 +973,7 @@ static void CDSpotifyApplyControlTint(UIView *view) {
             CDSpotifyApplyWindowOverlay(self);
         }
         CDSpotifyApplyInAppSettingsButton(self);
+        CDSpotifyApplyHomePreviewLauncher(self);
     }
 }
 %end
