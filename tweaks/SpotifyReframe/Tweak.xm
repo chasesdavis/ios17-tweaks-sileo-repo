@@ -1,6 +1,7 @@
 #import <UIKit/UIKit.h>
 #import <QuartzCore/QuartzCore.h>
 #import <objc/runtime.h>
+#import <objc/message.h>
 #import "CDVisualTweakKit.h"
 #import "CDPremiumTweakKit.h"
 
@@ -11,6 +12,7 @@ static char kCDSpotifyWindowGradientKey;
 static char kCDSpotifyLaunchBadgeKey;
 static char kCDSpotifySettingsButtonKey;
 static char kCDSpotifySettingsPanelKey;
+static char kCDSpotifyConceptControllerKey;
 static char kCDSpotifyControlProxyKey;
 static char kCDSpotifyCardStyleKey;
 static char kCDSpotifyArtworkStyleKey;
@@ -19,6 +21,8 @@ static char kCDSpotifyChromeStyleKey;
 static char kCDSpotifyLabelStyleKey;
 static char kCDSpotifyControlStyleKey;
 static BOOL kCDSpotifyLaunchBadgeShown = NO;
+static BOOL kCDSpotifyConceptDismissedThisSession = NO;
+static BOOL kCDSpotifyConceptObserverInstalled = NO;
 static NSInteger kCDSpotifyStyleGeneration = 1;
 static CFTimeInterval kCDSpotifyLastWindowRefresh = 0.0;
 
@@ -69,6 +73,14 @@ static BOOL CDSpotifyLowPowerMode(void) {
     return CDPremiumBool(CDSpotifyReframeDomain, @"lowPowerMode", YES);
 }
 
+static BOOL CDSpotifyConceptHomeEnabled(void) {
+    return CDPremiumBool(CDSpotifyReframeDomain, @"conceptHomeEnabled", YES);
+}
+
+static BOOL CDSpotifyConceptHomeAutoOpen(void) {
+    return CDPremiumBool(CDSpotifyReframeDomain, @"conceptHomeAutoOpen", YES);
+}
+
 static void CDSpotifySynchronizePreferences(void) {
     CFPreferencesAppSynchronize((__bridge CFStringRef)CDSpotifyReframeDomain);
 }
@@ -94,6 +106,8 @@ static NSDictionary<NSString *, id> *CDSpotifyCalmDefaults(void) {
     return @{
         @"enabled": @YES,
         @"lowPowerMode": @YES,
+        @"conceptHomeEnabled": @YES,
+        @"conceptHomeAutoOpen": @YES,
         @"forceVisualMode": @NO,
         @"inAppSettings": @NO,
         @"launchBadge": @NO,
@@ -115,13 +129,13 @@ static NSDictionary<NSString *, id> *CDSpotifyCalmDefaults(void) {
         @"tabBarGlass": @NO,
         @"navBarGlass": @NO,
         @"chromeFill": @0.0,
-        @"profileVersion": @3
+        @"profileVersion": @4
     };
 }
 
 static void CDSpotifyMigrateCalmDefaultsIfNeeded(void) {
     CDSpotifySynchronizePreferences();
-    if (CDPremiumInteger(CDSpotifyReframeDomain, @"profileVersion", 0) >= 3) {
+    if (CDPremiumInteger(CDSpotifyReframeDomain, @"profileVersion", 0) >= 4) {
         return;
     }
     NSDictionary<NSString *, id> *defaults = CDSpotifyCalmDefaults();
@@ -286,6 +300,93 @@ static void CDSpotifyShowLaunchBadge(UIWindow *window) {
             }];
         });
     }];
+}
+
+static UIViewController *CDSpotifyMakeConceptHomeController(void) {
+    Class factoryClass = NSClassFromString(@"SpotifyReframeConceptHomeControllerFactory");
+    SEL selector = NSSelectorFromString(@"makeController");
+    if (!factoryClass || ![factoryClass respondsToSelector:selector]) {
+        NSLog(@"[SpotifyReframe] SwiftUI concept factory unavailable");
+        return nil;
+    }
+
+    UIViewController *(*makeController)(id, SEL) = (UIViewController *(*)(id, SEL))objc_msgSend;
+    UIViewController *controller = makeController(factoryClass, selector);
+    if (![controller isKindOfClass:[UIViewController class]]) {
+        return nil;
+    }
+    return controller;
+}
+
+static void CDSpotifyDismissConceptHome(UIWindow *window) {
+    if (!window) {
+        window = CDVTKeyWindow();
+    }
+    UIViewController *controller = objc_getAssociatedObject(window, &kCDSpotifyConceptControllerKey);
+    if (!controller) {
+        return;
+    }
+
+    kCDSpotifyConceptDismissedThisSession = YES;
+    [controller willMoveToParentViewController:nil];
+    [UIView animateWithDuration:0.20 animations:^{
+        controller.view.alpha = 0.0;
+        controller.view.transform = CGAffineTransformMakeTranslation(0.0, 14.0);
+    } completion:^(__unused BOOL finished) {
+        [controller.view removeFromSuperview];
+        [controller removeFromParentViewController];
+        objc_setAssociatedObject(window, &kCDSpotifyConceptControllerKey, nil, OBJC_ASSOCIATION_ASSIGN);
+    }];
+}
+
+static void CDSpotifyInstallConceptObserver(void) {
+    if (kCDSpotifyConceptObserverInstalled) {
+        return;
+    }
+    kCDSpotifyConceptObserverInstalled = YES;
+    [[NSNotificationCenter defaultCenter] addObserverForName:@"com.chasedavis.spotifyreframe.concept.close" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(__unused NSNotification *notification) {
+        CDSpotifyDismissConceptHome(CDVTKeyWindow());
+    }];
+}
+
+static void CDSpotifyShowConceptHome(UIWindow *window, BOOL userInitiated) {
+    if (!CDSpotifyEnabled() || !CDSpotifyConceptHomeEnabled() || !CDSpotifyWindowIsAppWindow(window)) {
+        return;
+    }
+    if (!userInitiated && (!CDSpotifyConceptHomeAutoOpen() || kCDSpotifyConceptDismissedThisSession)) {
+        return;
+    }
+
+    UIViewController *existing = objc_getAssociatedObject(window, &kCDSpotifyConceptControllerKey);
+    if (existing) {
+        existing.view.frame = window.bounds;
+        [window bringSubviewToFront:existing.view];
+        return;
+    }
+
+    UIViewController *controller = CDSpotifyMakeConceptHomeController();
+    if (!controller) {
+        return;
+    }
+
+    UIViewController *rootController = window.rootViewController;
+    if (rootController) {
+        [rootController addChildViewController:controller];
+    }
+    controller.view.frame = window.bounds;
+    controller.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    controller.view.alpha = 0.0;
+    controller.view.transform = CGAffineTransformMakeTranslation(0.0, 18.0);
+    [window addSubview:controller.view];
+    if (rootController) {
+        [controller didMoveToParentViewController:rootController];
+    }
+    objc_setAssociatedObject(window, &kCDSpotifyConceptControllerKey, controller, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+
+    [UIView animateWithDuration:0.24 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+        controller.view.alpha = 1.0;
+        controller.view.transform = CGAffineTransformIdentity;
+    } completion:nil];
 }
 
 static UILabel *CDSpotifyMakeSettingsLabel(NSString *text, UIFont *font, UIColor *color) {
@@ -464,6 +565,26 @@ static void CDSpotifyOpenSettingsPanel(UIWindow *window) {
     CGFloat y = 0.0;
     CDSpotifyAddSwitchRow(scrollView, &y, @"Enabled", @"Master switch for all SpotifyReframe visuals.", @"enabled", YES);
     CDSpotifyAddSwitchRow(scrollView, &y, @"Low Power Mode", @"Avoids repeated glow work while scrolling.", @"lowPowerMode", YES);
+    CDSpotifyAddSwitchRow(scrollView, &y, @"AI Home Concept", @"SwiftUI home screen concept inspired by Spotify AI.", @"conceptHomeEnabled", YES);
+    CDSpotifyAddSwitchRow(scrollView, &y, @"Auto Open Concept", @"Show the SwiftUI concept when Spotify opens.", @"conceptHomeAutoOpen", YES);
+
+    UIView *conceptRow = CDSpotifyAddSettingsRow(scrollView, &y, @"Open Concept", @"Show the SwiftUI home surface now.", 74.0);
+    UIButton *conceptButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    [conceptButton setTitle:@"Open AI Home Concept" forState:UIControlStateNormal];
+    conceptButton.titleLabel.font = [UIFont systemFontOfSize:14.0 weight:UIFontWeightBlack];
+    conceptButton.tintColor = [UIColor blackColor];
+    conceptButton.backgroundColor = tint;
+    conceptButton.layer.cornerRadius = 16.0;
+    conceptButton.frame = CGRectMake(14.0, 34.0, CGRectGetWidth(conceptRow.bounds) - 28.0, 32.0);
+    conceptButton.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    CDSpotifyAddControlHandler(conceptButton, UIControlEventTouchUpInside, ^(__unused id sender) {
+        CDSpotifySetPreference(@"conceptHomeEnabled", @YES);
+        kCDSpotifyConceptDismissedThisSession = NO;
+        CDSpotifyDismissSettingsPanel(window);
+        CDSpotifyShowConceptHome(window, YES);
+    });
+    [conceptRow addSubview:conceptButton];
+
     CDSpotifyAddSwitchRow(scrollView, &y, @"Force Visual Mode", @"Compatibility fallback; keep off unless normal styling is invisible.", @"forceVisualMode", NO);
     CDSpotifyAddSwitchRow(scrollView, &y, @"In-App Settings Button", @"Opt-in floating control. Off by default to avoid Spotify UI overlap.", @"inAppSettings", NO);
     CDSpotifyAddSwitchRow(scrollView, &y, @"Launch Badge", @"Debug-only load confirmation.", @"launchBadge", NO);
@@ -512,6 +633,7 @@ static void CDSpotifyOpenSettingsPanel(UIWindow *window) {
         for (NSString *key in defaults) {
             CDSpotifySetPreference(key, defaults[key]);
         }
+        kCDSpotifyConceptDismissedThisSession = NO;
         CDSpotifyDismissSettingsPanel(window);
         CDSpotifyReapplyAllWindows();
     });
@@ -631,12 +753,20 @@ static void CDSpotifyReapplyAllWindows(void) {
     for (UIWindow *window in [UIApplication sharedApplication].windows) {
         CDSpotifyApplyWindowOverlay(window);
         CDSpotifyApplyInAppSettingsButton(window);
+        if (CDSpotifyConceptHomeEnabled()) {
+            CDSpotifyShowConceptHome(window, NO);
+        } else {
+            CDSpotifyDismissConceptHome(window);
+        }
     }
 }
 
 static void CDSpotifyPreferencesChanged(__unused CFNotificationCenterRef center, __unused void *observer, __unused CFStringRef name, __unused const void *object, __unused CFDictionaryRef userInfo) {
     CDSpotifySynchronizePreferences();
     kCDSpotifyStyleGeneration++;
+    if (CDSpotifyConceptHomeEnabled() && CDSpotifyConceptHomeAutoOpen()) {
+        kCDSpotifyConceptDismissedThisSession = NO;
+    }
     dispatch_async(dispatch_get_main_queue(), ^{
         CDSpotifyReapplyAllWindows();
     });
@@ -821,6 +951,7 @@ static void CDSpotifyApplyControlTint(UIView *view) {
         CDSpotifyApplyWindowOverlay(self.view.window);
     }
     CDSpotifyApplyInAppSettingsButton(self.view.window);
+    CDSpotifyShowConceptHome(self.view.window, NO);
 }
 %end
 
@@ -831,6 +962,7 @@ static void CDSpotifyApplyControlTint(UIView *view) {
         CDSpotifyApplyWindowOverlay(self);
     }
     CDSpotifyApplyInAppSettingsButton(self);
+    CDSpotifyShowConceptHome(self, NO);
 }
 - (void)layoutSubviews {
     %orig;
@@ -839,6 +971,7 @@ static void CDSpotifyApplyControlTint(UIView *view) {
             CDSpotifyApplyWindowOverlay(self);
         }
         CDSpotifyApplyInAppSettingsButton(self);
+        CDSpotifyShowConceptHome(self, NO);
     }
 }
 %end
@@ -954,6 +1087,7 @@ static void CDSpotifyApplyControlTint(UIView *view) {
         if (CDSpotifyIsTarget()) {
             NSLog(@"[SpotifyReframe] loaded");
             CDSpotifyMigrateCalmDefaultsIfNeeded();
+            CDSpotifyInstallConceptObserver();
             CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, CDSpotifyPreferencesChanged, CFSTR("com.chasedavis.spotifyreframe/preferences.changed"), NULL, CFNotificationSuspensionBehaviorDeliverImmediately);
             %init;
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.85 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
