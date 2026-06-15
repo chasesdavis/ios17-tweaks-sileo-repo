@@ -18,6 +18,14 @@
             cell = PSSwitchCell;
             default = 1;
             defaults = "com.chasedavis.spotifyreframe";
+            key = lowPowerMode;
+            label = "Low Power Mode";
+            PostNotification = "com.chasedavis.spotifyreframe/preferences.changed";
+        },
+        {
+            cell = PSSwitchCell;
+            default = 0;
+            defaults = "com.chasedavis.spotifyreframe";
             key = forceVisualMode;
             label = "Force Visual Mode";
             PostNotification = "com.chasedavis.spotifyreframe/preferences.changed";
@@ -32,7 +40,7 @@
         },
         {
             cell = PSSwitchCell;
-            default = 1;
+            default = 0;
             defaults = "com.chasedavis.spotifyreframe";
             key = launchBadge;
             label = "Launch Badge";
@@ -55,18 +63,18 @@
         },
         {
             cell = PSSliderCell;
-            default = 0.32;
+            default = 0.06;
             defaults = "com.chasedavis.spotifyreframe";
             key = backgroundWash;
             label = "Background Wash";
             min = 0;
-            max = 0.70;
+            max = 0.30;
             showValue = 1;
             PostNotification = "com.chasedavis.spotifyreframe/preferences.changed";
         },
         {
             cell = PSSwitchCell;
-            default = 1;
+            default = 0;
             defaults = "com.chasedavis.spotifyreframe";
             key = tintPrimaryLabels;
             label = "Tint Key Labels";
@@ -74,12 +82,12 @@
         },
         {
             cell = PSSliderCell;
-            default = 0.18;
+            default = 0;
             defaults = "com.chasedavis.spotifyreframe";
             key = labelTintStrength;
             label = "Label Tint";
             min = 0;
-            max = 0.75;
+            max = 0.35;
             showValue = 1;
             PostNotification = "com.chasedavis.spotifyreframe/preferences.changed";
         },
@@ -97,7 +105,7 @@
         },
         {
             cell = PSLinkListCell;
-            default = 1;
+            default = 0;
             defaults = "com.chasedavis.spotifyreframe";
             detail = PSListItemsController;
             key = cardDensity;
@@ -108,34 +116,34 @@
         },
         {
             cell = PSSliderCell;
-            default = 0.28;
+            default = 0.08;
             defaults = "com.chasedavis.spotifyreframe";
             key = cardFill;
             label = "Card Fill";
-            min = 0.04;
-            max = 0.68;
+            min = 0;
+            max = 0.26;
             showValue = 1;
             PostNotification = "com.chasedavis.spotifyreframe/preferences.changed";
         },
         {
             cell = PSSliderCell;
-            default = 18;
+            default = 12;
             defaults = "com.chasedavis.spotifyreframe";
             key = cardRadius;
             label = "Card Radius";
-            min = 8;
-            max = 30;
+            min = 6;
+            max = 20;
             showValue = 1;
             PostNotification = "com.chasedavis.spotifyreframe/preferences.changed";
         },
         {
             cell = PSSliderCell;
-            default = 0.42;
+            default = 0;
             defaults = "com.chasedavis.spotifyreframe";
             key = cardShadow;
             label = "Card Shadow";
             min = 0;
-            max = 1;
+            max = 0.22;
             showValue = 1;
             PostNotification = "com.chasedavis.spotifyreframe/preferences.changed";
         },
@@ -153,23 +161,23 @@
         },
         {
             cell = PSSliderCell;
-            default = 14;
+            default = 8;
             defaults = "com.chasedavis.spotifyreframe";
             key = artworkRadius;
             label = "Artwork Radius";
             min = 0;
-            max = 28;
+            max = 18;
             showValue = 1;
             PostNotification = "com.chasedavis.spotifyreframe/preferences.changed";
         },
         {
             cell = PSSliderCell;
-            default = 0.34;
+            default = 0.06;
             defaults = "com.chasedavis.spotifyreframe";
             key = artworkGlow;
             label = "Artwork Glow";
             min = 0;
-            max = 1;
+            max = 0.30;
             showValue = 1;
             PostNotification = "com.chasedavis.spotifyreframe/preferences.changed";
         },
@@ -187,7 +195,7 @@
         },
         {
             cell = PSSwitchCell;
-            default = 1;
+            default = 0;
             defaults = "com.chasedavis.spotifyreframe";
             key = controlTint;
             label = "Tint Controls";
@@ -195,12 +203,12 @@
         },
         {
             cell = PSSliderCell;
-            default = 0.52;
+            default = 0.06;
             defaults = "com.chasedavis.spotifyreframe";
             key = playerGlow;
-            label = "Player Glow";
+            label = "Player Accent";
             min = 0;
-            max = 1;
+            max = 0.30;
             showValue = 1;
             PostNotification = "com.chasedavis.spotifyreframe/preferences.changed";
         },
@@ -218,7 +226,7 @@
         },
         {
             cell = PSSwitchCell;
-            default = 1;
+            default = 0;
             defaults = "com.chasedavis.spotifyreframe";
             key = navBarGlass;
             label = "Navigation Glass";
@@ -226,12 +234,12 @@
         },
         {
             cell = PSSliderCell;
-            default = 0.42;
+            default = 0.12;
             defaults = "com.chasedavis.spotifyreframe";
             key = chromeFill;
             label = "Chrome Fill";
-            min = 0.05;
-            max = 0.82;
+            min = 0;
+            max = 0.32;
             showValue = 1;
             PostNotification = "com.chasedavis.spotifyreframe/preferences.changed";
         },

@@ -4,13 +4,13 @@ SpotifyReframe is a Spotify-only UI redesign tweak for Bootstrap / roothide.
 
 It targets `com.spotify.client` and keeps behavior visual-only:
 
-- In-app SpotifyReframe settings panel from a floating Spotify-side control.
-- Forced visual mode with a visible launch badge and window-level tint wash.
-- Glass-style playlist, album, and queue cards.
-- Tunable album-art rounding and glow.
-- Refined tab bar and navigation bar treatment.
-- Now Playing surface polish.
-- Optional label tinting and background wash.
+- Low-power in-app SpotifyReframe settings panel from a small Spotify-side control.
+- Calm defaults that migrate away from the old glow-heavy 1.0.1 profile.
+- Subtle playlist, album, and queue card shaping.
+- Tunable album-art rounding with a restrained accent stroke.
+- Refined tab bar and optional navigation bar treatment.
+- Now Playing surface polish without live shadow loops.
+- Optional label tinting, debug launch badge, and compatibility force mode.
 - PreferenceLoader pane with matching controls.
 
 Build:

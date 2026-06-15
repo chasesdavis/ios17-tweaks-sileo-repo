@@ -12,7 +12,15 @@ static char kCDSpotifyLaunchBadgeKey;
 static char kCDSpotifySettingsButtonKey;
 static char kCDSpotifySettingsPanelKey;
 static char kCDSpotifyControlProxyKey;
+static char kCDSpotifyCardStyleKey;
+static char kCDSpotifyArtworkStyleKey;
+static char kCDSpotifyPlayerStyleKey;
+static char kCDSpotifyChromeStyleKey;
+static char kCDSpotifyLabelStyleKey;
+static char kCDSpotifyControlStyleKey;
 static BOOL kCDSpotifyLaunchBadgeShown = NO;
+static NSInteger kCDSpotifyStyleGeneration = 1;
+static CFTimeInterval kCDSpotifyLastWindowRefresh = 0.0;
 
 static void CDSpotifyReapplyAllWindows(void);
 
@@ -46,15 +54,19 @@ static BOOL CDSpotifyEnabled(void) {
 }
 
 static BOOL CDSpotifyForceVisualMode(void) {
-    return CDPremiumBool(CDSpotifyReframeDomain, @"forceVisualMode", YES);
+    return CDPremiumBool(CDSpotifyReframeDomain, @"forceVisualMode", NO);
 }
 
 static BOOL CDSpotifyLaunchBadgeEnabled(void) {
-    return CDPremiumBool(CDSpotifyReframeDomain, @"launchBadge", YES);
+    return CDPremiumBool(CDSpotifyReframeDomain, @"launchBadge", NO);
 }
 
 static BOOL CDSpotifyInAppSettingsEnabled(void) {
     return CDPremiumBool(CDSpotifyReframeDomain, @"inAppSettings", YES);
+}
+
+static BOOL CDSpotifyLowPowerMode(void) {
+    return CDPremiumBool(CDSpotifyReframeDomain, @"lowPowerMode", YES);
 }
 
 static void CDSpotifySynchronizePreferences(void) {
@@ -67,7 +79,78 @@ static void CDSpotifySetPreference(NSString *key, id value) {
     }
     CFPreferencesSetAppValue((__bridge CFStringRef)key, (__bridge CFPropertyListRef)value, (__bridge CFStringRef)CDSpotifyReframeDomain);
     CDSpotifySynchronizePreferences();
+    kCDSpotifyStyleGeneration++;
     CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), CFSTR("com.chasedavis.spotifyreframe/preferences.changed"), NULL, NULL, YES);
+}
+
+static void CDSpotifySetPreferenceSilently(NSString *key, id value) {
+    if (!key.length || !value) {
+        return;
+    }
+    CFPreferencesSetAppValue((__bridge CFStringRef)key, (__bridge CFPropertyListRef)value, (__bridge CFStringRef)CDSpotifyReframeDomain);
+}
+
+static NSDictionary<NSString *, id> *CDSpotifyCalmDefaults(void) {
+    return @{
+        @"enabled": @YES,
+        @"lowPowerMode": @YES,
+        @"forceVisualMode": @NO,
+        @"inAppSettings": @YES,
+        @"launchBadge": @NO,
+        @"palette": @0,
+        @"backgroundWash": @0.06,
+        @"glassCards": @YES,
+        @"cardDensity": @0,
+        @"cardFill": @0.08,
+        @"cardRadius": @12.0,
+        @"cardShadow": @0.0,
+        @"styleArtwork": @YES,
+        @"artworkRadius": @8.0,
+        @"artworkGlow": @0.06,
+        @"nowPlayingGlass": @YES,
+        @"controlTint": @NO,
+        @"playerGlow": @0.06,
+        @"tintPrimaryLabels": @NO,
+        @"labelTintStrength": @0.0,
+        @"tabBarGlass": @YES,
+        @"navBarGlass": @NO,
+        @"chromeFill": @0.12,
+        @"profileVersion": @2
+    };
+}
+
+static void CDSpotifyMigrateCalmDefaultsIfNeeded(void) {
+    CDSpotifySynchronizePreferences();
+    if (CDPremiumInteger(CDSpotifyReframeDomain, @"profileVersion", 0) >= 2) {
+        return;
+    }
+    NSDictionary<NSString *, id> *defaults = CDSpotifyCalmDefaults();
+    for (NSString *key in defaults) {
+        CDSpotifySetPreferenceSilently(key, defaults[key]);
+    }
+    CDSpotifySynchronizePreferences();
+    kCDSpotifyStyleGeneration++;
+}
+
+static BOOL CDSpotifyShouldApplyStyle(UIView *view, const void *key) {
+    if (!view || !key) {
+        return NO;
+    }
+    NSNumber *applied = objc_getAssociatedObject(view, key);
+    if (CDSpotifyLowPowerMode() && applied.integerValue == kCDSpotifyStyleGeneration) {
+        return NO;
+    }
+    objc_setAssociatedObject(view, key, @(kCDSpotifyStyleGeneration), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    return YES;
+}
+
+static BOOL CDSpotifyShouldRefreshWindow(void) {
+    CFTimeInterval now = CACurrentMediaTime();
+    if (now - kCDSpotifyLastWindowRefresh < 0.75) {
+        return NO;
+    }
+    kCDSpotifyLastWindowRefresh = now;
+    return YES;
 }
 
 static void CDSpotifyAddControlHandler(UIControl *control, UIControlEvents events, void (^handler)(id sender)) {
@@ -380,24 +463,25 @@ static void CDSpotifyOpenSettingsPanel(UIWindow *window) {
 
     CGFloat y = 0.0;
     CDSpotifyAddSwitchRow(scrollView, &y, @"Enabled", @"Master switch for all SpotifyReframe visuals.", @"enabled", YES);
-    CDSpotifyAddSwitchRow(scrollView, &y, @"Force Visual Mode", @"Adds visible window tinting even when Spotify uses custom Swift views.", @"forceVisualMode", YES);
+    CDSpotifyAddSwitchRow(scrollView, &y, @"Low Power Mode", @"Avoids repeated glow work while scrolling.", @"lowPowerMode", YES);
+    CDSpotifyAddSwitchRow(scrollView, &y, @"Force Visual Mode", @"Compatibility fallback; keep off unless normal styling is invisible.", @"forceVisualMode", NO);
     CDSpotifyAddSwitchRow(scrollView, &y, @"In-App Settings Button", @"Show the floating Reframe control inside Spotify.", @"inAppSettings", YES);
-    CDSpotifyAddSwitchRow(scrollView, &y, @"Launch Badge", @"Briefly confirms that Spotify loaded the tweak.", @"launchBadge", YES);
+    CDSpotifyAddSwitchRow(scrollView, &y, @"Launch Badge", @"Debug-only load confirmation.", @"launchBadge", NO);
     CDSpotifyAddSegmentRow(scrollView, &y, @"Accent Palette", @"palette", @[@"Green", @"Coral", @"Mint", @"Gold", @"Violet"], 0);
-    CDSpotifyAddSliderRow(scrollView, &y, @"Background Wash", @"backgroundWash", 0.32, 0.0, 0.70, NO);
+    CDSpotifyAddSliderRow(scrollView, &y, @"Background Wash", @"backgroundWash", 0.06, 0.0, 0.30, NO);
     CDSpotifyAddSwitchRow(scrollView, &y, @"Glass Cards", @"Style list and grid cells.", @"glassCards", YES);
-    CDSpotifyAddSliderRow(scrollView, &y, @"Card Fill", @"cardFill", 0.28, 0.04, 0.68, NO);
-    CDSpotifyAddSliderRow(scrollView, &y, @"Card Radius", @"cardRadius", 18.0, 8.0, 30.0, YES);
+    CDSpotifyAddSliderRow(scrollView, &y, @"Card Fill", @"cardFill", 0.08, 0.0, 0.26, NO);
+    CDSpotifyAddSliderRow(scrollView, &y, @"Card Radius", @"cardRadius", 12.0, 6.0, 20.0, YES);
     CDSpotifyAddSwitchRow(scrollView, &y, @"Album Art Styling", @"Round covers and add a subtle accent stroke.", @"styleArtwork", YES);
-    CDSpotifyAddSliderRow(scrollView, &y, @"Artwork Radius", @"artworkRadius", 14.0, 0.0, 28.0, YES);
+    CDSpotifyAddSliderRow(scrollView, &y, @"Artwork Radius", @"artworkRadius", 8.0, 0.0, 18.0, YES);
     CDSpotifyAddSwitchRow(scrollView, &y, @"Now Playing Glass", @"Accent mini-player and playback surfaces.", @"nowPlayingGlass", YES);
-    CDSpotifyAddSwitchRow(scrollView, &y, @"Tint Controls", @"Apply the palette to playback controls and icons.", @"controlTint", YES);
-    CDSpotifyAddSliderRow(scrollView, &y, @"Player Glow", @"playerGlow", 0.52, 0.0, 1.0, NO);
-    CDSpotifyAddSwitchRow(scrollView, &y, @"Tint Key Labels", @"Accent headings and primary Spotify labels.", @"tintPrimaryLabels", YES);
-    CDSpotifyAddSliderRow(scrollView, &y, @"Label Tint", @"labelTintStrength", 0.18, 0.0, 0.75, NO);
+    CDSpotifyAddSwitchRow(scrollView, &y, @"Tint Controls", @"Apply the palette to playback controls and icons.", @"controlTint", NO);
+    CDSpotifyAddSliderRow(scrollView, &y, @"Player Accent", @"playerGlow", 0.06, 0.0, 0.30, NO);
+    CDSpotifyAddSwitchRow(scrollView, &y, @"Tint Key Labels", @"Accent headings and primary Spotify labels.", @"tintPrimaryLabels", NO);
+    CDSpotifyAddSliderRow(scrollView, &y, @"Label Tint", @"labelTintStrength", 0.0, 0.0, 0.35, NO);
     CDSpotifyAddSwitchRow(scrollView, &y, @"Tab Bar Glass", @"Apply tint and shadow to UIKit tab bars when present.", @"tabBarGlass", YES);
-    CDSpotifyAddSwitchRow(scrollView, &y, @"Navigation Glass", @"Apply tint and shadow to UIKit navigation bars when present.", @"navBarGlass", YES);
-    CDSpotifyAddSliderRow(scrollView, &y, @"Chrome Fill", @"chromeFill", 0.42, 0.05, 0.82, NO);
+    CDSpotifyAddSwitchRow(scrollView, &y, @"Navigation Glass", @"Apply tint and shadow to UIKit navigation bars when present.", @"navBarGlass", NO);
+    CDSpotifyAddSliderRow(scrollView, &y, @"Chrome Fill", @"chromeFill", 0.12, 0.0, 0.32, NO);
 
     UIView *buttonRow = CDSpotifyAddSettingsRow(scrollView, &y, @"", @"", 58.0);
     UIButton *disableButton = [UIButton buttonWithType:UIButtonTypeSystem];
@@ -424,27 +508,7 @@ static void CDSpotifyOpenSettingsPanel(UIWindow *window) {
     resetButton.frame = CGRectMake(CGRectGetMaxX(disableButton.frame) + 14.0, 14.0, CGRectGetWidth(disableButton.bounds), 30.0);
     resetButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleLeftMargin;
     CDSpotifyAddControlHandler(resetButton, UIControlEventTouchUpInside, ^(__unused id sender) {
-        NSDictionary<NSString *, id> *defaults = @{
-            @"enabled": @YES,
-            @"forceVisualMode": @YES,
-            @"inAppSettings": @YES,
-            @"launchBadge": @YES,
-            @"palette": @0,
-            @"backgroundWash": @0.32,
-            @"glassCards": @YES,
-            @"cardFill": @0.28,
-            @"cardRadius": @18.0,
-            @"styleArtwork": @YES,
-            @"artworkRadius": @14.0,
-            @"nowPlayingGlass": @YES,
-            @"controlTint": @YES,
-            @"playerGlow": @0.52,
-            @"tintPrimaryLabels": @YES,
-            @"labelTintStrength": @0.18,
-            @"tabBarGlass": @YES,
-            @"navBarGlass": @YES,
-            @"chromeFill": @0.42
-        };
+        NSDictionary<NSString *, id> *defaults = CDSpotifyCalmDefaults();
         for (NSString *key in defaults) {
             CDSpotifySetPreference(key, defaults[key]);
         }
@@ -476,14 +540,14 @@ static void CDSpotifyApplyInAppSettingsButton(UIWindow *window) {
     if (!button) {
         button = [UIButton buttonWithType:UIButtonTypeSystem];
         button.accessibilityLabel = @"SpotifyReframe settings";
-        button.tintColor = [UIColor whiteColor];
-        button.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.58];
+        button.tintColor = [[UIColor whiteColor] colorWithAlphaComponent:0.82];
+        button.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.26];
         button.layer.cornerCurve = kCACornerCurveContinuous;
-        button.layer.cornerRadius = 18.0;
+        button.layer.cornerRadius = 14.0;
         button.layer.borderWidth = 1.0;
         button.layer.shadowOffset = CGSizeZero;
-        button.layer.shadowRadius = 12.0;
-        button.layer.shadowOpacity = 0.24;
+        button.layer.shadowRadius = 0.0;
+        button.layer.shadowOpacity = 0.0;
 
         UIImage *image = [UIImage systemImageNamed:@"slider.horizontal.3"];
         if (image) {
@@ -500,11 +564,11 @@ static void CDSpotifyApplyInAppSettingsButton(UIWindow *window) {
     }
 
     UIColor *tint = CDSpotifyTint();
-    CGFloat size = 36.0;
-    button.frame = CGRectMake(CGRectGetWidth(window.bounds) - size - 14.0, MAX(52.0, window.safeAreaInsets.top + 48.0), size, size);
+    CGFloat size = 28.0;
+    button.frame = CGRectMake(CGRectGetWidth(window.bounds) - size - 10.0, MAX(48.0, window.safeAreaInsets.top + 44.0), size, size);
     button.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin;
-    button.layer.borderColor = [tint colorWithAlphaComponent:0.42].CGColor;
-    button.layer.shadowColor = tint.CGColor;
+    button.layer.borderColor = [tint colorWithAlphaComponent:0.18].CGColor;
+    button.layer.shadowColor = nil;
     [window bringSubviewToFront:button];
 }
 
@@ -522,7 +586,7 @@ static void CDSpotifyApplyWindowOverlay(UIWindow *window) {
         overlay.backgroundColor = [UIColor clearColor];
         overlay.layer.cornerCurve = kCACornerCurveContinuous;
         overlay.layer.cornerRadius = 0.0;
-        overlay.layer.borderWidth = 1.0;
+        overlay.layer.borderWidth = 0.0;
 
         CAGradientLayer *gradient = [CAGradientLayer layer];
         gradient.name = @"com.chasedavis.spotifyreframe.windowWash";
@@ -531,22 +595,21 @@ static void CDSpotifyApplyWindowOverlay(UIWindow *window) {
         [overlay.layer insertSublayer:gradient atIndex:0];
         objc_setAssociatedObject(overlay, &kCDSpotifyWindowGradientKey, gradient, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 
-        [window addSubview:overlay];
+        [window insertSubview:overlay atIndex:0];
         objc_setAssociatedObject(window, &kCDSpotifyWindowOverlayKey, overlay, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     }
 
     UIColor *tint = CDSpotifyTint();
-    CGFloat wash = CDPremiumClampedFloat(CDSpotifyReframeDomain, @"backgroundWash", 0.32, 0.0, 0.70);
-    CGFloat edge = CDPremiumClampedFloat(CDSpotifyReframeDomain, @"playerGlow", 0.52, 0.0, 1.0);
-    CGFloat topAlpha = MIN(0.26, MAX(0.05, wash * 0.34));
-    CGFloat bottomAlpha = MIN(0.22, MAX(0.04, wash * 0.26));
+    CGFloat wash = CDPremiumClampedFloat(CDSpotifyReframeDomain, @"backgroundWash", 0.06, 0.0, 0.30);
+    CGFloat topAlpha = MIN(0.08, wash * 0.30);
+    CGFloat bottomAlpha = MIN(0.06, wash * 0.22);
 
     overlay.frame = window.bounds;
-    overlay.layer.borderColor = [tint colorWithAlphaComponent:edge * 0.22].CGColor;
-    overlay.layer.shadowColor = tint.CGColor;
+    overlay.layer.borderColor = [UIColor clearColor].CGColor;
+    overlay.layer.shadowColor = nil;
     overlay.layer.shadowOffset = CGSizeZero;
-    overlay.layer.shadowRadius = 18.0;
-    overlay.layer.shadowOpacity = edge * 0.16;
+    overlay.layer.shadowRadius = 0.0;
+    overlay.layer.shadowOpacity = 0.0;
 
     CAGradientLayer *gradient = objc_getAssociatedObject(overlay, &kCDSpotifyWindowGradientKey);
     gradient.frame = overlay.bounds;
@@ -557,7 +620,6 @@ static void CDSpotifyApplyWindowOverlay(UIWindow *window) {
     ];
     gradient.locations = @[@0.0, @0.50, @1.0];
 
-    [window bringSubviewToFront:overlay];
     CDSpotifyApplyInAppSettingsButton(window);
     CDSpotifyShowLaunchBadge(window);
 }
@@ -574,6 +636,7 @@ static void CDSpotifyReapplyAllWindows(void) {
 
 static void CDSpotifyPreferencesChanged(__unused CFNotificationCenterRef center, __unused void *observer, __unused CFStringRef name, __unused const void *object, __unused CFDictionaryRef userInfo) {
     CDSpotifySynchronizePreferences();
+    kCDSpotifyStyleGeneration++;
     dispatch_async(dispatch_get_main_queue(), ^{
         CDSpotifyReapplyAllWindows();
     });
@@ -583,7 +646,7 @@ static void CDSpotifyApplyRootWash(UIView *view) {
     if (!CDSpotifyEnabled() || !view.window || !CDSpotifyViewIsLargeEnough(view, 260.0, 400.0)) {
         return;
     }
-    CGFloat wash = CDPremiumClampedFloat(CDSpotifyReframeDomain, @"backgroundWash", 0.32, 0.0, 0.70);
+    CGFloat wash = CDPremiumClampedFloat(CDSpotifyReframeDomain, @"backgroundWash", 0.06, 0.0, 0.30);
     if (wash <= 0.01) {
         CALayer *oldLayer = objc_getAssociatedObject(view, &kCDSpotifyBackgroundLayerKey);
         [oldLayer removeFromSuperlayer];
@@ -602,57 +665,77 @@ static void CDSpotifyApplyRootWash(UIView *view) {
     }
     layer.frame = view.bounds;
     layer.colors = @[
-        (id)[tint colorWithAlphaComponent:wash * 0.34].CGColor,
-        (id)[UIColor colorWithWhite:0.015 alpha:wash].CGColor,
+        (id)[tint colorWithAlphaComponent:wash * 0.16].CGColor,
+        (id)[UIColor colorWithWhite:0.015 alpha:wash * 0.28].CGColor,
         (id)[UIColor colorWithWhite:0.0 alpha:0.0].CGColor
     ];
     layer.locations = @[@0.0, @0.48, @1.0];
-    CDSpotifyApplyWindowOverlay(view.window);
 }
 
 static void CDSpotifyApplyCard(UIView *surface) {
     if (!CDSpotifyEnabled() || !CDPremiumBool(CDSpotifyReframeDomain, @"glassCards", YES) || !CDSpotifyViewIsLargeEnough(surface, 80.0, 42.0)) {
         return;
     }
+    if (!CDSpotifyShouldApplyStyle(surface, &kCDSpotifyCardStyleKey)) {
+        return;
+    }
     UIColor *tint = CDSpotifyTint();
-    CGFloat fill = CDPremiumClampedFloat(CDSpotifyReframeDomain, @"cardFill", 0.28, 0.04, 0.68);
-    CGFloat radius = CDPremiumClampedFloat(CDSpotifyReframeDomain, @"cardRadius", 18.0, 8.0, 30.0);
-    CGFloat shadow = CDPremiumClampedFloat(CDSpotifyReframeDomain, @"cardShadow", 0.42, 0.0, 1.0);
-    NSInteger density = CDPremiumInteger(CDSpotifyReframeDomain, @"cardDensity", 1);
+    CGFloat fill = CDPremiumClampedFloat(CDSpotifyReframeDomain, @"cardFill", 0.08, 0.0, 0.26);
+    CGFloat radius = CDPremiumClampedFloat(CDSpotifyReframeDomain, @"cardRadius", 12.0, 6.0, 20.0);
+    CGFloat shadow = CDPremiumClampedFloat(CDSpotifyReframeDomain, @"cardShadow", 0.0, 0.0, 0.22);
+    NSInteger density = CDPremiumInteger(CDSpotifyReframeDomain, @"cardDensity", 0);
     if (density == 0) {
         radius = MIN(radius, 14.0);
-        fill *= 0.78;
+        fill *= 0.70;
     } else if (density == 2) {
-        radius = MAX(radius, 22.0);
-        fill = MIN(fill * 1.16, 0.68);
+        radius = MAX(radius, 16.0);
+        fill = MIN(fill * 1.10, 0.26);
     }
-    surface.backgroundColor = [UIColor colorWithWhite:0.02 alpha:fill];
-    CDVTStyleSurface(surface, surface.backgroundColor, tint, radius, 4.0 + shadow * 18.0);
+    surface.backgroundColor = [UIColor colorWithWhite:1.0 alpha:fill];
+    surface.layer.cornerCurve = kCACornerCurveContinuous;
+    surface.layer.cornerRadius = radius;
+    surface.layer.masksToBounds = YES;
+    surface.layer.borderColor = [tint colorWithAlphaComponent:0.055 + shadow * 0.10].CGColor;
+    surface.layer.borderWidth = fill > 0.01 ? 0.5 : 0.0;
+    surface.layer.shadowOpacity = 0.0;
 }
 
 static void CDSpotifyApplyArtwork(UIImageView *imageView) {
     if (!CDSpotifyEnabled() || !CDPremiumBool(CDSpotifyReframeDomain, @"styleArtwork", YES) || !CDSpotifyViewLooksLikeArtwork(imageView)) {
         return;
     }
+    if (!CDSpotifyShouldApplyStyle(imageView, &kCDSpotifyArtworkStyleKey)) {
+        return;
+    }
     UIColor *tint = CDSpotifyTint();
-    CGFloat radius = CDPremiumClampedFloat(CDSpotifyReframeDomain, @"artworkRadius", 14.0, 0.0, 28.0);
-    CGFloat glow = CDPremiumClampedFloat(CDSpotifyReframeDomain, @"artworkGlow", 0.34, 0.0, 1.0);
+    CGFloat radius = CDPremiumClampedFloat(CDSpotifyReframeDomain, @"artworkRadius", 8.0, 0.0, 18.0);
+    CGFloat glow = CDPremiumClampedFloat(CDSpotifyReframeDomain, @"artworkGlow", 0.06, 0.0, 0.30);
     imageView.layer.cornerCurve = kCACornerCurveContinuous;
     imageView.layer.cornerRadius = radius;
     imageView.clipsToBounds = YES;
-    imageView.layer.borderColor = [tint colorWithAlphaComponent:glow * 0.62].CGColor;
-    imageView.layer.borderWidth = glow > 0.02 ? 1.0 + glow * 1.6 : 0.0;
+    imageView.layer.borderColor = [tint colorWithAlphaComponent:glow * 0.45].CGColor;
+    imageView.layer.borderWidth = glow > 0.02 ? 0.5 : 0.0;
+    imageView.layer.shadowOpacity = 0.0;
 }
 
 static void CDSpotifyApplyPlayerSurface(UIView *view) {
     if (!CDSpotifyEnabled() || !CDPremiumBool(CDSpotifyReframeDomain, @"nowPlayingGlass", YES) || !CDSpotifyViewLooksLikePlayerSurface(view)) {
         return;
     }
+    if (!CDSpotifyShouldApplyStyle(view, &kCDSpotifyPlayerStyleKey)) {
+        return;
+    }
     UIColor *tint = CDSpotifyTint();
-    CGFloat fill = CDPremiumClampedFloat(CDSpotifyReframeDomain, @"cardFill", 0.28, 0.04, 0.68);
-    CGFloat glow = CDPremiumClampedFloat(CDSpotifyReframeDomain, @"playerGlow", 0.52, 0.0, 1.0);
-    CGFloat radius = MIN(28.0, MAX(14.0, CGRectGetHeight(view.bounds) * 0.24));
-    CDVTStyleSurface(view, [UIColor colorWithWhite:0.025 alpha:MIN(fill + 0.12, 0.76)], tint, radius, 5.0 + glow * 20.0);
+    CGFloat fill = CDPremiumClampedFloat(CDSpotifyReframeDomain, @"cardFill", 0.08, 0.0, 0.26);
+    CGFloat glow = CDPremiumClampedFloat(CDSpotifyReframeDomain, @"playerGlow", 0.06, 0.0, 0.30);
+    CGFloat radius = MIN(18.0, MAX(10.0, CGRectGetHeight(view.bounds) * 0.18));
+    view.backgroundColor = [UIColor colorWithWhite:1.0 alpha:MIN(fill + 0.05, 0.24)];
+    view.layer.cornerCurve = kCACornerCurveContinuous;
+    view.layer.cornerRadius = radius;
+    view.layer.masksToBounds = YES;
+    view.layer.borderColor = [tint colorWithAlphaComponent:glow * 0.38].CGColor;
+    view.layer.borderWidth = glow > 0.02 ? 0.5 : 0.0;
+    view.layer.shadowOpacity = 0.0;
 }
 
 static void CDSpotifyApplyChrome(UIView *view, BOOL navigationBar) {
@@ -665,14 +748,17 @@ static void CDSpotifyApplyChrome(UIView *view, BOOL navigationBar) {
     if (!navigationBar && !CDPremiumBool(CDSpotifyReframeDomain, @"tabBarGlass", YES)) {
         return;
     }
+    if (!CDSpotifyShouldApplyStyle(view, &kCDSpotifyChromeStyleKey)) {
+        return;
+    }
     UIColor *tint = CDSpotifyTint();
-    CGFloat fill = CDPremiumClampedFloat(CDSpotifyReframeDomain, @"chromeFill", 0.42, 0.05, 0.82);
+    CGFloat fill = CDPremiumClampedFloat(CDSpotifyReframeDomain, @"chromeFill", 0.12, 0.0, 0.32);
     view.tintColor = tint;
-    view.backgroundColor = [UIColor colorWithWhite:0.01 alpha:fill];
-    view.layer.shadowColor = tint.CGColor;
+    view.backgroundColor = [UIColor colorWithWhite:0.0 alpha:fill];
+    view.layer.shadowColor = nil;
     view.layer.shadowOffset = CGSizeZero;
-    view.layer.shadowRadius = 12.0;
-    view.layer.shadowOpacity = 0.20;
+    view.layer.shadowRadius = 0.0;
+    view.layer.shadowOpacity = 0.0;
 }
 
 static void CDSpotifyApplyLabel(UILabel *label) {
@@ -687,42 +773,53 @@ static void CDSpotifyApplyLabel(UILabel *label) {
     if (!matchesSpotifySurface && (!CDSpotifyForceVisualMode() || fontSize < 15.0 || label.text.length > 64)) {
         return;
     }
-    CGFloat strength = CDPremiumClampedFloat(CDSpotifyReframeDomain, @"labelTintStrength", 0.18, 0.0, 0.75);
+    if (!CDSpotifyShouldApplyStyle(label, &kCDSpotifyLabelStyleKey)) {
+        return;
+    }
+    CGFloat strength = CDPremiumClampedFloat(CDSpotifyReframeDomain, @"labelTintStrength", 0.0, 0.0, 0.35);
     if (strength <= 0.01) {
         return;
     }
     UIColor *tint = CDSpotifyTint();
-    label.textColor = [tint colorWithAlphaComponent:MIN(1.0, 0.35 + strength)];
-    label.layer.shadowColor = tint.CGColor;
+    label.textColor = [tint colorWithAlphaComponent:MIN(0.78, 0.44 + strength)];
+    label.layer.shadowColor = nil;
     label.layer.shadowOffset = CGSizeZero;
-    label.layer.shadowRadius = 2.0 + strength * 7.0;
-    label.layer.shadowOpacity = strength * 0.52;
+    label.layer.shadowRadius = 0.0;
+    label.layer.shadowOpacity = 0.0;
 }
 
 static void CDSpotifyApplyControlTint(UIView *view) {
-    if (!CDSpotifyEnabled() || !CDPremiumBool(CDSpotifyReframeDomain, @"controlTint", YES) || !view.window) {
+    if (!CDSpotifyEnabled() || !CDPremiumBool(CDSpotifyReframeDomain, @"controlTint", NO) || !view.window) {
         return;
     }
     BOOL isObviousControl = [view isKindOfClass:[UIButton class]] || [view isKindOfClass:[UIImageView class]];
     if (!isObviousControl && !CDVTClassChainContains(view, @[@"NowPlaying", @"Player", @"Playback", @"TabBar", @"Button", @"Control"])) {
         return;
     }
+    if (!CDSpotifyShouldApplyStyle(view, &kCDSpotifyControlStyleKey)) {
+        return;
+    }
     UIColor *tint = CDSpotifyTint();
     view.tintColor = tint;
-    view.layer.shadowColor = tint.CGColor;
+    view.layer.shadowColor = nil;
     view.layer.shadowOffset = CGSizeZero;
-    view.layer.shadowRadius = 3.0;
-    view.layer.shadowOpacity = 0.26;
+    view.layer.shadowRadius = 0.0;
+    view.layer.shadowOpacity = 0.0;
 }
 
 %hook UIViewController
 - (void)viewDidLayoutSubviews {
     %orig;
-    CDSpotifyApplyRootWash(self.view);
+    if (!CDSpotifyLowPowerMode()) {
+        CDSpotifyApplyRootWash(self.view);
+    }
 }
 - (void)viewDidAppear:(BOOL)animated {
     %orig(animated);
-    CDSpotifyApplyWindowOverlay(self.view.window);
+    CDSpotifyApplyRootWash(self.view);
+    if (CDSpotifyForceVisualMode()) {
+        CDSpotifyApplyWindowOverlay(self.view.window);
+    }
     CDSpotifyApplyInAppSettingsButton(self.view.window);
 }
 %end
@@ -730,13 +827,19 @@ static void CDSpotifyApplyControlTint(UIView *view) {
 %hook UIWindow
 - (void)makeKeyAndVisible {
     %orig;
-    CDSpotifyApplyWindowOverlay(self);
+    if (CDSpotifyForceVisualMode()) {
+        CDSpotifyApplyWindowOverlay(self);
+    }
     CDSpotifyApplyInAppSettingsButton(self);
 }
 - (void)layoutSubviews {
     %orig;
-    CDSpotifyApplyWindowOverlay(self);
-    CDSpotifyApplyInAppSettingsButton(self);
+    if (CDSpotifyShouldRefreshWindow()) {
+        if (CDSpotifyForceVisualMode()) {
+            CDSpotifyApplyWindowOverlay(self);
+        }
+        CDSpotifyApplyInAppSettingsButton(self);
+    }
 }
 %end
 
@@ -744,8 +847,8 @@ static void CDSpotifyApplyControlTint(UIView *view) {
 - (void)layoutSubviews {
     %orig;
     if (CDSpotifyEnabled() && CDSpotifyForceVisualMode()) {
-        self.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.12];
-        self.separatorColor = [CDSpotifyTint() colorWithAlphaComponent:0.22];
+        self.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.03];
+        self.separatorColor = [CDSpotifyTint() colorWithAlphaComponent:0.08];
     }
 }
 %end
@@ -781,7 +884,9 @@ static void CDSpotifyApplyControlTint(UIView *view) {
 }
 - (void)layoutSubviews {
     %orig;
-    CDSpotifyApplyPlayerSurface(self);
+    if (!CDSpotifyLowPowerMode()) {
+        CDSpotifyApplyPlayerSurface(self);
+    }
 }
 %end
 
@@ -793,15 +898,23 @@ static void CDSpotifyApplyControlTint(UIView *view) {
 }
 - (void)layoutSubviews {
     %orig;
+    if (!CDSpotifyLowPowerMode()) {
+        CDSpotifyApplyArtwork(self);
+        CDSpotifyApplyControlTint(self);
+    }
+}
+- (void)setImage:(UIImage *)image {
+    %orig(image);
     CDSpotifyApplyArtwork(self);
-    CDSpotifyApplyControlTint(self);
 }
 %end
 
 %hook UIButton
 - (void)layoutSubviews {
     %orig;
-    CDSpotifyApplyControlTint(self);
+    if (!CDSpotifyLowPowerMode()) {
+        CDSpotifyApplyControlTint(self);
+    }
 }
 %end
 
@@ -812,7 +925,9 @@ static void CDSpotifyApplyControlTint(UIView *view) {
 }
 - (void)layoutSubviews {
     %orig;
-    CDSpotifyApplyLabel(self);
+    if (!CDSpotifyLowPowerMode()) {
+        CDSpotifyApplyLabel(self);
+    }
 }
 - (void)setText:(NSString *)text {
     %orig(text);
@@ -838,6 +953,7 @@ static void CDSpotifyApplyControlTint(UIView *view) {
     @autoreleasepool {
         if (CDSpotifyIsTarget()) {
             NSLog(@"[SpotifyReframe] loaded");
+            CDSpotifyMigrateCalmDefaultsIfNeeded();
             CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, CDSpotifyPreferencesChanged, CFSTR("com.chasedavis.spotifyreframe/preferences.changed"), NULL, CFNotificationSuspensionBehaviorDeliverImmediately);
             %init;
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.85 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
