@@ -31,7 +31,7 @@ forbidden_regex='password|credential|payment|purchase|receipt|drm|keychain|conta
     lower="$(printf "%s" "$name" | tr '[:upper:]' '[:lower:]')"
 
     grep -q 'THEOS_PACKAGE_SCHEME = roothide' "$tweak_dir/Makefile" && roothide="pass"
-    [[ -f "$tweak_dir/$name.plist" ]] && grep -q 'com.apple.springboard' "$tweak_dir/$name.plist" && filter="pass"
+    [[ -f "$tweak_dir/$name.plist" ]] && grep -q 'Bundles' "$tweak_dir/$name.plist" && filter="pass"
     [[ -f "$tweak_dir/control" ]] && grep -q "Package: com.chasedavis." "$tweak_dir/control" && package="pass"
     if grep -q 'Prefs_INSTALL_PATH = /Library/PreferenceBundles' "$tweak_dir/Makefile" 2>/dev/null; then
       prefs="missing"

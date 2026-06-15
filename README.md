@@ -12,6 +12,7 @@ This repo contains a first tranche of Bootstrap-compatible, roothide Theos tweak
 - VolumeRibbon: compact volume HUD ribbon styling.
 - SilentToast: small toast when silent mode changes.
 - ChargingAurora: charging edge glow on SpringBoard.
+- SpotifyReframe: Spotify-only UI redesign with glass cards, tuned artwork, player chrome, and Settings controls.
 
 Premium suite:
 

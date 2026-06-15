@@ -1,0 +1,9 @@
+Package: com.chasedavis.spotifyreframe
+Name: SpotifyReframe
+Depends: mobilesubstrate, preferenceloader
+Version: 1.0.0-1
+Architecture: iphoneos-arm64
+Description: Spotify UI redesign tweak with glass cards, refined now-playing surfaces, themed tab bars, and Settings controls.
+Maintainer: Chase Davis
+Author: Chase Davis
+Section: Tweaks

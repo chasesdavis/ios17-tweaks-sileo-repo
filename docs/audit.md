@@ -1,6 +1,6 @@
 # Audit
 
-Generated: 2026-06-15T12:05:14Z
+Generated: 2026-06-15T12:35:24Z
 
 ## Static Tweak Checks
 
@@ -36,6 +36,7 @@ Generated: 2026-06-15T12:05:14Z
 | SilentToast | pass | pass | pass | pass | present | pass | n/a | iphoneos-arm64e |
 | SleepySpringBoard | pass | pass | pass | pass | present | pass | n/a | iphoneos-arm64e |
 | SnapGrid | pass | pass | pass | pass | present | pass | n/a | iphoneos-arm64e |
+| SpotifyReframe | pass | pass | pass | pass | present | pass | pass | iphoneos-arm64e |
 | SpringBoardAutomations | pass | pass | pass | pass | present | pass | pass | iphoneos-arm64e |
 | SpringTrails | pass | pass | pass | pass | present | pass | n/a | iphoneos-arm64e |
 | StatusLabPro | pass | pass | pass | pass | present | pass | pass | iphoneos-arm64e |
@@ -84,9 +85,10 @@ Generated: 2026-06-15T12:05:14Z
 30. SignalBloom
 31. SleepySpringBoard
 32. SnapGrid
-33. SpringBoardAutomations
-34. SpringTrails
-35. StatusLabPro
-36. WallpaperDepthTint
+33. SpotifyReframe
+34. SpringBoardAutomations
+35. SpringTrails
+36. StatusLabPro
+37. WallpaperDepthTint
 
 Install one tweak at a time, respring, verify SpringBoard stability, then proceed.
