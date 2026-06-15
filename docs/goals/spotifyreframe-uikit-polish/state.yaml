@@ -5,7 +5,7 @@ goal:
   slug: "spotifyreframe-uikit-polish"
   kind: specific
   tranche: "Stabilize the visible UIKit AI Home launcher, ship a polished 1.3.0 preview pass, and leave a safe 1.4.0 integration plan."
-  status: active
+  status: done
 
 rules:
   pm_owns_state: true
@@ -19,7 +19,7 @@ agents:
   worker: installed
   judge: installed
 
-active_task: T005
+active_task: null
 
 tasks:
   - id: T001
@@ -189,7 +189,7 @@ tasks:
   - id: T005
     type: worker
     assignee: Worker
-    status: active
+    status: done
     objective: "Publish the approved 1.3.0 package to gh-pages and verify the live Sileo repo serves the matching package."
     allowed_files:
       - ../../../repo
@@ -202,12 +202,35 @@ tasks:
       - "T004 does not explicitly approve publication."
       - "GitHub Pages does not serve the new metadata after repeated polling."
       - "Live package hash differs from the local package."
-    receipt: null
+    receipt:
+      result: done
+      changed_files:
+        - "repo/Packages"
+        - "repo/Packages.gz"
+        - "repo/Packages.xz"
+        - "repo/Release"
+        - "repo/debs/com.chasedavis.spotifyreframe_1.3.0-1_iphoneos-arm64e.deb"
+      commands:
+        - cmd: "git push origin main"
+          status: pass
+          detail: "main d03b0a3..366702e"
+        - cmd: "Publish repo/ to gh-pages using detached worktree"
+          status: pass
+          detail: "gh-pages 0efac5e..37b3cda"
+        - cmd: "curl live Packages until Version 1.3.0-1 appeared"
+          status: pass
+        - cmd: "Download live .deb and compare SHA256 with local repo package"
+          status: pass
+      live:
+        url: "https://chasesdavis.github.io/ios17-tweaks-sileo-repo/"
+        package: "debs/com.chasedavis.spotifyreframe_1.3.0-1_iphoneos-arm64e.deb"
+        sha256: "2721de3725b19c860ed41cf966b6836af87732d386a05c9b8a095e4b6c78b30e"
+      summary: "Published SpotifyReframe 1.3.0-1 to gh-pages and verified the live package byte-matches the local repo package."
 
   - id: T006
     type: scout
     assignee: Scout
-    status: queued
+    status: done
     objective: "Draft a safe 1.4.0 integration plan for feeding visible Spotify content into the UIKit preview."
     inputs:
       - "../../../tweaks/SpotifyReframe"
@@ -221,12 +244,20 @@ tasks:
       - "Safe integration candidates."
       - "Risks and fallback behavior."
       - "Proposed 1.4.0 task board additions."
-    receipt: null
+    receipt:
+      result: done
+      note: "notes/T006-safe-1.4.0-integration-plan.md"
+      summary: "Drafted a safe 1.4.0 integration plan based only on foreground visible UILabel/UIImageView content at user-initiated preview open time. The plan rejects network/API/account/cache/token/model access, persistence, background polling, DRM/payment behavior, and hidden/offscreen data."
+      proposed_next_scope:
+        - "Optional visible-content snapshot provider, default off."
+        - "UIKit preview accepts nullable snapshot and falls back to static mock content."
+        - "Hard caps on traversal and no persistence."
+        - "Package gates for no SwiftUI/libswift, com.spotify.client filter, and no network/filesystem/account APIs."
 
   - id: T007
     type: pm
     assignee: PM
-    status: queued
+    status: done
     objective: "Close the tranche with a compact release and handoff summary."
     inputs:
       - "T001-T006 receipts"
@@ -236,11 +267,29 @@ tasks:
       - "Release summary."
       - "Remaining risks."
       - "Next recommended /goal."
-    receipt: null
+    receipt:
+      result: done
+      decision: complete
+      release_summary: "SpotifyReframe 1.3.0-1 shipped as a UIKit-only polish/reliability release. It adds profileVersion 4 migration for visible AI Home defaults, launcher placement controls, richer preview visuals, and Low Power/Reduce Motion-safe preview presentation."
+      completion_evidence:
+        - "T001 Scout mapped implementation, verification commands, device-test risks, and candidate 1.3.0 tasks."
+        - "T002 Judge selected the bounded 1.3.0 UIKit-only scope and deferred real Spotify content to 1.4.0 planning."
+        - "T003 Worker implemented and locally packaged SpotifyReframe 1.3.0-1; package SHA256 2721de3725b19c860ed41cf966b6836af87732d386a05c9b8a095e4b6c78b30e."
+        - "T004 Judge approved publish based on diff/plist checks, docs/audit.md, repo/Packages, packaged filter inspection, and otool linkage inspection."
+        - "T005 Worker published gh-pages and verified the live package byte-matches the local package."
+        - "T006 Scout wrote notes/T006-safe-1.4.0-integration-plan.md for a future visible-content integration."
+      remaining_risks:
+        - "Final visual/positioning quality still needs on-device review across Spotify Home, Search, Library, and Now Playing."
+        - "The 1.4.0 visible-content plan is intentionally unimplemented and should remain opt-in/default-off when pursued."
+      next_recommended_goal: "/goal Follow docs/goals/spotifyreframe-uikit-polish/goal.md is complete; next create or run a new 1.4.0 visible-content integration goal after device feedback on 1.3.0."
 
 checks:
   dirty_fingerprint: unknown
   last_verification:
-    result: unknown
-    task: null
-    commands: []
+    result: pass
+    task: T007
+    commands:
+      - "git diff --check"
+      - "plutil -lint tweaks/SpotifyReframe/Resources/Root.plist tweaks/SpotifyReframe/Resources/Info.plist"
+      - "./scripts/audit-tweaks.sh"
+      - "curl live Packages and compare live .deb SHA256"
