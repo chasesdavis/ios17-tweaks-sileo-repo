@@ -48,27 +48,6 @@
         },
         {
             cell = PSGroupCell;
-            label = "AI Home Concept";
-            footerText = "SwiftUI concept surface inspired by the Spotify AI mockup. It is static mock UI for now, separate from Spotify account data.";
-        },
-        {
-            cell = PSSwitchCell;
-            default = 1;
-            defaults = "com.chasedavis.spotifyreframe";
-            key = conceptHomeEnabled;
-            label = "AI Home Concept";
-            PostNotification = "com.chasedavis.spotifyreframe/preferences.changed";
-        },
-        {
-            cell = PSSwitchCell;
-            default = 1;
-            defaults = "com.chasedavis.spotifyreframe";
-            key = conceptHomeAutoOpen;
-            label = "Auto Open Concept";
-            PostNotification = "com.chasedavis.spotifyreframe/preferences.changed";
-        },
-        {
-            cell = PSGroupCell;
             label = "Theme";
         },
         {

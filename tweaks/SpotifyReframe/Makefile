@@ -8,10 +8,9 @@ include $(THEOS)/makefiles/common.mk
 
 TWEAK_NAME = SpotifyReframe
 
-SpotifyReframe_FILES = Tweak.xm SpotifyConceptHomeView.swift SpotifyReframeConceptHomeControllerFactory.swift ../../shared/CDVisualTweakKit.m ../../shared/CDPremiumTweakKit.m
+SpotifyReframe_FILES = Tweak.xm ../../shared/CDVisualTweakKit.m ../../shared/CDPremiumTweakKit.m
 SpotifyReframe_CFLAGS = -fobjc-arc -Wno-deprecated-declarations -I../../shared
-SpotifyReframe_SWIFTFLAGS = -swift-version 5
-SpotifyReframe_FRAMEWORKS = UIKit Foundation QuartzCore CoreGraphics SwiftUI
+SpotifyReframe_FRAMEWORKS = UIKit Foundation QuartzCore CoreGraphics
 
 include $(THEOS_MAKE_PATH)/tweak.mk
 
