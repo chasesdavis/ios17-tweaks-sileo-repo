@@ -41,6 +41,21 @@ static UIView *CDSPRoundedGradient(CGRect frame, NSArray<UIColor *> *colors, CGF
     return view;
 }
 
+static void CDSPApplyStroke(UIView *view, CGFloat alpha) {
+    view.layer.borderColor = [[UIColor whiteColor] colorWithAlphaComponent:alpha].CGColor;
+    view.layer.borderWidth = 1.0;
+}
+
+static UILabel *CDSPBadge(NSString *text, UIColor *textColor, UIColor *fillColor) {
+    UILabel *label = CDSPLabel(text, [UIFont systemFontOfSize:11.0 weight:UIFontWeightBlack], textColor, 1);
+    label.textAlignment = NSTextAlignmentCenter;
+    label.backgroundColor = fillColor;
+    label.layer.cornerCurve = kCACornerCurveContinuous;
+    label.layer.cornerRadius = 7.0;
+    label.clipsToBounds = YES;
+    return label;
+}
+
 static UIImageView *CDSPSymbol(NSString *name, CGFloat pointSize, UIColor *color) {
     UIImageSymbolConfiguration *config = [UIImageSymbolConfiguration configurationWithPointSize:pointSize weight:UIImageSymbolWeightBold];
     UIImageView *imageView = [[UIImageView alloc] initWithImage:[[UIImage systemImageNamed:name] imageWithConfiguration:config]];
@@ -107,6 +122,17 @@ static UIImageView *CDSPSymbol(NSString *name, CGFloat pointSize, UIColor *color
     ];
     glow.locations = @[@0.0, @0.58, @1.0];
     [self.layer insertSublayer:glow above:base];
+
+    CAGradientLayer *violetGlow = [CAGradientLayer layer];
+    violetGlow.type = kCAGradientLayerRadial;
+    violetGlow.frame = CGRectMake(width * 0.14, height * 0.54, width * 0.72, height * 0.42);
+    violetGlow.colors = @[
+        (id)CDSPColor(143, 79, 255, 0.24).CGColor,
+        (id)CDSPColor(143, 79, 255, 0.04).CGColor,
+        (id)[UIColor clearColor].CGColor
+    ];
+    violetGlow.locations = @[@0.0, @0.56, @1.0];
+    [self.layer insertSublayer:violetGlow above:glow];
 
     CGFloat safeTop = self.safeAreaInsets.top;
     CGFloat safeBottom = self.safeAreaInsets.bottom;
@@ -231,9 +257,15 @@ static UIImageView *CDSPSymbol(NSString *name, CGFloat pointSize, UIColor *color
 - (void)addHeroToScrollView:(UIScrollView *)scrollView x:(CGFloat)x y:(CGFloat)y width:(CGFloat)width {
     CGFloat artW = MIN(204.0, width * 0.45);
     UIView *art = CDSPRoundedGradient(CGRectMake(x, y, artW, 150.0), @[CDSPColor(252, 151, 83, 1.0), CDSPColor(205, 78, 134, 1.0), [UIColor blackColor]], 14.0);
+    CDSPApplyStroke(art, 0.16);
     UIImageView *sun = CDSPSymbol(@"sunset.fill", 58.0, [[UIColor whiteColor] colorWithAlphaComponent:0.28]);
     sun.frame = CGRectMake(16.0, 78.0, 64.0, 54.0);
     [art addSubview:sun];
+
+    UILabel *mood = CDSPBadge(@"SUNSET MIX", [UIColor whiteColor], [[UIColor blackColor] colorWithAlphaComponent:0.28]);
+    mood.frame = CGRectMake(12.0, 12.0, 86.0, 24.0);
+    [art addSubview:mood];
+
     [scrollView addSubview:art];
 
     UIButton *play = [UIButton buttonWithType:UIButtonTypeSystem];
@@ -250,6 +282,8 @@ static UIImageView *CDSPSymbol(NSString *name, CGFloat pointSize, UIColor *color
     play.frame = CGRectMake(CGRectGetMaxX(art.frame) - 42.0, y + 106.0, 62.0, 62.0);
     [scrollView addSubview:play];
 
+    [self addWaveformToScrollView:scrollView x:x + artW * 0.58 y:y + 28.0 width:width - artW * 0.58];
+
     CGFloat textX = x + artW + 28.0;
     UILabel *headline = CDSPLabel(@"Good Vibes,\nBetter Days", [UIFont systemFontOfSize:30.0 weight:UIFontWeightBlack], [UIColor whiteColor], 2);
     headline.frame = CGRectMake(textX, y + 20.0, width - (textX - x), 74.0);
@@ -262,6 +296,23 @@ static UIImageView *CDSPSymbol(NSString *name, CGFloat pointSize, UIColor *color
     UILabel *made = CDSPLabel(@"•  Made for you", [UIFont systemFontOfSize:13.0 weight:UIFontWeightBold], CDSPColor(30, 215, 96, 1.0), 1);
     made.frame = CGRectMake(textX, y + 122.0, width - (textX - x), 22.0);
     [scrollView addSubview:made];
+}
+
+- (void)addWaveformToScrollView:(UIScrollView *)scrollView x:(CGFloat)x y:(CGFloat)y width:(CGFloat)width {
+    NSArray<NSNumber *> *heights = @[@0.22, @0.44, @0.70, @0.36, @0.58, @0.92, @0.28, @0.64, @0.42, @0.76, @0.34, @0.50];
+    CGFloat cursor = x;
+    for (NSInteger index = 0; index < 42; index++) {
+        CGFloat barHeight = 74.0 * heights[index % heights.count].doubleValue;
+        UIView *bar = [[UIView alloc] initWithFrame:CGRectMake(cursor, y + (74.0 - barHeight) / 2.0, 2.5, barHeight)];
+        bar.backgroundColor = [CDSPColor(30, 215, 96, 1.0) colorWithAlphaComponent:index % 3 == 0 ? 0.38 : 0.18];
+        bar.layer.cornerRadius = 1.25;
+        bar.userInteractionEnabled = NO;
+        [scrollView addSubview:bar];
+        cursor += 5.0;
+        if (cursor > x + width) {
+            break;
+        }
+    }
 }
 
 - (void)addSectionTitle:(NSString *)title toScrollView:(UIScrollView *)scrollView x:(CGFloat)x y:(CGFloat)y width:(CGFloat)width {
@@ -284,6 +335,7 @@ static UIImageView *CDSPSymbol(NSString *name, CGFloat pointSize, UIColor *color
     CGFloat tx = 0.0;
     for (NSArray *item in items) {
         UIView *cover = CDSPRoundedGradient(CGRectMake(tx, 0.0, 112.0, 92.0), @[item[2], item[3]], 12.0);
+        CDSPApplyStroke(cover, 0.14);
         UIImageView *note = CDSPSymbol(@"music.note", 28.0, [[UIColor whiteColor] colorWithAlphaComponent:0.48]);
         note.frame = CGRectMake(12.0, 52.0, 30.0, 28.0);
         [cover addSubview:note];
@@ -314,6 +366,7 @@ static UIImageView *CDSPSymbol(NSString *name, CGFloat pointSize, UIColor *color
     CGFloat tx = 0.0;
     for (NSArray *item in items) {
         UIView *card = CDSPRoundedGradient(CGRectMake(tx, 0.0, 158.0, 94.0), @[item[2], item[3]], 13.0);
+        CDSPApplyStroke(card, 0.16);
         UILabel *title = CDSPLabel(item[0], [UIFont systemFontOfSize:17.0 weight:UIFontWeightBlack], [UIColor whiteColor], 1);
         title.frame = CGRectMake(14.0, 48.0, 130.0, 22.0);
         [card addSubview:title];
@@ -338,6 +391,7 @@ static UIImageView *CDSPSymbol(NSString *name, CGFloat pointSize, UIColor *color
     card.layer.cornerCurve = kCACornerCurveContinuous;
     card.layer.cornerRadius = 16.0;
     card.layer.masksToBounds = YES;
+    CDSPApplyStroke(card, 0.14);
     [scrollView addSubview:card];
 
     CAGradientLayer *gradient = [CAGradientLayer layer];
@@ -357,12 +411,8 @@ static UIImageView *CDSPSymbol(NSString *name, CGFloat pointSize, UIColor *color
     UILabel *sub = CDSPLabel(@"Smart picks, just for you", [UIFont systemFontOfSize:14.0 weight:UIFontWeightMedium], [[UIColor whiteColor] colorWithAlphaComponent:0.82], 1);
     sub.frame = CGRectMake(18.0, 48.0, width * 0.50, 20.0);
     [card.contentView addSubview:sub];
-    UILabel *badge = CDSPLabel(@"AI", [UIFont systemFontOfSize:13.0 weight:UIFontWeightBlack], [UIColor blackColor], 1);
-    badge.textAlignment = NSTextAlignmentCenter;
+    UILabel *badge = CDSPBadge(@"AI", [UIColor blackColor], CDSPColor(30, 215, 96, 1.0));
     badge.frame = CGRectMake(18.0, 78.0, 36.0, 26.0);
-    badge.backgroundColor = CDSPColor(30, 215, 96, 1.0);
-    badge.layer.cornerRadius = 7.0;
-    badge.clipsToBounds = YES;
     [card.contentView addSubview:badge];
 
     NSArray<NSArray *> *pills = @[
@@ -382,6 +432,7 @@ static UIImageView *CDSPSymbol(NSString *name, CGFloat pointSize, UIColor *color
         [card.contentView addSubview:pillView];
 
         UIView *thumb = CDSPRoundedGradient(CGRectMake(7.0, 6.0, 22.0, 22.0), @[pill[2], [UIColor blackColor]], 5.0);
+        CDSPApplyStroke(thumb, 0.12);
         [pillView addSubview:thumb];
         UILabel *ptitle = CDSPLabel(pill[0], [UIFont systemFontOfSize:11.0 weight:UIFontWeightBold], [UIColor whiteColor], 1);
         ptitle.frame = CGRectMake(36.0, 5.0, CGRectGetWidth(pillView.bounds) - 44.0, 14.0);

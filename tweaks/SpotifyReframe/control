@@ -1,9 +1,9 @@
 Package: com.chasedavis.spotifyreframe
 Name: SpotifyReframe
 Depends: mobilesubstrate, preferenceloader
-Version: 1.2.1-1
+Version: 1.3.0-1
 Architecture: iphoneos-arm64
-Description: Native-first Spotify refinement with a visible UIKit AI Home launcher, safe defaults, and minimal artwork polish.
+Description: Native-first Spotify refinement with UIKit AI Home launcher placement, safer upgrade defaults, and polished preview visuals.
 Maintainer: Chase Davis
 Author: Chase Davis
 Section: Tweaks

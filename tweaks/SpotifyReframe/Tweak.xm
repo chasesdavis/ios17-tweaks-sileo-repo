@@ -83,6 +83,11 @@ static BOOL CDSpotifyHomePreviewLauncherEnabled(void) {
     return CDPremiumBool(CDSpotifyReframeDomain, @"homePreviewLauncher", YES);
 }
 
+static NSInteger CDSpotifyHomePreviewLauncherPlacement(void) {
+    NSInteger placement = CDPremiumInteger(CDSpotifyReframeDomain, @"homePreviewPlacement", 0);
+    return MIN(MAX(placement, 0), 3);
+}
+
 static void CDSpotifySynchronizePreferences(void) {
     CFPreferencesAppSynchronize((__bridge CFStringRef)CDSpotifyReframeDomain);
 }
@@ -113,6 +118,7 @@ static NSDictionary<NSString *, id> *CDSpotifyCalmDefaults(void) {
         @"launchBadge": @NO,
         @"homePreviewEnabled": @YES,
         @"homePreviewLauncher": @YES,
+        @"homePreviewPlacement": @0,
         @"palette": @0,
         @"backgroundWash": @0.0,
         @"glassCards": @NO,
@@ -131,18 +137,34 @@ static NSDictionary<NSString *, id> *CDSpotifyCalmDefaults(void) {
         @"tabBarGlass": @NO,
         @"navBarGlass": @NO,
         @"chromeFill": @0.0,
-        @"profileVersion": @3
+        @"profileVersion": @4
     };
 }
 
 static void CDSpotifyMigrateCalmDefaultsIfNeeded(void) {
     CDSpotifySynchronizePreferences();
-    if (CDPremiumInteger(CDSpotifyReframeDomain, @"profileVersion", 0) >= 3) {
+    NSInteger currentProfile = CDPremiumInteger(CDSpotifyReframeDomain, @"profileVersion", 0);
+    if (currentProfile >= 4) {
         return;
     }
     NSDictionary<NSString *, id> *defaults = CDSpotifyCalmDefaults();
-    for (NSString *key in defaults) {
-        CDSpotifySetPreferenceSilently(key, defaults[key]);
+    if (currentProfile < 3) {
+        for (NSString *key in defaults) {
+            CDSpotifySetPreferenceSilently(key, defaults[key]);
+        }
+    } else {
+        BOOL tweakEnabled = CDPremiumBool(CDSpotifyReframeDomain, @"enabled", YES);
+        if (tweakEnabled) {
+            CDSpotifySetPreferenceSilently(@"homePreviewEnabled", @YES);
+            CDSpotifySetPreferenceSilently(@"homePreviewLauncher", @YES);
+        }
+        CFTypeRef existingPlacement = CFPreferencesCopyAppValue(CFSTR("homePreviewPlacement"), (__bridge CFStringRef)CDSpotifyReframeDomain);
+        if (!existingPlacement) {
+            CDSpotifySetPreferenceSilently(@"homePreviewPlacement", @0);
+        } else {
+            CFRelease(existingPlacement);
+        }
+        CDSpotifySetPreferenceSilently(@"profileVersion", @4);
     }
     CDSpotifySynchronizePreferences();
     kCDSpotifyStyleGeneration++;
@@ -314,7 +336,9 @@ static void CDSpotifyDismissHomePreview(UIWindow *window) {
     }
     [UIView animateWithDuration:0.18 animations:^{
         preview.alpha = 0.0;
-        preview.transform = CGAffineTransformMakeTranslation(0.0, 14.0);
+        if (!CDSpotifyLowPowerMode() && !UIAccessibilityIsReduceMotionEnabled()) {
+            preview.transform = CGAffineTransformMakeTranslation(0.0, 14.0);
+        }
     } completion:^(__unused BOOL finished) {
         [preview removeFromSuperview];
         objc_setAssociatedObject(window, &kCDSpotifyHomePreviewKey, nil, OBJC_ASSOCIATION_ASSIGN);
@@ -344,11 +368,12 @@ static void CDSpotifyShowHomePreview(UIWindow *window, BOOL userInitiated) {
     preview.frame = window.bounds;
     preview.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     preview.alpha = 0.0;
-    preview.transform = CGAffineTransformMakeTranslation(0.0, 18.0);
+    BOOL reduceMotion = CDSpotifyLowPowerMode() || UIAccessibilityIsReduceMotionEnabled();
+    preview.transform = reduceMotion ? CGAffineTransformIdentity : CGAffineTransformMakeTranslation(0.0, 18.0);
     [window addSubview:preview];
     objc_setAssociatedObject(window, &kCDSpotifyHomePreviewKey, preview, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 
-    [UIView animateWithDuration:0.22 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+    [UIView animateWithDuration:reduceMotion ? 0.12 : 0.22 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
         preview.alpha = 1.0;
         preview.transform = CGAffineTransformIdentity;
     } completion:nil];
@@ -388,8 +413,16 @@ static void CDSpotifyApplyHomePreviewLauncher(UIWindow *window) {
 
     CGFloat width = 76.0;
     CGFloat height = 34.0;
-    button.frame = CGRectMake(CGRectGetWidth(window.bounds) - width - 10.0, MAX(82.0, window.safeAreaInsets.top + 78.0), width, height);
-    button.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin;
+    CGFloat margin = 10.0;
+    CGFloat topY = MAX(82.0, window.safeAreaInsets.top + 78.0);
+    CGFloat lowerY = MIN(MAX(window.safeAreaInsets.top + 146.0, CGRectGetHeight(window.bounds) * 0.30), CGRectGetHeight(window.bounds) - window.safeAreaInsets.bottom - 210.0);
+    NSInteger placement = CDSpotifyHomePreviewLauncherPlacement();
+    BOOL left = placement == 1 || placement == 3;
+    BOOL lower = placement == 2 || placement == 3;
+    CGFloat x = left ? margin : CGRectGetWidth(window.bounds) - width - margin;
+    CGFloat y = lower ? lowerY : topY;
+    button.frame = CGRectMake(x, y, width, height);
+    button.autoresizingMask = (left ? UIViewAutoresizingFlexibleRightMargin : UIViewAutoresizingFlexibleLeftMargin) | UIViewAutoresizingFlexibleBottomMargin;
     button.backgroundColor = CDSpotifyTint();
     button.layer.borderColor = [[UIColor whiteColor] colorWithAlphaComponent:0.16].CGColor;
     [window bringSubviewToFront:button];
@@ -576,6 +609,7 @@ static void CDSpotifyOpenSettingsPanel(UIWindow *window) {
     CDSpotifyAddSwitchRow(scrollView, &y, @"Launch Badge", @"Debug-only load confirmation.", @"launchBadge", NO);
     CDSpotifyAddSwitchRow(scrollView, &y, @"AI Home Preview", @"UIKit-only mockup. It never opens automatically.", @"homePreviewEnabled", YES);
     CDSpotifyAddSwitchRow(scrollView, &y, @"Preview Launcher", @"Shows an AI Home button when the preview is enabled.", @"homePreviewLauncher", YES);
+    CDSpotifyAddSegmentRow(scrollView, &y, @"Launcher Position", @"homePreviewPlacement", @[@"Top R", @"Top L", @"Low R", @"Low L"], 0);
 
     UIView *previewRow = CDSpotifyAddSettingsRow(scrollView, &y, @"Open AI Home Preview", @"Turns the UIKit preview on and shows it now.", 74.0);
     UIButton *previewButton = [UIButton buttonWithType:UIButtonTypeSystem];

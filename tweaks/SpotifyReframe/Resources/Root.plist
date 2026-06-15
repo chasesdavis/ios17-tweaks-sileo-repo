@@ -68,6 +68,17 @@
             PostNotification = "com.chasedavis.spotifyreframe/preferences.changed";
         },
         {
+            cell = PSLinkListCell;
+            default = 0;
+            defaults = "com.chasedavis.spotifyreframe";
+            detail = PSListItemsController;
+            key = homePreviewPlacement;
+            label = "Launcher Position";
+            validTitles = ("Top Right", "Top Left", "Lower Right", "Lower Left");
+            validValues = (0, 1, 2, 3);
+            PostNotification = "com.chasedavis.spotifyreframe/preferences.changed";
+        },
+        {
             cell = PSGroupCell;
             label = "Theme";
         },

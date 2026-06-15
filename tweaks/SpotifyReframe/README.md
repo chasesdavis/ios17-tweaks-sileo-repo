@@ -5,7 +5,8 @@ SpotifyReframe is a Spotify-only UI redesign tweak for Bootstrap / roothide.
 It targets `com.spotify.client` and keeps behavior visual-only:
 
 - UIKit AI home preview inspired by the mockup.
-- The AI Home launcher is visible by default; the preview never auto-opens.
+- The AI Home launcher is visible by default, has placement controls, and the preview never auto-opens.
+- Upgrade migration recovers visible launcher defaults from the short-lived hidden-launcher build.
 - No SwiftUI or Swift runtime linkage in the Spotify tweak dylib.
 - Native-first defaults that preserve Spotify's own layout.
 - Upgrade migration that disables the older gray-card/glow-heavy settings.
