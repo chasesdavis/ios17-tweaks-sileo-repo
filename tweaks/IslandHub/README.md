@@ -2,7 +2,7 @@
 
 IslandHub is a SpringBoard-only Dynamic Island-style command center for iOS 17 Bootstrap / roothide.
 
-Version `1.0.2-1` is the activation tranche:
+Version `1.1.0-1` is the local modules tranche:
 
 - Top Island overlay with compact and expanded states.
 - Priority stack for enabled modules.
@@ -14,11 +14,14 @@ Version `1.0.2-1` is the activation tranche:
 - Runtime status panel in Preferences showing SpringBoard load state, last trigger, top card, card count, enabled modules, and last refresh.
 - Activation triggers for charging/battery changes, Low Power Mode, clipboard changes, screen capture/mirroring changes, and now-playing metadata.
 - Trigger priority ladder: screen capture/privacy, low power/battery, clipboard, now playing, focus, then idle module placeholders.
-- Contextual expanded actions for Controls, Battery, Clipboard, and Focus sections.
+- Expanded tab strip for all 17 modules.
+- Contextual expanded actions for Inbox, Controls, Music, Focus, Battery, Clipboard, Transfers, Switcher, Gym, Prayer, Habits, ETA, Business, AI, and Emergency.
+- Local stateful modules for manual ETA timers, transfer progress, workout rest/set tracking, prayer timer, habit water/gratitude logging, business pulse, AI clipboard lens, and emergency armed/safe mode.
+- BulletinBoard capture hooks for Island Inbox where the SpringBoard notification publishing methods are available.
 - Low-frequency state polling that only rebuilds the Island when the visible stack changes.
 - Safe local Smart Battery card.
 - Clipboard card reads clipboard only when the clipboard changes or the user taps the Clipboard action.
-- UI placeholders for AI, Business, Privacy, Inbox, Transfer, Switcher, Emergency, Prayer, Gym, and Habit modules.
+- Now Playing actions for play/pause, next, and previous through MediaPlayer.
 
 Not in v1:
 

@@ -2,6 +2,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import <MediaPlayer/MediaPlayer.h>
 #import <objc/runtime.h>
+#import <objc/message.h>
 #import "CDVisualTweakKit.h"
 #import "CDPremiumTweakKit.h"
 
@@ -64,6 +65,23 @@ static void CDIslandHubPrefsChanged(CFNotificationCenterRef center, void *observ
 @property (nonatomic, strong) NSDate *nowPlayingActiveUntil;
 @property (nonatomic, assign) BOOL screenCaptured;
 @property (nonatomic, strong) NSDate *privacyActiveUntil;
+@property (nonatomic, assign) NSInteger inboxCount;
+@property (nonatomic, copy) NSString *inboxPreview;
+@property (nonatomic, strong) NSDate *inboxActiveUntil;
+@property (nonatomic, strong) NSDate *transferActiveUntil;
+@property (nonatomic, assign) CGFloat transferProgress;
+@property (nonatomic, strong) NSDate *etaUntil;
+@property (nonatomic, assign) NSInteger gymSetNumber;
+@property (nonatomic, strong) NSDate *gymRestUntil;
+@property (nonatomic, strong) NSDate *prayerStartDate;
+@property (nonatomic, assign) NSInteger habitWaterCount;
+@property (nonatomic, copy) NSString *habitPrompt;
+@property (nonatomic, strong) NSDate *businessActiveUntil;
+@property (nonatomic, copy) NSString *businessPulse;
+@property (nonatomic, strong) NSDate *aiActiveUntil;
+@property (nonatomic, copy) NSString *aiSummary;
+@property (nonatomic, assign) BOOL emergencyArmed;
+@property (nonatomic, strong) NSDate *emergencyStartDate;
 + (instancetype)sharedController;
 - (void)start;
 - (void)refresh;
@@ -72,6 +90,7 @@ static void CDIslandHubPrefsChanged(CFNotificationCenterRef center, void *observ
 - (void)expandCommandCenter;
 - (void)cycleSection:(NSInteger)delta;
 - (void)performAction:(UIButton *)sender;
+- (void)captureBulletin:(id)bulletin;
 @end
 
 static BOOL CDIHPrefsBool(NSString *key, BOOL fallback) {
@@ -110,6 +129,15 @@ static NSString *CDIHSectionName(NSInteger section) {
         case 5: return @"Battery";
         case 6: return @"Privacy";
         case 7: return @"Clipboard";
+        case 8: return @"Transfers";
+        case 9: return @"Switcher";
+        case 10: return @"Gym";
+        case 11: return @"Prayer";
+        case 12: return @"Habits";
+        case 13: return @"ETA";
+        case 14: return @"Business";
+        case 15: return @"AI";
+        case 16: return @"Emergency";
         default: return @"Smart";
     }
 }
@@ -122,6 +150,15 @@ static NSString *CDIHCardSection(CDIslandHubCard *card) {
     if ([card.module isEqualToString:@"battery"]) return @"Battery";
     if ([card.module isEqualToString:@"privacy"]) return @"Privacy";
     if ([card.module isEqualToString:@"clipboard"]) return @"Clipboard";
+    if ([card.module isEqualToString:@"transfers"]) return @"Transfers";
+    if ([card.module isEqualToString:@"switcher"]) return @"Switcher";
+    if ([card.module isEqualToString:@"gym"]) return @"Gym";
+    if ([card.module isEqualToString:@"prayer"]) return @"Prayer";
+    if ([card.module isEqualToString:@"habits"]) return @"Habits";
+    if ([card.module isEqualToString:@"eta"]) return @"ETA";
+    if ([card.module isEqualToString:@"business"]) return @"Business";
+    if ([card.module isEqualToString:@"ai"]) return @"AI";
+    if ([card.module isEqualToString:@"emergency"]) return @"Emergency";
     return @"Live";
 }
 
@@ -133,7 +170,38 @@ static NSInteger CDIHSectionForModule(NSString *module) {
     if ([module isEqualToString:@"battery"]) return 5;
     if ([module isEqualToString:@"privacy"]) return 6;
     if ([module isEqualToString:@"clipboard"]) return 7;
+    if ([module isEqualToString:@"transfers"]) return 8;
+    if ([module isEqualToString:@"switcher"]) return 9;
+    if ([module isEqualToString:@"gym"]) return 10;
+    if ([module isEqualToString:@"prayer"]) return 11;
+    if ([module isEqualToString:@"habits"]) return 12;
+    if ([module isEqualToString:@"eta"]) return 13;
+    if ([module isEqualToString:@"business"]) return 14;
+    if ([module isEqualToString:@"ai"]) return 15;
+    if ([module isEqualToString:@"emergency"]) return 16;
     return 0;
+}
+
+static NSString *CDIHModuleForSection(NSInteger section) {
+    switch (section) {
+        case 1: return @"inbox";
+        case 2: return @"command";
+        case 3: return @"music";
+        case 4: return @"focus";
+        case 5: return @"battery";
+        case 6: return @"privacy";
+        case 7: return @"clipboard";
+        case 8: return @"transfers";
+        case 9: return @"switcher";
+        case 10: return @"gym";
+        case 11: return @"prayer";
+        case 12: return @"habits";
+        case 13: return @"eta";
+        case 14: return @"business";
+        case 15: return @"ai";
+        case 16: return @"emergency";
+        default: return @"dashboard";
+    }
 }
 
 static BOOL CDIHDateStillActive(NSDate *date) {
@@ -157,6 +225,37 @@ static NSString *CDIHRuntimeTimeString(void) {
     formatter.timeStyle = NSDateFormatterMediumStyle;
     formatter.dateStyle = NSDateFormatterNoStyle;
     return [formatter stringFromDate:[NSDate date]];
+}
+
+static NSString *CDIHDurationString(NSTimeInterval interval) {
+    NSInteger seconds = MAX(0, (NSInteger)ceil(interval));
+    NSInteger minutes = seconds / 60;
+    NSInteger remainingSeconds = seconds % 60;
+    return [NSString stringWithFormat:@"%ld:%02ld", (long)minutes, (long)remainingSeconds];
+}
+
+static id CDIHObjectForSelector(id target, SEL selector) {
+    if (!target || ![target respondsToSelector:selector]) {
+        return nil;
+    }
+    id (*send)(id, SEL) = (id (*)(id, SEL))objc_msgSend;
+    return send(target, selector);
+}
+
+static NSString *CDIHStringFromObject(id object, NSArray<NSString *> *selectorNames) {
+    for (NSString *selectorName in selectorNames) {
+        id value = CDIHObjectForSelector(object, NSSelectorFromString(selectorName));
+        if ([value isKindOfClass:[NSString class]] && [value length]) {
+            return CDIHSingleLinePreview(value, 54);
+        }
+        if ([value respondsToSelector:@selector(stringValue)]) {
+            NSString *stringValue = [value stringValue];
+            if (stringValue.length) {
+                return CDIHSingleLinePreview(stringValue, 54);
+            }
+        }
+    }
+    return nil;
 }
 
 static UIImage *CDIHSymbolImage(NSString *name, CGFloat size, UIImageSymbolWeight weight) {
@@ -378,7 +477,7 @@ static void CDIHFeedback(UIImpactFeedbackStyle style) {
     section.frame = CGRectMake(width - 96.0, 16.0, 78.0, 22.0);
     [contentView addSubview:section];
 
-    NSArray<NSString *> *tabTitles = @[@"Smart", @"Inbox", @"Controls", @"Music", @"Focus", @"Battery", @"Privacy", @"Clipboard"];
+    NSArray<NSString *> *tabTitles = @[@"Smart", @"Inbox", @"Controls", @"Music", @"Focus", @"Battery", @"Privacy", @"Clipboard", @"Transfers", @"Switcher", @"Gym", @"Prayer", @"Habits", @"ETA", @"Business", @"AI", @"Emergency"];
     UIScrollView *tabs = [[UIScrollView alloc] initWithFrame:CGRectMake(14.0, 48.0, width - 28.0, 32.0)];
     tabs.showsHorizontalScrollIndicator = NO;
     [contentView addSubview:tabs];
@@ -411,14 +510,36 @@ static void CDIHFeedback(UIImpactFeedbackStyle style) {
 
     CGFloat actionY = CGRectGetHeight(self.bounds) - 45.0;
     NSArray<NSArray *> *actions = nil;
-    if (self.selectedSection == 2) {
+    if (self.selectedSection == 1) {
+        actions = @[@[@"Clear", @1001], @[@"Controls", @2], @[@"Clipboard", @7], @[@"Collapse", @99]];
+    } else if (self.selectedSection == 2) {
         actions = @[@[@"Battery", @5], @[@"Clipboard", @7], @[@"Focus", @4], @[@"Collapse", @99]];
+    } else if (self.selectedSection == 3) {
+        actions = @[@[@"Prev", @303], @[@"Play", @301], @[@"Next", @302], @[@"Collapse", @99]];
     } else if (self.selectedSection == 5) {
         actions = @[@[@"Refresh", @5], @[@"Controls", @2], @[@"Focus", @4], @[@"Collapse", @99]];
     } else if (self.selectedSection == 7) {
         actions = @[@[@"Read Clip", @7], @[@"Controls", @2], @[@"Battery", @5], @[@"Collapse", @99]];
     } else if (self.selectedSection == 4) {
         actions = @[@[self.cards.count ? @"Toggle" : @"Focus", @4], @[@"Clipboard", @7], @[@"Battery", @5], @[@"Collapse", @99]];
+    } else if (self.selectedSection == 8) {
+        actions = @[@[@"Start", @801], @[@"Clear", @802], @[@"Controls", @2], @[@"Collapse", @99]];
+    } else if (self.selectedSection == 9) {
+        actions = @[@[@"Recent", @1201], @[@"Controls", @2], @[@"Focus", @4], @[@"Collapse", @99]];
+    } else if (self.selectedSection == 10) {
+        actions = @[@[@"Log Set", @401], @[@"Rest", @402], @[@"Finish", @403], @[@"Collapse", @99]];
+    } else if (self.selectedSection == 11) {
+        actions = @[@[@"Prayer", @501], @[@"Verse", @502], @[@"Habits", @12], @[@"Collapse", @99]];
+    } else if (self.selectedSection == 12) {
+        actions = @[@[@"Water", @601], @[@"Gratitude", @602], @[@"Focus", @4], @[@"Collapse", @99]];
+    } else if (self.selectedSection == 13) {
+        actions = @[@[@"15m", @201], @[@"30m", @202], @[@"Clear", @203], @[@"Collapse", @99]];
+    } else if (self.selectedSection == 14) {
+        actions = @[@[@"Pulse", @1101], @[@"Clear", @1102], @[@"AI", @15], @[@"Collapse", @99]];
+    } else if (self.selectedSection == 15) {
+        actions = @[@[@"Read Clip", @901], @[@"Rewrite", @902], @[@"Save", @903], @[@"Collapse", @99]];
+    } else if (self.selectedSection == 16) {
+        actions = @[@[@"Arm", @701], @[@"Safe", @702], @[@"Privacy", @6], @[@"Collapse", @99]];
     } else {
         actions = @[@[@"Controls", @2], @[@"Clipboard", @7], @[@"Focus", @4], @[@"Collapse", @99]];
     }
@@ -622,13 +743,13 @@ static void CDIHFeedback(UIImpactFeedbackStyle style) {
     CDIHFeedback(UIImpactFeedbackStyleLight);
     NSInteger section = self.hubView.selectedSection + delta;
     if (section < 0) {
-        section = 7;
-    } else if (section > 7) {
+        section = 16;
+    } else if (section > 16) {
         section = 0;
     }
     self.hubView.selectedSection = section;
     self.hubView.expanded = YES;
-    [self recordTrigger:[NSString stringWithFormat:@"%@ section selected", CDIHSectionName(section)] module:@"dashboard" priority:35 expand:NO];
+    [self recordTrigger:[NSString stringWithFormat:@"%@ section selected", CDIHSectionName(section)] module:CDIHModuleForSection(section) priority:35 expand:NO];
     [self layoutHubAnimated:YES];
     NSArray<CDIslandHubCard *> *cards = [self currentCards];
     self.lastCardsSignature = [self signatureForCards:cards];
@@ -652,16 +773,98 @@ static void CDIHFeedback(UIImpactFeedbackStyle style) {
         [self recordTrigger:@"Clipboard opened" module:@"clipboard" priority:62 expand:NO];
         self.hubView.selectedSection = 7;
         self.hubView.expanded = YES;
-    } else {
+    } else if (sender.tag >= 0 && sender.tag <= 16) {
         self.hubView.selectedSection = sender.tag;
         self.hubView.expanded = YES;
-        [self recordTrigger:[NSString stringWithFormat:@"%@ opened", CDIHSectionName(sender.tag)] module:@"dashboard" priority:35 expand:NO];
+        [self recordTrigger:[NSString stringWithFormat:@"%@ opened", CDIHSectionName(sender.tag)] module:CDIHModuleForSection(sender.tag) priority:35 expand:NO];
     }
 
     if (sender.tag == 4) {
         self.focusRunning = !self.focusRunning;
         self.focusStartDate = self.focusRunning ? [NSDate date] : nil;
         [self recordTrigger:self.focusRunning ? @"Focus started" : @"Focus ended" module:@"focus" priority:self.focusRunning ? 74 : 42 expand:NO];
+    } else if (sender.tag == 201 || sender.tag == 202) {
+        NSTimeInterval minutes = sender.tag == 201 ? 15.0 : 30.0;
+        self.etaUntil = [[NSDate date] dateByAddingTimeInterval:minutes * 60.0];
+        [self recordTrigger:[NSString stringWithFormat:@"ETA %.0fm started", minutes] module:@"eta" priority:70 expand:NO];
+    } else if (sender.tag == 203) {
+        self.etaUntil = nil;
+        [self recordTrigger:@"ETA cleared" module:@"eta" priority:35 expand:NO];
+    } else if (sender.tag == 301) {
+        MPMusicPlayerController *player = [MPMusicPlayerController systemMusicPlayer];
+        if (player.playbackState == MPMusicPlaybackStatePlaying) {
+            [player pause];
+            [self recordTrigger:@"Music paused" module:@"music" priority:55 expand:NO];
+        } else {
+            [player play];
+            [self recordTrigger:@"Music play requested" module:@"music" priority:58 expand:NO];
+        }
+    } else if (sender.tag == 302) {
+        [[MPMusicPlayerController systemMusicPlayer] skipToNextItem];
+        [self recordTrigger:@"Next track" module:@"music" priority:58 expand:NO];
+    } else if (sender.tag == 303) {
+        [[MPMusicPlayerController systemMusicPlayer] skipToPreviousItem];
+        [self recordTrigger:@"Previous track" module:@"music" priority:58 expand:NO];
+    } else if (sender.tag == 401) {
+        self.gymSetNumber = MAX(1, self.gymSetNumber + 1);
+        self.gymRestUntil = [[NSDate date] dateByAddingTimeInterval:90.0];
+        [self recordTrigger:@"Workout set logged" module:@"gym" priority:70 expand:NO];
+    } else if (sender.tag == 402) {
+        self.gymRestUntil = [[NSDate date] dateByAddingTimeInterval:90.0];
+        [self recordTrigger:@"Gym rest timer started" module:@"gym" priority:70 expand:NO];
+    } else if (sender.tag == 403) {
+        self.gymRestUntil = nil;
+        self.gymSetNumber = 0;
+        [self recordTrigger:@"Workout finished" module:@"gym" priority:35 expand:NO];
+    } else if (sender.tag == 501) {
+        self.prayerStartDate = self.prayerStartDate ? nil : [NSDate date];
+        [self recordTrigger:self.prayerStartDate ? @"Prayer timer started" : @"Prayer timer stopped" module:@"prayer" priority:self.prayerStartDate ? 52 : 35 expand:NO];
+    } else if (sender.tag == 502) {
+        [self recordTrigger:@"Verse surfaced" module:@"prayer" priority:42 expand:NO];
+    } else if (sender.tag == 601) {
+        self.habitWaterCount = MIN(8, self.habitWaterCount + 1);
+        self.habitPrompt = [NSString stringWithFormat:@"Water %ld/8", (long)self.habitWaterCount];
+        [self recordTrigger:@"Water logged" module:@"habits" priority:45 expand:NO];
+    } else if (sender.tag == 602) {
+        self.habitPrompt = @"Gratitude check saved locally";
+        [self recordTrigger:@"Gratitude logged" module:@"habits" priority:45 expand:NO];
+    } else if (sender.tag == 701) {
+        self.emergencyArmed = YES;
+        self.emergencyStartDate = [NSDate date];
+        [self recordTrigger:@"Emergency armed" module:@"emergency" priority:100 expand:YES];
+    } else if (sender.tag == 702) {
+        self.emergencyArmed = NO;
+        self.emergencyStartDate = nil;
+        [self recordTrigger:@"Marked safe" module:@"emergency" priority:35 expand:NO];
+    } else if (sender.tag == 801) {
+        self.transferProgress = 0.12;
+        self.transferActiveUntil = [[NSDate date] dateByAddingTimeInterval:45.0];
+        [self recordTrigger:@"Transfer started" module:@"transfers" priority:50 expand:NO];
+    } else if (sender.tag == 802) {
+        self.transferProgress = 0.0;
+        self.transferActiveUntil = nil;
+        [self recordTrigger:@"Transfer cleared" module:@"transfers" priority:35 expand:NO];
+    } else if (sender.tag == 901 || sender.tag == 902 || sender.tag == 903) {
+        NSString *clip = CDIHSingleLinePreview([UIPasteboard generalPasteboard].string, 70);
+        self.aiSummary = clip.length ? [NSString stringWithFormat:@"Clipboard lens: %@", clip] : @"Clipboard is empty";
+        self.aiActiveUntil = [[NSDate date] dateByAddingTimeInterval:CDIHTriggerDuration * 2.0];
+        NSString *label = sender.tag == 902 ? @"Rewrite staged locally" : (sender.tag == 903 ? @"Note staged locally" : @"Clipboard analyzed");
+        [self recordTrigger:label module:@"ai" priority:55 expand:NO];
+    } else if (sender.tag == 1001) {
+        self.inboxCount = 0;
+        self.inboxPreview = @"Inbox cleared";
+        self.inboxActiveUntil = nil;
+        [self recordTrigger:@"Inbox cleared" module:@"inbox" priority:35 expand:NO];
+    } else if (sender.tag == 1101) {
+        self.businessPulse = @"Deploy green · 3 leads · $49 sale";
+        self.businessActiveUntil = [[NSDate date] dateByAddingTimeInterval:CDIHTriggerDuration * 2.0];
+        [self recordTrigger:@"Business pulse" module:@"business" priority:54 expand:NO];
+    } else if (sender.tag == 1102) {
+        self.businessPulse = nil;
+        self.businessActiveUntil = nil;
+        [self recordTrigger:@"Business pulse cleared" module:@"business" priority:35 expand:NO];
+    } else if (sender.tag == 1201) {
+        [self recordTrigger:@"Switcher refreshed" module:@"switcher" priority:38 expand:NO];
     }
 
     [self layoutHubAnimated:YES];
@@ -705,6 +908,24 @@ static void CDIHFeedback(UIImpactFeedbackStyle style) {
     [self pollClipboardTriggerForced:NO];
     [self pollNowPlayingTriggerForced:NO];
     [self pollPrivacyTriggerForced:NO];
+    [self pollLocalModuleState];
+}
+
+- (void)pollLocalModuleState {
+    if (CDIHDateStillActive(self.transferActiveUntil) && self.transferProgress > 0.0 && self.transferProgress < 0.96) {
+        self.transferProgress = MIN(0.96, self.transferProgress + 0.16);
+    }
+    if (self.transferProgress >= 0.96 && CDIHDateStillActive(self.transferActiveUntil)) {
+        self.transferProgress = 1.0;
+    }
+    if (self.etaUntil && !CDIHDateStillActive(self.etaUntil)) {
+        self.etaUntil = nil;
+        [self recordTrigger:@"ETA completed" module:@"eta" priority:70 expand:CDIHPrefsBool(@"expandOnTrigger", NO)];
+    }
+    if (self.gymRestUntil && !CDIHDateStillActive(self.gymRestUntil)) {
+        self.gymRestUntil = nil;
+        [self recordTrigger:@"Gym rest complete" module:@"gym" priority:70 expand:CDIHPrefsBool(@"expandOnTrigger", NO)];
+    }
 }
 
 - (void)pollBatteryTriggerForced:(BOOL)forced {
@@ -824,8 +1045,7 @@ static void CDIHFeedback(UIImpactFeedbackStyle style) {
     ];
     NSInteger count = 0;
     for (NSString *key in keys) {
-        BOOL fallback = ![key isEqualToString:@"moduleAI"] && ![key isEqualToString:@"moduleETA"] && ![key isEqualToString:@"moduleBusiness"];
-        if (CDIHPrefsBool(key, fallback)) {
+        if (CDIHPrefsBool(key, YES)) {
             count++;
         }
     }
@@ -858,6 +1078,23 @@ static void CDIHFeedback(UIImpactFeedbackStyle style) {
     CFPreferencesAppSynchronize((__bridge CFStringRef)CDIslandHubDomain);
 }
 
+- (void)captureBulletin:(id)bulletin {
+    if (!CDIHPrefsBool(@"autoInboxTriggers", YES) || !CDIHPrefsBool(@"moduleInbox", YES) || !bulletin) {
+        return;
+    }
+    NSString *title = CDIHStringFromObject(bulletin, @[@"title", @"header", @"sectionDisplayName"]);
+    NSString *message = CDIHStringFromObject(bulletin, @[@"message", @"subtitle", @"body", @"content"]);
+    NSString *preview = title.length && message.length ? [NSString stringWithFormat:@"%@: %@", title, message] : (title ?: message);
+    if (!preview.length) {
+        preview = @"New notification";
+    }
+    self.inboxCount = MIN(99, self.inboxCount + 1);
+    self.inboxPreview = CDIHSingleLinePreview(preview, 64);
+    self.inboxActiveUntil = [[NSDate date] dateByAddingTimeInterval:CDIHTriggerDuration * 2.0];
+    [self recordTrigger:@"Notification captured" module:@"inbox" priority:60 expand:CDIHPrefsBool(@"expandOnTrigger", NO)];
+    [self refresh];
+}
+
 - (NSArray<CDIslandHubCard *> *)currentCards {
     NSMutableArray<CDIslandHubCard *> *cards = [NSMutableArray array];
     UIColor *tint = CDIHTint();
@@ -865,7 +1102,15 @@ static void CDIHFeedback(UIImpactFeedbackStyle style) {
     BOOL batteryActive = CDIHDateStillActive(self.batteryActiveUntil) || CDIHDateStillActive(self.lowPowerActiveUntil);
     BOOL nowPlayingActive = CDIHDateStillActive(self.nowPlayingActiveUntil) && self.nowPlayingTitle.length;
     BOOL privacyActive = self.screenCaptured || CDIHDateStillActive(self.privacyActiveUntil);
-    BOOL hasLiveTrigger = clipboardActive || batteryActive || nowPlayingActive || privacyActive || self.focusRunning;
+    BOOL inboxActive = self.inboxCount > 0 || CDIHDateStillActive(self.inboxActiveUntil);
+    BOOL transferActive = CDIHDateStillActive(self.transferActiveUntil);
+    BOOL etaActive = CDIHDateStillActive(self.etaUntil);
+    BOOL gymActive = CDIHDateStillActive(self.gymRestUntil) || self.gymSetNumber > 0;
+    BOOL prayerActive = self.prayerStartDate != nil;
+    BOOL habitsActive = self.habitWaterCount > 0 || self.habitPrompt.length;
+    BOOL businessActive = CDIHDateStillActive(self.businessActiveUntil);
+    BOOL aiActive = CDIHDateStillActive(self.aiActiveUntil);
+    BOOL hasLiveTrigger = clipboardActive || batteryActive || nowPlayingActive || privacyActive || self.focusRunning || inboxActive || transferActive || etaActive || gymActive || prayerActive || habitsActive || businessActive || aiActive || self.emergencyArmed;
 
     if (CDIHPrefsBool(@"hideWhenIdle", NO) && !hasLiveTrigger) {
         return @[];
@@ -875,7 +1120,8 @@ static void CDIHFeedback(UIImpactFeedbackStyle style) {
     [cards addObject:[self cardWithIdentifier:@"dashboard" module:@"dashboard" title:@"IslandHub Core" subtitle:dashboardSubtitle symbol:@"sparkles" priority:22 tint:tint]];
 
     if (CDIHPrefsBool(@"moduleEmergency", YES)) {
-        [cards addObject:[self cardWithIdentifier:@"emergency" module:@"emergency" title:@"Emergency Island" subtitle:@"Safety mode ready, not armed" symbol:@"sos" priority:24 tint:CDVTColor(255, 88, 108, 1.0)]];
+        NSString *subtitle = self.emergencyArmed ? [NSString stringWithFormat:@"Armed %@", CDIHDurationString(-[self.emergencyStartDate timeIntervalSinceNow])] : @"Safety mode ready, not armed";
+        [cards addObject:[self cardWithIdentifier:@"emergency" module:@"emergency" title:@"Emergency Island" subtitle:subtitle symbol:@"sos" priority:self.emergencyArmed ? 100 : 24 tint:CDVTColor(255, 88, 108, 1.0)]];
     }
     if (CDIHPrefsBool(@"modulePrivacy", YES)) {
         NSString *subtitle = self.screenCaptured ? @"Screen recording or mirroring active" : (privacyActive ? @"Screen capture state changed" : @"Screen capture radar armed");
@@ -883,7 +1129,8 @@ static void CDIHFeedback(UIImpactFeedbackStyle style) {
         [cards addObject:[self cardWithIdentifier:@"privacy" module:@"privacy" title:@"Privacy Radar" subtitle:subtitle symbol:@"shield.lefthalf.filled" priority:priority tint:CDVTColor(255, 88, 108, 1.0)]];
     }
     if (CDIHPrefsBool(@"moduleInbox", YES)) {
-        [cards addObject:[self cardWithIdentifier:@"inbox" module:@"inbox" title:@"Island Inbox" subtitle:@"Queue surface ready" symbol:@"tray.full.fill" priority:30 tint:CDVTColor(92, 214, 255, 1.0)]];
+        NSString *subtitle = inboxActive ? [NSString stringWithFormat:@"%ld queued · %@", (long)self.inboxCount, self.inboxPreview ?: @"Latest bulletin"] : @"Notification hook ready";
+        [cards addObject:[self cardWithIdentifier:@"inbox" module:@"inbox" title:@"Island Inbox" subtitle:subtitle symbol:@"tray.full.fill" priority:inboxActive ? 60 : 30 tint:CDVTColor(92, 214, 255, 1.0)]];
     }
     if (CDIHPrefsBool(@"moduleCommand", YES)) {
         [cards addObject:[self cardWithIdentifier:@"command" module:@"command" title:@"Command Center" subtitle:@"Long press Island for controls" symbol:@"switch.2" priority:36 tint:CDVTColor(182, 121, 255, 1.0)]];
@@ -906,28 +1153,35 @@ static void CDIHFeedback(UIImpactFeedbackStyle style) {
         [cards addObject:[self cardWithIdentifier:@"clipboard" module:@"clipboard" title:@"Clipboard Island" subtitle:subtitle symbol:@"doc.on.clipboard.fill" priority:clipboardActive ? 62 : 32 tint:CDVTColor(255, 212, 94, 1.0)]];
     }
     if (CDIHPrefsBool(@"moduleTransfers", YES)) {
-        [cards addObject:[self cardWithIdentifier:@"transfers" module:@"transfers" title:@"Transfer Hub" subtitle:@"Progress widgets staged" symbol:@"arrow.up.arrow.down.circle.fill" priority:28 tint:CDVTColor(92, 214, 255, 1.0)]];
+        NSString *subtitle = transferActive ? [NSString stringWithFormat:@"Local transfer %.0f%%", self.transferProgress * 100.0] : @"Start a local progress widget";
+        [cards addObject:[self cardWithIdentifier:@"transfers" module:@"transfers" title:@"Transfer Hub" subtitle:subtitle symbol:@"arrow.up.arrow.down.circle.fill" priority:transferActive ? 50 : 28 tint:CDVTColor(92, 214, 255, 1.0)]];
     }
     if (CDIHPrefsBool(@"moduleGym", YES)) {
-        [cards addObject:[self cardWithIdentifier:@"gym" module:@"gym" title:@"Gym Island" subtitle:@"Rest timer and set HUD staged" symbol:@"figure.strengthtraining.traditional" priority:27 tint:CDVTColor(113, 229, 174, 1.0)]];
+        NSString *subtitle = CDIHDateStillActive(self.gymRestUntil) ? [NSString stringWithFormat:@"Set %ld · rest %@", (long)MAX(1, self.gymSetNumber), CDIHDurationString([self.gymRestUntil timeIntervalSinceNow])] : (self.gymSetNumber > 0 ? [NSString stringWithFormat:@"Set %ld logged", (long)self.gymSetNumber] : @"Log sets and rest timers");
+        [cards addObject:[self cardWithIdentifier:@"gym" module:@"gym" title:@"Gym Island" subtitle:subtitle symbol:@"figure.strengthtraining.traditional" priority:gymActive ? 70 : 27 tint:CDVTColor(113, 229, 174, 1.0)]];
     }
     if (CDIHPrefsBool(@"modulePrayer", YES)) {
-        [cards addObject:[self cardWithIdentifier:@"prayer" module:@"prayer" title:@"Prayer Focus" subtitle:@"John 15:5 reminder ready" symbol:@"book.closed.fill" priority:26 tint:CDVTColor(255, 212, 94, 1.0)]];
+        NSString *subtitle = prayerActive ? [NSString stringWithFormat:@"Prayer %@", CDIHDurationString(-[self.prayerStartDate timeIntervalSinceNow])] : @"John 15:5 reminder ready";
+        [cards addObject:[self cardWithIdentifier:@"prayer" module:@"prayer" title:@"Prayer Focus" subtitle:subtitle symbol:@"book.closed.fill" priority:prayerActive ? 52 : 26 tint:CDVTColor(255, 212, 94, 1.0)]];
     }
     if (CDIHPrefsBool(@"moduleHabits", YES)) {
-        [cards addObject:[self cardWithIdentifier:@"habits" module:@"habits" title:@"Habit Streaks" subtitle:@"Water, mood, gratitude cards ready" symbol:@"checkmark.seal.fill" priority:25 tint:CDVTColor(182, 121, 255, 1.0)]];
+        NSString *subtitle = self.habitPrompt.length ? self.habitPrompt : [NSString stringWithFormat:@"Water %ld/8 · gratitude ready", (long)self.habitWaterCount];
+        [cards addObject:[self cardWithIdentifier:@"habits" module:@"habits" title:@"Habit Streaks" subtitle:subtitle symbol:@"checkmark.seal.fill" priority:habitsActive ? 45 : 25 tint:CDVTColor(182, 121, 255, 1.0)]];
     }
     if (CDIHPrefsBool(@"moduleSwitcher", YES)) {
-        [cards addObject:[self cardWithIdentifier:@"switcher" module:@"switcher" title:@"Island Switcher" subtitle:@"Recent app carousel staged" symbol:@"rectangle.stack.fill" priority:29 tint:CDVTColor(92, 214, 255, 1.0)]];
+        [cards addObject:[self cardWithIdentifier:@"switcher" module:@"switcher" title:@"Island Switcher" subtitle:@"Recent apps shell ready" symbol:@"rectangle.stack.fill" priority:29 tint:CDVTColor(92, 214, 255, 1.0)]];
     }
-    if (CDIHPrefsBool(@"moduleETA", NO)) {
-        [cards addObject:[self cardWithIdentifier:@"eta" module:@"eta" title:@"Life ETA Stack" subtitle:@"Manual timers staged" symbol:@"clock.badge.checkmark.fill" priority:35 tint:CDVTColor(255, 154, 74, 1.0)]];
+    if (CDIHPrefsBool(@"moduleETA", YES)) {
+        NSString *subtitle = etaActive ? [NSString stringWithFormat:@"ETA %@", CDIHDurationString([self.etaUntil timeIntervalSinceNow])] : @"Start a 15m or 30m manual ETA";
+        [cards addObject:[self cardWithIdentifier:@"eta" module:@"eta" title:@"Life ETA Stack" subtitle:subtitle symbol:@"clock.badge.checkmark.fill" priority:etaActive ? 70 : 35 tint:CDVTColor(255, 154, 74, 1.0)]];
     }
-    if (CDIHPrefsBool(@"moduleBusiness", NO)) {
-        [cards addObject:[self cardWithIdentifier:@"business" module:@"business" title:@"Business & DevOps" subtitle:@"Sales/deploy cards staged locally" symbol:@"chart.line.uptrend.xyaxis" priority:35 tint:CDVTColor(255, 212, 94, 1.0)]];
+    if (CDIHPrefsBool(@"moduleBusiness", YES)) {
+        NSString *subtitle = businessActive && self.businessPulse.length ? self.businessPulse : @"Local sales/deploy pulse";
+        [cards addObject:[self cardWithIdentifier:@"business" module:@"business" title:@"Business & DevOps" subtitle:subtitle symbol:@"chart.line.uptrend.xyaxis" priority:businessActive ? 54 : 35 tint:CDVTColor(255, 212, 94, 1.0)]];
     }
-    if (CDIHPrefsBool(@"moduleAI", NO)) {
-        [cards addObject:[self cardWithIdentifier:@"ai" module:@"ai" title:@"AI Copilot" subtitle:@"Local prompt surface only in v1" symbol:@"brain.head.profile" priority:35 tint:CDVTColor(182, 121, 255, 1.0)]];
+    if (CDIHPrefsBool(@"moduleAI", YES)) {
+        NSString *subtitle = aiActive && self.aiSummary.length ? self.aiSummary : @"Clipboard lens and local prompt surface";
+        [cards addObject:[self cardWithIdentifier:@"ai" module:@"ai" title:@"AI Copilot" subtitle:subtitle symbol:@"brain.head.profile" priority:aiActive ? 55 : 35 tint:CDVTColor(182, 121, 255, 1.0)]];
     }
 
     [cards sortUsingComparator:^NSComparisonResult(CDIslandHubCard *a, CDIslandHubCard *b) {
@@ -998,6 +1252,18 @@ static void CDIslandHubPrefsChanged(__unused CFNotificationCenterRef center, __u
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.9 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [[CDIslandHubController sharedController] start];
     });
+}
+%end
+
+%hook BBServer
+- (void)publishBulletin:(id)bulletin destinations:(unsigned long long)destinations {
+    [[CDIslandHubController sharedController] captureBulletin:bulletin];
+    %orig;
+}
+
+- (void)publishBulletin:(id)bulletin destinations:(unsigned long long)destinations alwaysToLockScreen:(BOOL)alwaysToLockScreen {
+    [[CDIslandHubController sharedController] captureBulletin:bulletin];
+    %orig;
 }
 %end
 
