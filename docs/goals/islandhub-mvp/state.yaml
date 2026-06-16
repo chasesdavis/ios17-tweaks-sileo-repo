@@ -1,8 +1,26 @@
+version: 2
+
 goal:
   slug: islandhub-mvp
   title: IslandHub MVP
-  status: active
-  classification: specific
+  kind: specific
+  tranche: "Build and publish IslandHub v1 core overlay and preferences."
+  status: done
+
+rules:
+  pm_owns_state: true
+  one_active_task: true
+  max_write_workers: 1
+  no_implementation_without_worker_or_pm_task: true
+  no_completion_without_judge_or_pm_audit: true
+
+agents:
+  scout: installed
+  worker: installed
+  judge: installed
+
+active_task: null
+
 tasks:
   - id: T001
     type: scout
@@ -103,7 +121,7 @@ tasks:
   - id: T004
     type: worker
     assignee: Worker
-    status: active
+    status: done
     objective: "Commit, push, publish gh-pages, and verify live Sileo package bytes."
     allowed_files:
       - "*"
@@ -114,11 +132,25 @@ tasks:
     stop_if:
       - "GitHub push fails repeatedly."
       - "Live repo cannot be verified after polling window."
-    receipt: null
+    receipt:
+      result: done
+      changed_files:
+        - "main branch"
+        - "gh-pages branch"
+      commands:
+        - cmd: "git push origin main"
+          status: pass
+        - cmd: "git push origin HEAD:gh-pages"
+          status: pass
+        - cmd: "live IslandHub deb SHA256 compare"
+          status: pass
+      summary: "Pushed main at f9104b3 and published gh-pages at d793b6d. Live IslandHub 1.0.0-1 deb matched local bytes."
+      evidence:
+        - "IslandHub SHA256 cb59463f6def7eff598a5a2cab2562f4f2daefb73b237dfe6b6a3061dbbb368a"
   - id: T999
     type: judge
     assignee: Judge
-    status: queued
+    status: done
     objective: "Audit whether the current tranche is complete."
     inputs:
       - "All done task receipts"
@@ -128,4 +160,22 @@ tasks:
       - "complete | not_complete"
       - "missing evidence"
       - "next task if not complete"
-    receipt: null
+    receipt:
+      result: done
+      decision: complete
+      summary: "The current tranche is complete: IslandHub source exists, roothide package builds, local and live package audits pass, Sileo repo metadata includes IslandHub 1.0.0-1, and hosted bytes match the local deb."
+      remaining_risks:
+        - "Real notification capture, AI, media, privacy sensor, command toggles, and business integrations are intentionally deferred to later UI-reviewed tranches."
+        - "On-device visual fit still needs user testing across Dynamic Island and notched layouts."
+
+checks:
+  dirty_fingerprint: clean-before-final-receipt-commit
+  last_verification:
+    result: pass
+    task: T004
+    commands:
+      - "plutil -lint IslandHub plists"
+      - "Theos roothide build"
+      - "./scripts/audit-tweaks.sh"
+      - "focused IslandHub deb inspection"
+      - "live IslandHub deb SHA256 compare"
