@@ -270,6 +270,38 @@ MD5sum: 2421b691c16114f72addbf53a40f3a13
 SHA1: 205db1757f51d8f3473dfb58cbbca3a9c95b4af3
 SHA256: 7f7bbeb16542c81d24eeb196653d5fcf8077edbbb7983d55b617950d92dc063a
 
+Package: com.chasedavis.islandhub
+Name: IslandHub
+Depends: mobilesubstrate, preferenceloader
+Description: Dynamic Island command center, priority stack, module dashboard, and theme engine for SpringBoard.
+Maintainer: Chase Davis
+Author: Chase Davis
+Section: Tweaks
+Architecture: iphoneos-arm64e
+Version: 1.0.0-1
+Installed-Size: 456
+Filename: debs/com.chasedavis.islandhub_1.0.0-1_iphoneos-arm64e.deb
+Size: 40136
+MD5sum: 63da33542b30be8c84c10744997a7498
+SHA1: f7cdabc9a9f48086e26c7c752ff8d50fbd6b2e54
+SHA256: cb59463f6def7eff598a5a2cab2562f4f2daefb73b237dfe6b6a3061dbbb368a
+
+Package: com.chasedavis.islandinbox
+Name: Island Inbox
+Depends: mobilesubstrate, preferenceloader
+Description: Dynamic Island notification queue with app chips, a compact inbox panel, swipe archiving, swipe-to-open, and quick reply controls.
+Maintainer: Chase Davis
+Author: Chase Davis
+Section: Tweaks
+Architecture: iphoneos-arm64e
+Version: 1.0.0-1
+Installed-Size: 460
+Filename: debs/com.chasedavis.islandinbox_1.0.0-1_iphoneos-arm64e.deb
+Size: 41410
+MD5sum: ea4fc6c6bd0ece196a8d05714141c5ba
+SHA1: 1e5832ec725e288a8764858207e9455859ecbf9b
+SHA256: 96410f613a426d5c23da648e62f6229aaba3c83cdeb2a0ea8172f8b0c221c24e
+
 Package: com.chasedavis.kineticbadges
 Name: KineticBadges
 Depends: mobilesubstrate
