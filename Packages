@@ -278,13 +278,13 @@ Maintainer: Chase Davis
 Author: Chase Davis
 Section: Tweaks
 Architecture: iphoneos-arm64e
-Version: 1.1.0-1
+Version: 1.1.1-1
 Installed-Size: 528
-Filename: debs/com.chasedavis.islandhub_1.1.0-1_iphoneos-arm64e.deb
-Size: 60280
-MD5sum: d3be2b3961fcfd3200430aaa887d7be9
-SHA1: 6b3c3345861d7ca4806931c57cf451c809fe6848
-SHA256: 5856ffcef3b5dc7f7034cf3ee4ca9e0bb6a4e3c96c92f0537516f1ecbc112709
+Filename: debs/com.chasedavis.islandhub_1.1.1-1_iphoneos-arm64e.deb
+Size: 62572
+MD5sum: 974e7486806b471ac3132d4e57e84c0d
+SHA1: a5506da7dd4885d86ddf5b07f76922b0575054d4
+SHA256: 6c8f945e75f110b5d499838e483bd1b32cd33569e9785c33caeea68c61a22f02
 
 Package: com.chasedavis.islandinbox
 Name: Island Inbox
