@@ -48,23 +48,23 @@
         },
         {
             cell = PSGroupCell;
-            label = "AI Home Preview";
-            footerText = "UIKit-only mockup inspired by the Spotify AI home concept. The launcher is visible by default, but the full preview never auto-opens.";
+            label = "Reframe Player";
+            footerText = "Custom UIKit player shell. The launcher is visible by default, but the shell never opens automatically.";
         },
         {
             cell = PSSwitchCell;
             default = 1;
             defaults = "com.chasedavis.spotifyreframe";
-            key = homePreviewEnabled;
-            label = "Enable Preview";
+            key = reframePlayerEnabled;
+            label = "Enable Player";
             PostNotification = "com.chasedavis.spotifyreframe/preferences.changed";
         },
         {
             cell = PSSwitchCell;
             default = 1;
             defaults = "com.chasedavis.spotifyreframe";
-            key = homePreviewLauncher;
-            label = "Show AI Launcher";
+            key = reframePlayerLauncher;
+            label = "Show Player Launcher";
             PostNotification = "com.chasedavis.spotifyreframe/preferences.changed";
         },
         {
@@ -72,7 +72,7 @@
             default = 0;
             defaults = "com.chasedavis.spotifyreframe";
             detail = PSListItemsController;
-            key = homePreviewPlacement;
+            key = reframePlayerPlacement;
             label = "Launcher Position";
             validTitles = ("Top Right", "Top Left", "Lower Right", "Lower Left");
             validValues = (0, 1, 2, 3);

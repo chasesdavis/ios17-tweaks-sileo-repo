@@ -6,7 +6,7 @@ NS_ASSUME_NONNULL_BEGIN
 extern "C" {
 #endif
 
-UIView *CDSpotifyCreateUIKitHomePreviewView(void (^closeHandler)(void), void (^settingsHandler)(void));
+UIView *CDSpotifyCreateReframePlayerView(void (^closeHandler)(void), void (^settingsHandler)(void));
 
 #ifdef __cplusplus
 }
