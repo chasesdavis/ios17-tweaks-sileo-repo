@@ -10,7 +10,7 @@ TWEAK_NAME = IslandHub
 
 IslandHub_FILES = Tweak.xm ../../shared/CDVisualTweakKit.m ../../shared/CDPremiumTweakKit.m
 IslandHub_CFLAGS = -fobjc-arc -Wno-deprecated-declarations -I../../shared
-IslandHub_FRAMEWORKS = UIKit Foundation QuartzCore CoreGraphics
+IslandHub_FRAMEWORKS = UIKit Foundation QuartzCore CoreGraphics MediaPlayer
 
 include $(THEOS_MAKE_PATH)/tweak.mk
 

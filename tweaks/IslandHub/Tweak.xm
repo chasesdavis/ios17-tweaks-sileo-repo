@@ -1,11 +1,13 @@
 #import <UIKit/UIKit.h>
 #import <QuartzCore/QuartzCore.h>
+#import <MediaPlayer/MediaPlayer.h>
 #import <objc/runtime.h>
 #import "CDVisualTweakKit.h"
 #import "CDPremiumTweakKit.h"
 
 static NSString *const CDIslandHubDomain = @"com.chasedavis.islandhub";
 static BOOL gCDIslandHubRefreshing = NO;
+static NSTimeInterval const CDIHTriggerDuration = 10.0;
 
 @class CDIslandHubController;
 static void CDIslandHubPrefsChanged(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo);
@@ -42,9 +44,30 @@ static void CDIslandHubPrefsChanged(CFNotificationCenterRef center, void *observ
 @property (nonatomic, strong) NSTimer *refreshTimer;
 @property (nonatomic, assign) BOOL focusRunning;
 @property (nonatomic, strong) NSDate *focusStartDate;
+@property (nonatomic, copy) NSString *lastTrigger;
+@property (nonatomic, copy) NSString *lastActiveModule;
+@property (nonatomic, copy) NSString *lastCardsSignature;
+@property (nonatomic, assign) NSInteger lastCardCount;
+@property (nonatomic, assign) NSInteger lastEnabledModuleCount;
+@property (nonatomic, assign) NSInteger pasteboardChangeCount;
+@property (nonatomic, copy) NSString *clipboardPreview;
+@property (nonatomic, strong) NSDate *clipboardActiveUntil;
+@property (nonatomic, assign) NSInteger lastBatteryPercent;
+@property (nonatomic, assign) UIDeviceBatteryState lastBatteryState;
+@property (nonatomic, strong) NSDate *batteryActiveUntil;
+@property (nonatomic, assign) BOOL lastLowPowerMode;
+@property (nonatomic, strong) NSDate *lowPowerActiveUntil;
+@property (nonatomic, copy) NSString *nowPlayingTitle;
+@property (nonatomic, copy) NSString *nowPlayingArtist;
+@property (nonatomic, copy) NSString *lastNowPlayingSignature;
+@property (nonatomic, assign) CGFloat nowPlayingRate;
+@property (nonatomic, strong) NSDate *nowPlayingActiveUntil;
+@property (nonatomic, assign) BOOL screenCaptured;
+@property (nonatomic, strong) NSDate *privacyActiveUntil;
 + (instancetype)sharedController;
 - (void)start;
 - (void)refresh;
+- (void)configureRefreshTimer;
 - (void)toggleExpanded;
 - (void)expandCommandCenter;
 - (void)cycleSection:(NSInteger)delta;
@@ -100,6 +123,40 @@ static NSString *CDIHCardSection(CDIslandHubCard *card) {
     if ([card.module isEqualToString:@"privacy"]) return @"Privacy";
     if ([card.module isEqualToString:@"clipboard"]) return @"Clipboard";
     return @"Live";
+}
+
+static NSInteger CDIHSectionForModule(NSString *module) {
+    if ([module isEqualToString:@"inbox"]) return 1;
+    if ([module isEqualToString:@"command"]) return 2;
+    if ([module isEqualToString:@"music"]) return 3;
+    if ([module isEqualToString:@"focus"]) return 4;
+    if ([module isEqualToString:@"battery"]) return 5;
+    if ([module isEqualToString:@"privacy"]) return 6;
+    if ([module isEqualToString:@"clipboard"]) return 7;
+    return 0;
+}
+
+static BOOL CDIHDateStillActive(NSDate *date) {
+    return date && [date timeIntervalSinceNow] > 0.0;
+}
+
+static NSString *CDIHSingleLinePreview(NSString *text, NSUInteger maxLength) {
+    if (!text.length) {
+        return nil;
+    }
+    NSString *singleLine = [[text componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]] componentsJoinedByString:@" "];
+    singleLine = [singleLine stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    if (singleLine.length > maxLength) {
+        return [[singleLine substringToIndex:maxLength] stringByAppendingString:@"..."];
+    }
+    return singleLine;
+}
+
+static NSString *CDIHRuntimeTimeString(void) {
+    NSDateFormatter *formatter = [NSDateFormatter new];
+    formatter.timeStyle = NSDateFormatterMediumStyle;
+    formatter.dateStyle = NSDateFormatterNoStyle;
+    return [formatter stringFromDate:[NSDate date]];
 }
 
 static UIImage *CDIHSymbolImage(NSString *name, CGFloat size, UIImageSymbolWeight weight) {
@@ -353,12 +410,18 @@ static void CDIHFeedback(UIImpactFeedbackStyle style) {
     }
 
     CGFloat actionY = CGRectGetHeight(self.bounds) - 45.0;
-    NSArray<NSArray *> *actions = @[
-        @[@"Controls", @2],
-        @[@"Clipboard", @7],
-        @[@"Focus", @4],
-        @[@"Collapse", @99]
-    ];
+    NSArray<NSArray *> *actions = nil;
+    if (self.selectedSection == 2) {
+        actions = @[@[@"Battery", @5], @[@"Clipboard", @7], @[@"Focus", @4], @[@"Collapse", @99]];
+    } else if (self.selectedSection == 5) {
+        actions = @[@[@"Refresh", @5], @[@"Controls", @2], @[@"Focus", @4], @[@"Collapse", @99]];
+    } else if (self.selectedSection == 7) {
+        actions = @[@[@"Read Clip", @7], @[@"Controls", @2], @[@"Battery", @5], @[@"Collapse", @99]];
+    } else if (self.selectedSection == 4) {
+        actions = @[@[self.cards.count ? @"Toggle" : @"Focus", @4], @[@"Clipboard", @7], @[@"Battery", @5], @[@"Collapse", @99]];
+    } else {
+        actions = @[@[@"Controls", @2], @[@"Clipboard", @7], @[@"Focus", @4], @[@"Collapse", @99]];
+    }
     CGFloat gap = 8.0;
     CGFloat actionWidth = (width - 28.0 - gap * (actions.count - 1)) / actions.count;
     for (NSInteger index = 0; index < (NSInteger)actions.count; index++) {
@@ -419,13 +482,32 @@ static void CDIHFeedback(UIImpactFeedbackStyle style) {
 
 - (void)start {
     [[UIDevice currentDevice] setBatteryMonitoringEnabled:YES];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refresh) name:UIDeviceBatteryLevelDidChangeNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refresh) name:UIDeviceBatteryStateDidChangeNotification object:nil];
+    self.lastTrigger = @"SpringBoard loaded";
+    self.lastActiveModule = @"Smart";
+    self.lastBatteryPercent = -1;
+    self.lastBatteryState = UIDeviceBatteryStateUnknown;
+    self.lastLowPowerMode = [NSProcessInfo processInfo].isLowPowerModeEnabled;
+    self.pasteboardChangeCount = [UIPasteboard generalPasteboard].changeCount;
+    self.screenCaptured = [UIScreen mainScreen].isCaptured;
+
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(batteryChanged) name:UIDeviceBatteryLevelDidChangeNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(batteryChanged) name:UIDeviceBatteryStateDidChangeNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(clipboardChanged) name:UIPasteboardChangedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(powerStateChanged) name:NSProcessInfoPowerStateDidChangeNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(screenCaptureChanged) name:UIScreenCapturedDidChangeNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refresh) name:UIApplicationDidBecomeActiveNotification object:nil];
     CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, CDIslandHubPrefsChanged, CFSTR("com.chasedavis.islandhub/preferences.changed"), NULL, CFNotificationSuspensionBehaviorDeliverImmediately);
 
-    self.refreshTimer = [NSTimer scheduledTimerWithTimeInterval:12.0 target:self selector:@selector(refresh) userInfo:nil repeats:YES];
+    [self configureRefreshTimer];
+    [self recordTrigger:@"SpringBoard loaded" module:@"dashboard" priority:35 expand:NO];
     [self refresh];
+}
+
+- (void)configureRefreshTimer {
+    [self.refreshTimer invalidate];
+    NSTimeInterval pollInterval = CDIHPrefsFloat(@"triggerPollInterval", 8.0, 4.0, 30.0);
+    self.refreshTimer = [NSTimer timerWithTimeInterval:pollInterval target:self selector:@selector(refresh) userInfo:nil repeats:YES];
+    [[NSRunLoop mainRunLoop] addTimer:self.refreshTimer forMode:NSRunLoopCommonModes];
 }
 
 - (void)ensureWindow {
@@ -461,12 +543,28 @@ static void CDIHFeedback(UIImpactFeedbackStyle style) {
     dispatch_async(dispatch_get_main_queue(), ^{
         if (!CDIHEnabled()) {
             self.window.hidden = YES;
+            [self writeRuntimeStatusWithCards:@[] topCard:nil];
             return;
         }
         [self ensureWindow];
         self.window.hidden = NO;
-        [self layoutHubAnimated:YES];
-        [self.hubView reloadWithCards:[self currentCards]];
+        [self pollLiveTriggers];
+        NSArray<CDIslandHubCard *> *cards = [self currentCards];
+        if (cards.count == 0) {
+            self.window.hidden = YES;
+            self.lastCardsSignature = @"hidden";
+            [self.hubView reloadWithCards:@[]];
+            [self writeRuntimeStatusWithCards:@[] topCard:nil];
+            return;
+        }
+        self.window.hidden = NO;
+        [self layoutHubAnimated:NO];
+        NSString *signature = [self signatureForCards:cards];
+        if (![signature isEqualToString:self.lastCardsSignature]) {
+            self.lastCardsSignature = signature;
+            [self.hubView reloadWithCards:cards];
+        }
+        [self writeRuntimeStatusWithCards:cards topCard:cards.firstObject];
     });
 }
 
@@ -500,16 +598,24 @@ static void CDIHFeedback(UIImpactFeedbackStyle style) {
 - (void)toggleExpanded {
     CDIHFeedback(UIImpactFeedbackStyleLight);
     self.hubView.expanded = !self.hubView.isExpanded;
+    [self recordTrigger:self.hubView.isExpanded ? @"Island expanded" : @"Island collapsed" module:@"dashboard" priority:35 expand:NO];
     [self layoutHubAnimated:YES];
-    [self.hubView reloadWithCards:[self currentCards]];
+    NSArray<CDIslandHubCard *> *cards = [self currentCards];
+    self.lastCardsSignature = [self signatureForCards:cards];
+    [self.hubView reloadWithCards:cards];
+    [self writeRuntimeStatusWithCards:cards topCard:cards.firstObject];
 }
 
 - (void)expandCommandCenter {
     CDIHFeedback(UIImpactFeedbackStyleMedium);
     self.hubView.selectedSection = 2;
     self.hubView.expanded = YES;
+    [self recordTrigger:@"Command Center opened" module:@"command" priority:58 expand:NO];
     [self layoutHubAnimated:YES];
-    [self.hubView reloadWithCards:[self currentCards]];
+    NSArray<CDIslandHubCard *> *cards = [self currentCards];
+    self.lastCardsSignature = [self signatureForCards:cards];
+    [self.hubView reloadWithCards:cards];
+    [self writeRuntimeStatusWithCards:cards topCard:cards.firstObject];
 }
 
 - (void)cycleSection:(NSInteger)delta {
@@ -522,8 +628,12 @@ static void CDIHFeedback(UIImpactFeedbackStyle style) {
     }
     self.hubView.selectedSection = section;
     self.hubView.expanded = YES;
+    [self recordTrigger:[NSString stringWithFormat:@"%@ section selected", CDIHSectionName(section)] module:@"dashboard" priority:35 expand:NO];
     [self layoutHubAnimated:YES];
-    [self.hubView reloadWithCards:[self currentCards]];
+    NSArray<CDIslandHubCard *> *cards = [self currentCards];
+    self.lastCardsSignature = [self signatureForCards:cards];
+    [self.hubView reloadWithCards:cards];
+    [self writeRuntimeStatusWithCards:cards topCard:cards.firstObject];
 }
 
 - (void)performAction:(UIButton *)sender {
@@ -535,80 +645,289 @@ static void CDIHFeedback(UIImpactFeedbackStyle style) {
         if (!clip.length) {
             self.hubView.clipboardPreview = @"Clipboard is empty";
         } else {
-            NSString *singleLine = [[clip componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]] componentsJoinedByString:@" "];
-            self.hubView.clipboardPreview = singleLine.length > 48 ? [[singleLine substringToIndex:48] stringByAppendingString:@"..."] : singleLine;
+            self.hubView.clipboardPreview = CDIHSingleLinePreview(clip, 48);
         }
+        self.clipboardPreview = self.hubView.clipboardPreview;
+        self.clipboardActiveUntil = [[NSDate date] dateByAddingTimeInterval:CDIHTriggerDuration];
+        [self recordTrigger:@"Clipboard opened" module:@"clipboard" priority:62 expand:NO];
         self.hubView.selectedSection = 7;
         self.hubView.expanded = YES;
     } else {
         self.hubView.selectedSection = sender.tag;
         self.hubView.expanded = YES;
+        [self recordTrigger:[NSString stringWithFormat:@"%@ opened", CDIHSectionName(sender.tag)] module:@"dashboard" priority:35 expand:NO];
     }
 
     if (sender.tag == 4) {
         self.focusRunning = !self.focusRunning;
         self.focusStartDate = self.focusRunning ? [NSDate date] : nil;
+        [self recordTrigger:self.focusRunning ? @"Focus started" : @"Focus ended" module:@"focus" priority:self.focusRunning ? 74 : 42 expand:NO];
     }
 
     [self layoutHubAnimated:YES];
-    [self.hubView reloadWithCards:[self currentCards]];
+    NSArray<CDIslandHubCard *> *cards = [self currentCards];
+    self.lastCardsSignature = [self signatureForCards:cards];
+    [self.hubView reloadWithCards:cards];
+    [self writeRuntimeStatusWithCards:cards topCard:cards.firstObject];
+}
+
+- (void)batteryChanged {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self pollBatteryTriggerForced:YES];
+        [self refresh];
+    });
+}
+
+- (void)clipboardChanged {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self pollClipboardTriggerForced:YES];
+        [self refresh];
+    });
+}
+
+- (void)powerStateChanged {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self pollLowPowerTriggerForced:YES];
+        [self refresh];
+    });
+}
+
+- (void)screenCaptureChanged {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self pollPrivacyTriggerForced:YES];
+        [self refresh];
+    });
+}
+
+- (void)pollLiveTriggers {
+    [self pollBatteryTriggerForced:NO];
+    [self pollLowPowerTriggerForced:NO];
+    [self pollClipboardTriggerForced:NO];
+    [self pollNowPlayingTriggerForced:NO];
+    [self pollPrivacyTriggerForced:NO];
+}
+
+- (void)pollBatteryTriggerForced:(BOOL)forced {
+    if (!CDIHPrefsBool(@"autoBatteryTriggers", YES) || !CDIHPrefsBool(@"moduleBattery", YES)) {
+        return;
+    }
+    UIDevice *device = [UIDevice currentDevice];
+    NSInteger percent = device.batteryLevel < 0 ? -1 : (NSInteger)round(device.batteryLevel * 100.0);
+    UIDeviceBatteryState state = device.batteryState;
+    BOOL changed = forced || percent != self.lastBatteryPercent || state != self.lastBatteryState;
+    self.lastBatteryPercent = percent;
+    self.lastBatteryState = state;
+    if (!changed) {
+        return;
+    }
+
+    BOOL important = state == UIDeviceBatteryStateCharging || state == UIDeviceBatteryStateFull || (percent >= 0 && percent <= 20);
+    if (important) {
+        self.batteryActiveUntil = [[NSDate date] dateByAddingTimeInterval:CDIHTriggerDuration];
+        NSString *label = state == UIDeviceBatteryStateCharging || state == UIDeviceBatteryStateFull ? @"Charging changed" : @"Low battery";
+        [self recordTrigger:label module:@"battery" priority:state == UIDeviceBatteryStateCharging ? 68 : 74 expand:CDIHPrefsBool(@"expandOnTrigger", NO)];
+    }
+}
+
+- (void)pollLowPowerTriggerForced:(BOOL)forced {
+    if (!CDIHPrefsBool(@"autoLowPowerTriggers", YES) || !CDIHPrefsBool(@"moduleBattery", YES)) {
+        return;
+    }
+    BOOL enabled = [NSProcessInfo processInfo].isLowPowerModeEnabled;
+    if (!forced && enabled == self.lastLowPowerMode) {
+        return;
+    }
+    self.lastLowPowerMode = enabled;
+    self.lowPowerActiveUntil = [[NSDate date] dateByAddingTimeInterval:CDIHTriggerDuration];
+    [self recordTrigger:enabled ? @"Low Power Mode on" : @"Low Power Mode off" module:@"battery" priority:76 expand:CDIHPrefsBool(@"expandOnTrigger", NO)];
+}
+
+- (void)pollClipboardTriggerForced:(BOOL)forced {
+    if (!CDIHPrefsBool(@"autoClipboardTriggers", YES) || !CDIHPrefsBool(@"moduleClipboard", YES)) {
+        return;
+    }
+    UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+    NSInteger changeCount = pasteboard.changeCount;
+    if (!forced && changeCount == self.pasteboardChangeCount) {
+        return;
+    }
+    self.pasteboardChangeCount = changeCount;
+
+    NSString *preview = CDIHSingleLinePreview(pasteboard.string, 54);
+    if (!preview.length) {
+        preview = @"Non-text clipboard item";
+    }
+    self.clipboardPreview = preview;
+    self.hubView.clipboardPreview = preview;
+    self.clipboardActiveUntil = [[NSDate date] dateByAddingTimeInterval:CDIHTriggerDuration];
+    [self recordTrigger:@"Clipboard changed" module:@"clipboard" priority:62 expand:CDIHPrefsBool(@"expandOnTrigger", NO)];
+}
+
+- (void)pollNowPlayingTriggerForced:(BOOL)forced {
+    if (!CDIHPrefsBool(@"autoNowPlayingTriggers", YES) || !CDIHPrefsBool(@"moduleNowPlaying", YES)) {
+        return;
+    }
+    NSDictionary *info = [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo;
+    NSString *title = CDIHSingleLinePreview(info[MPMediaItemPropertyTitle], 42);
+    NSString *artist = CDIHSingleLinePreview(info[MPMediaItemPropertyArtist], 34);
+    NSNumber *rateNumber = info[MPNowPlayingInfoPropertyPlaybackRate];
+    CGFloat rate = rateNumber ? rateNumber.doubleValue : 0.0;
+    NSString *signature = [NSString stringWithFormat:@"%@|%@|%.2f", title ?: @"", artist ?: @"", rate];
+    if (!forced && [signature isEqualToString:self.lastNowPlayingSignature]) {
+        return;
+    }
+    self.lastNowPlayingSignature = signature;
+    self.nowPlayingTitle = title;
+    self.nowPlayingArtist = artist;
+    self.nowPlayingRate = rate;
+    if (title.length) {
+        self.nowPlayingActiveUntil = [[NSDate date] dateByAddingTimeInterval:CDIHTriggerDuration];
+        [self recordTrigger:rate > 0.01 ? @"Music playing" : @"Now playing updated" module:@"music" priority:58 expand:CDIHPrefsBool(@"expandOnTrigger", NO)];
+    }
+}
+
+- (void)pollPrivacyTriggerForced:(BOOL)forced {
+    if (!CDIHPrefsBool(@"autoPrivacyTriggers", YES) || !CDIHPrefsBool(@"modulePrivacy", YES)) {
+        return;
+    }
+    BOOL captured = [UIScreen mainScreen].isCaptured;
+    if (!forced && captured == self.screenCaptured) {
+        return;
+    }
+    self.screenCaptured = captured;
+    self.privacyActiveUntil = captured ? [[NSDate date] dateByAddingTimeInterval:CDIHTriggerDuration * 3.0] : [[NSDate date] dateByAddingTimeInterval:CDIHTriggerDuration];
+    [self recordTrigger:captured ? @"Screen recording active" : @"Screen recording stopped" module:@"privacy" priority:84 expand:captured || CDIHPrefsBool(@"expandOnTrigger", NO)];
+}
+
+- (void)recordTrigger:(NSString *)trigger module:(NSString *)module priority:(NSInteger)priority expand:(BOOL)expand {
+    self.lastTrigger = trigger.length ? trigger : @"Manual refresh";
+    NSInteger section = CDIHSectionForModule(module);
+    self.lastActiveModule = section > 0 ? CDIHSectionName(section) : @"Smart";
+    if (self.hubView && CDIHPrefsBool(@"followTriggerSection", YES) && section > 0) {
+        self.hubView.selectedSection = section;
+    }
+    if (self.hubView && expand) {
+        self.hubView.expanded = YES;
+        [self layoutHubAnimated:YES];
+    }
+    if (priority >= 70) {
+        CDIHFeedback(UIImpactFeedbackStyleLight);
+    }
+}
+
+- (NSInteger)enabledModuleCount {
+    NSArray<NSString *> *keys = @[
+        @"moduleInbox", @"moduleAI", @"moduleCommand", @"moduleNowPlaying", @"moduleFocus",
+        @"moduleETA", @"modulePrivacy", @"moduleBusiness", @"moduleGym", @"moduleClipboard",
+        @"moduleTransfers", @"moduleBattery", @"moduleSwitcher", @"modulePrayer", @"moduleHabits",
+        @"moduleEmergency"
+    ];
+    NSInteger count = 0;
+    for (NSString *key in keys) {
+        BOOL fallback = ![key isEqualToString:@"moduleAI"] && ![key isEqualToString:@"moduleETA"] && ![key isEqualToString:@"moduleBusiness"];
+        if (CDIHPrefsBool(key, fallback)) {
+            count++;
+        }
+    }
+    return count;
+}
+
+- (NSString *)signatureForCards:(NSArray<CDIslandHubCard *> *)cards {
+    NSMutableArray<NSString *> *parts = [NSMutableArray arrayWithCapacity:cards.count + 2];
+    [parts addObject:[NSString stringWithFormat:@"section:%ld expanded:%d", (long)self.hubView.selectedSection, self.hubView.isExpanded]];
+    for (CDIslandHubCard *card in cards) {
+        [parts addObject:[NSString stringWithFormat:@"%@:%@:%@:%ld", card.identifier ?: @"", card.title ?: @"", card.subtitle ?: @"", (long)card.priority]];
+    }
+    return [parts componentsJoinedByString:@"|"];
+}
+
+- (void)setRuntimeValue:(NSString *)value key:(NSString *)key {
+    CFPreferencesSetAppValue((__bridge CFStringRef)key, (__bridge CFStringRef)(value ?: @""), (__bridge CFStringRef)CDIslandHubDomain);
+}
+
+- (void)writeRuntimeStatusWithCards:(NSArray<CDIslandHubCard *> *)cards topCard:(CDIslandHubCard *)topCard {
+    self.lastCardCount = cards.count;
+    self.lastEnabledModuleCount = [self enabledModuleCount];
+    [self setRuntimeValue:CDIHEnabled() ? @"Running in SpringBoard" : @"Disabled" key:@"runtimeStatus"];
+    [self setRuntimeValue:self.lastTrigger ?: @"None" key:@"runtimeLastTrigger"];
+    [self setRuntimeValue:self.lastActiveModule ?: @"Smart" key:@"runtimeLastModule"];
+    [self setRuntimeValue:[NSString stringWithFormat:@"%ld", (long)self.lastCardCount] key:@"runtimeCardCount"];
+    [self setRuntimeValue:[NSString stringWithFormat:@"%ld", (long)self.lastEnabledModuleCount] key:@"runtimeEnabledModules"];
+    [self setRuntimeValue:topCard.title ?: @"No visible cards" key:@"runtimeTopCard"];
+    [self setRuntimeValue:CDIHRuntimeTimeString() key:@"runtimeLastRefresh"];
+    CFPreferencesAppSynchronize((__bridge CFStringRef)CDIslandHubDomain);
 }
 
 - (NSArray<CDIslandHubCard *> *)currentCards {
     NSMutableArray<CDIslandHubCard *> *cards = [NSMutableArray array];
     UIColor *tint = CDIHTint();
+    BOOL clipboardActive = CDIHDateStillActive(self.clipboardActiveUntil);
+    BOOL batteryActive = CDIHDateStillActive(self.batteryActiveUntil) || CDIHDateStillActive(self.lowPowerActiveUntil);
+    BOOL nowPlayingActive = CDIHDateStillActive(self.nowPlayingActiveUntil) && self.nowPlayingTitle.length;
+    BOOL privacyActive = self.screenCaptured || CDIHDateStillActive(self.privacyActiveUntil);
+    BOOL hasLiveTrigger = clipboardActive || batteryActive || nowPlayingActive || privacyActive || self.focusRunning;
 
-    [cards addObject:[self cardWithIdentifier:@"dashboard" module:@"dashboard" title:@"IslandHub Core" subtitle:@"Priority engine online" symbol:@"sparkles" priority:35 tint:tint]];
+    if (CDIHPrefsBool(@"hideWhenIdle", NO) && !hasLiveTrigger) {
+        return @[];
+    }
+
+    NSString *dashboardSubtitle = self.lastTrigger.length ? [NSString stringWithFormat:@"Last trigger: %@", self.lastTrigger] : @"Priority engine online";
+    [cards addObject:[self cardWithIdentifier:@"dashboard" module:@"dashboard" title:@"IslandHub Core" subtitle:dashboardSubtitle symbol:@"sparkles" priority:22 tint:tint]];
 
     if (CDIHPrefsBool(@"moduleEmergency", YES)) {
-        [cards addObject:[self cardWithIdentifier:@"emergency" module:@"emergency" title:@"Emergency Island" subtitle:@"Safety mode is ready, not armed" symbol:@"sos" priority:65 tint:CDVTColor(255, 88, 108, 1.0)]];
+        [cards addObject:[self cardWithIdentifier:@"emergency" module:@"emergency" title:@"Emergency Island" subtitle:@"Safety mode ready, not armed" symbol:@"sos" priority:24 tint:CDVTColor(255, 88, 108, 1.0)]];
     }
     if (CDIHPrefsBool(@"modulePrivacy", YES)) {
-        [cards addObject:[self cardWithIdentifier:@"privacy" module:@"privacy" title:@"Privacy Radar" subtitle:@"Local radar armed; live sensors deferred" symbol:@"shield.lefthalf.filled" priority:80 tint:CDVTColor(255, 88, 108, 1.0)]];
+        NSString *subtitle = self.screenCaptured ? @"Screen recording or mirroring active" : (privacyActive ? @"Screen capture state changed" : @"Screen capture radar armed");
+        NSInteger priority = self.screenCaptured ? 84 : (privacyActive ? 72 : 31);
+        [cards addObject:[self cardWithIdentifier:@"privacy" module:@"privacy" title:@"Privacy Radar" subtitle:subtitle symbol:@"shield.lefthalf.filled" priority:priority tint:CDVTColor(255, 88, 108, 1.0)]];
     }
     if (CDIHPrefsBool(@"moduleInbox", YES)) {
-        [cards addObject:[self cardWithIdentifier:@"inbox" module:@"inbox" title:@"Island Inbox" subtitle:@"Queue surface ready" symbol:@"tray.full.fill" priority:60 tint:CDVTColor(92, 214, 255, 1.0)]];
+        [cards addObject:[self cardWithIdentifier:@"inbox" module:@"inbox" title:@"Island Inbox" subtitle:@"Queue surface ready" symbol:@"tray.full.fill" priority:30 tint:CDVTColor(92, 214, 255, 1.0)]];
     }
     if (CDIHPrefsBool(@"moduleCommand", YES)) {
-        [cards addObject:[self cardWithIdentifier:@"command" module:@"command" title:@"Command Center" subtitle:@"Long press Island for controls" symbol:@"switch.2" priority:58 tint:CDVTColor(182, 121, 255, 1.0)]];
+        [cards addObject:[self cardWithIdentifier:@"command" module:@"command" title:@"Command Center" subtitle:@"Long press Island for controls" symbol:@"switch.2" priority:36 tint:CDVTColor(182, 121, 255, 1.0)]];
     }
     if (CDIHPrefsBool(@"moduleFocus", YES)) {
         NSString *subtitle = self.focusRunning ? [NSString stringWithFormat:@"Deep work %.0fm running", MAX(1.0, -[self.focusStartDate timeIntervalSinceNow] / 60.0)] : @"Tap Focus to start a local streak";
-        [cards addObject:[self cardWithIdentifier:@"focus" module:@"focus" title:@"Focus Boss Bar" subtitle:subtitle symbol:@"flame.fill" priority:self.focusRunning ? 74 : 52 tint:CDVTColor(255, 154, 74, 1.0)]];
+        [cards addObject:[self cardWithIdentifier:@"focus" module:@"focus" title:@"Focus Boss Bar" subtitle:subtitle symbol:@"flame.fill" priority:self.focusRunning ? 70 : 34 tint:CDVTColor(255, 154, 74, 1.0)]];
     }
     if (CDIHPrefsBool(@"moduleBattery", YES)) {
         [cards addObject:[self batteryCard]];
     }
     if (CDIHPrefsBool(@"moduleNowPlaying", YES)) {
-        [cards addObject:[self cardWithIdentifier:@"music" module:@"music" title:@"Now Playing Pro" subtitle:@"Media controls shell ready" symbol:@"waveform" priority:50 tint:CDVTColor(113, 229, 174, 1.0)]];
+        NSString *subtitle = nowPlayingActive ? (self.nowPlayingArtist.length ? self.nowPlayingArtist : @"Now playing") : @"Waiting for media metadata";
+        NSString *title = nowPlayingActive ? self.nowPlayingTitle : @"Now Playing Pro";
+        NSInteger priority = nowPlayingActive ? (self.nowPlayingRate > 0.01 ? 58 : 54) : 33;
+        [cards addObject:[self cardWithIdentifier:@"music" module:@"music" title:title subtitle:subtitle symbol:@"waveform" priority:priority tint:CDVTColor(113, 229, 174, 1.0)]];
     }
     if (CDIHPrefsBool(@"moduleClipboard", YES)) {
-        NSString *subtitle = self.hubView.clipboardPreview.length ? self.hubView.clipboardPreview : @"Tap Clipboard to inspect locally";
-        [cards addObject:[self cardWithIdentifier:@"clipboard" module:@"clipboard" title:@"Clipboard Island" subtitle:subtitle symbol:@"doc.on.clipboard.fill" priority:self.hubView.clipboardPreview.length ? 62 : 45 tint:CDVTColor(255, 212, 94, 1.0)]];
+        NSString *subtitle = self.clipboardPreview.length ? self.clipboardPreview : @"Copy text to trigger this card";
+        [cards addObject:[self cardWithIdentifier:@"clipboard" module:@"clipboard" title:@"Clipboard Island" subtitle:subtitle symbol:@"doc.on.clipboard.fill" priority:clipboardActive ? 62 : 32 tint:CDVTColor(255, 212, 94, 1.0)]];
     }
     if (CDIHPrefsBool(@"moduleTransfers", YES)) {
-        [cards addObject:[self cardWithIdentifier:@"transfers" module:@"transfers" title:@"Transfer Hub" subtitle:@"Progress widgets staged" symbol:@"arrow.up.arrow.down.circle.fill" priority:38 tint:CDVTColor(92, 214, 255, 1.0)]];
+        [cards addObject:[self cardWithIdentifier:@"transfers" module:@"transfers" title:@"Transfer Hub" subtitle:@"Progress widgets staged" symbol:@"arrow.up.arrow.down.circle.fill" priority:28 tint:CDVTColor(92, 214, 255, 1.0)]];
     }
     if (CDIHPrefsBool(@"moduleGym", YES)) {
-        [cards addObject:[self cardWithIdentifier:@"gym" module:@"gym" title:@"Gym Island" subtitle:@"Rest timer and set HUD staged" symbol:@"figure.strengthtraining.traditional" priority:36 tint:CDVTColor(113, 229, 174, 1.0)]];
+        [cards addObject:[self cardWithIdentifier:@"gym" module:@"gym" title:@"Gym Island" subtitle:@"Rest timer and set HUD staged" symbol:@"figure.strengthtraining.traditional" priority:27 tint:CDVTColor(113, 229, 174, 1.0)]];
     }
     if (CDIHPrefsBool(@"modulePrayer", YES)) {
-        [cards addObject:[self cardWithIdentifier:@"prayer" module:@"prayer" title:@"Prayer Focus" subtitle:@"John 15:5 reminder ready" symbol:@"book.closed.fill" priority:34 tint:CDVTColor(255, 212, 94, 1.0)]];
+        [cards addObject:[self cardWithIdentifier:@"prayer" module:@"prayer" title:@"Prayer Focus" subtitle:@"John 15:5 reminder ready" symbol:@"book.closed.fill" priority:26 tint:CDVTColor(255, 212, 94, 1.0)]];
     }
     if (CDIHPrefsBool(@"moduleHabits", YES)) {
-        [cards addObject:[self cardWithIdentifier:@"habits" module:@"habits" title:@"Habit Streaks" subtitle:@"Water, mood, gratitude cards ready" symbol:@"checkmark.seal.fill" priority:32 tint:CDVTColor(182, 121, 255, 1.0)]];
+        [cards addObject:[self cardWithIdentifier:@"habits" module:@"habits" title:@"Habit Streaks" subtitle:@"Water, mood, gratitude cards ready" symbol:@"checkmark.seal.fill" priority:25 tint:CDVTColor(182, 121, 255, 1.0)]];
     }
     if (CDIHPrefsBool(@"moduleSwitcher", YES)) {
-        [cards addObject:[self cardWithIdentifier:@"switcher" module:@"switcher" title:@"Island Switcher" subtitle:@"Recent app carousel staged" symbol:@"rectangle.stack.fill" priority:30 tint:CDVTColor(92, 214, 255, 1.0)]];
+        [cards addObject:[self cardWithIdentifier:@"switcher" module:@"switcher" title:@"Island Switcher" subtitle:@"Recent app carousel staged" symbol:@"rectangle.stack.fill" priority:29 tint:CDVTColor(92, 214, 255, 1.0)]];
     }
     if (CDIHPrefsBool(@"moduleETA", NO)) {
-        [cards addObject:[self cardWithIdentifier:@"eta" module:@"eta" title:@"Life ETA Stack" subtitle:@"Manual timers staged" symbol:@"clock.badge.checkmark.fill" priority:44 tint:CDVTColor(255, 154, 74, 1.0)]];
+        [cards addObject:[self cardWithIdentifier:@"eta" module:@"eta" title:@"Life ETA Stack" subtitle:@"Manual timers staged" symbol:@"clock.badge.checkmark.fill" priority:35 tint:CDVTColor(255, 154, 74, 1.0)]];
     }
     if (CDIHPrefsBool(@"moduleBusiness", NO)) {
-        [cards addObject:[self cardWithIdentifier:@"business" module:@"business" title:@"Business & DevOps" subtitle:@"Sales/deploy cards staged locally" symbol:@"chart.line.uptrend.xyaxis" priority:42 tint:CDVTColor(255, 212, 94, 1.0)]];
+        [cards addObject:[self cardWithIdentifier:@"business" module:@"business" title:@"Business & DevOps" subtitle:@"Sales/deploy cards staged locally" symbol:@"chart.line.uptrend.xyaxis" priority:35 tint:CDVTColor(255, 212, 94, 1.0)]];
     }
     if (CDIHPrefsBool(@"moduleAI", NO)) {
-        [cards addObject:[self cardWithIdentifier:@"ai" module:@"ai" title:@"AI Copilot" subtitle:@"Local prompt surface only in v1" symbol:@"brain.head.profile" priority:40 tint:CDVTColor(182, 121, 255, 1.0)]];
+        [cards addObject:[self cardWithIdentifier:@"ai" module:@"ai" title:@"AI Copilot" subtitle:@"Local prompt surface only in v1" symbol:@"brain.head.profile" priority:35 tint:CDVTColor(182, 121, 255, 1.0)]];
     }
 
     [cards sortUsingComparator:^NSComparisonResult(CDIslandHubCard *a, CDIslandHubCard *b) {
@@ -618,9 +937,6 @@ static void CDIHFeedback(UIImpactFeedbackStyle style) {
         return a.priority > b.priority ? NSOrderedAscending : NSOrderedDescending;
     }];
 
-    if (CDIHPrefsBool(@"hideWhenIdle", NO) && cards.count <= 1) {
-        return @[];
-    }
     return cards;
 }
 
@@ -628,20 +944,32 @@ static void CDIHFeedback(UIImpactFeedbackStyle style) {
     UIDevice *device = [UIDevice currentDevice];
     CGFloat rawLevel = device.batteryLevel;
     NSInteger percent = rawLevel < 0 ? 0 : (NSInteger)round(rawLevel * 100.0);
+    BOOL lowPower = [NSProcessInfo processInfo].isLowPowerModeEnabled;
+    BOOL batteryActive = CDIHDateStillActive(self.batteryActiveUntil);
+    BOOL lowPowerActive = CDIHDateStillActive(self.lowPowerActiveUntil);
+    NSString *title = @"Smart Battery";
     NSString *state = @"Battery";
-    NSInteger priority = 40;
+    NSInteger priority = 31;
     UIColor *tint = CDVTColor(113, 229, 174, 1.0);
-    if (device.batteryState == UIDeviceBatteryStateCharging || device.batteryState == UIDeviceBatteryStateFull) {
+    if (lowPower) {
+        title = @"Low Power Mode";
+        state = @"Enabled";
+        priority = 76;
+        tint = CDVTColor(255, 212, 94, 1.0);
+    } else if (device.batteryState == UIDeviceBatteryStateCharging || device.batteryState == UIDeviceBatteryStateFull) {
         state = @"Charging";
-        priority = 68;
+        priority = batteryActive ? 68 : 46;
         tint = CDVTColor(255, 212, 94, 1.0);
     } else if (percent > 0 && percent <= 20) {
-        state = @"Low Power";
+        state = @"Low Battery";
         priority = 72;
         tint = CDVTColor(255, 88, 108, 1.0);
+    } else if (batteryActive || lowPowerActive) {
+        state = @"Battery changed";
+        priority = 48;
     }
     NSString *subtitle = percent > 0 ? [NSString stringWithFormat:@"%@ %ld%%", state, (long)percent] : @"Battery monitor ready";
-    return [self cardWithIdentifier:@"battery" module:@"battery" title:@"Smart Battery" subtitle:subtitle symbol:@"battery.100.bolt" priority:priority tint:tint];
+    return [self cardWithIdentifier:@"battery" module:@"battery" title:title subtitle:subtitle symbol:@"battery.100.bolt" priority:priority tint:tint];
 }
 
 - (CDIslandHubCard *)cardWithIdentifier:(NSString *)identifier module:(NSString *)module title:(NSString *)title subtitle:(NSString *)subtitle symbol:(NSString *)symbol priority:(NSInteger)priority tint:(UIColor *)tint {
@@ -660,6 +988,7 @@ static void CDIHFeedback(UIImpactFeedbackStyle style) {
 
 static void CDIslandHubPrefsChanged(__unused CFNotificationCenterRef center, __unused void *observer, __unused CFStringRef name, __unused const void *object, __unused CFDictionaryRef userInfo) {
     CFPreferencesAppSynchronize((__bridge CFStringRef)CDIslandHubDomain);
+    [[CDIslandHubController sharedController] configureRefreshTimer];
     [[CDIslandHubController sharedController] refresh];
 }
 
