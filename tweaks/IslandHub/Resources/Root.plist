@@ -1,0 +1,275 @@
+{
+    title = IslandHub;
+    items = (
+        {
+            cell = PSGroupCell;
+            label = "Status";
+            footerText = "IslandHub v1 is a UI/UX-only SpringBoard Island layer. It does not collect credentials, send data, or execute destructive commands.";
+        },
+        {
+            cell = PSSwitchCell;
+            default = 1;
+            defaults = "com.chasedavis.islandhub";
+            key = enabled;
+            label = "Enabled";
+            PostNotification = "com.chasedavis.islandhub/preferences.changed";
+        },
+        {
+            cell = PSSwitchCell;
+            default = 1;
+            defaults = "com.chasedavis.islandhub";
+            key = haptics;
+            label = "Haptics";
+            PostNotification = "com.chasedavis.islandhub/preferences.changed";
+        },
+        {
+            cell = PSSwitchCell;
+            default = 0;
+            defaults = "com.chasedavis.islandhub";
+            key = hideWhenIdle;
+            label = "Hide When Idle";
+            PostNotification = "com.chasedavis.islandhub/preferences.changed";
+        },
+        {
+            cell = PSGroupCell;
+            label = "Priority Engine";
+            footerText = "Smart priority keeps safety and time-sensitive cards above visual idle widgets. Swipe the Island to cycle sections.";
+        },
+        {
+            cell = PSLinkListCell;
+            default = 0;
+            defaults = "com.chasedavis.islandhub";
+            detail = PSListItemsController;
+            key = defaultSection;
+            label = "Default Section";
+            validTitles = (Smart, Inbox, Controls, Music, Focus, Battery, Privacy, Clipboard);
+            validValues = (0, 1, 2, 3, 4, 5, 6, 7);
+            PostNotification = "com.chasedavis.islandhub/preferences.changed";
+        },
+        {
+            cell = PSSliderCell;
+            default = 5;
+            defaults = "com.chasedavis.islandhub";
+            key = maxStackItems;
+            label = "Expanded Stack Items";
+            min = 3;
+            max = 8;
+            showValue = 1;
+            PostNotification = "com.chasedavis.islandhub/preferences.changed";
+        },
+        {
+            cell = PSGroupCell;
+            label = "Core Modules";
+        },
+        {
+            cell = PSSwitchCell;
+            default = 1;
+            defaults = "com.chasedavis.islandhub";
+            key = moduleInbox;
+            label = "Island Inbox";
+            PostNotification = "com.chasedavis.islandhub/preferences.changed";
+        },
+        {
+            cell = PSSwitchCell;
+            default = 0;
+            defaults = "com.chasedavis.islandhub";
+            key = moduleAI;
+            label = "AI Copilot Placeholder";
+            PostNotification = "com.chasedavis.islandhub/preferences.changed";
+        },
+        {
+            cell = PSSwitchCell;
+            default = 1;
+            defaults = "com.chasedavis.islandhub";
+            key = moduleCommand;
+            label = "Command Center";
+            PostNotification = "com.chasedavis.islandhub/preferences.changed";
+        },
+        {
+            cell = PSSwitchCell;
+            default = 1;
+            defaults = "com.chasedavis.islandhub";
+            key = moduleNowPlaying;
+            label = "Now Playing Pro";
+            PostNotification = "com.chasedavis.islandhub/preferences.changed";
+        },
+        {
+            cell = PSSwitchCell;
+            default = 1;
+            defaults = "com.chasedavis.islandhub";
+            key = moduleFocus;
+            label = "Focus Boss Bar";
+            PostNotification = "com.chasedavis.islandhub/preferences.changed";
+        },
+        {
+            cell = PSSwitchCell;
+            default = 0;
+            defaults = "com.chasedavis.islandhub";
+            key = moduleETA;
+            label = "Life ETA Stack";
+            PostNotification = "com.chasedavis.islandhub/preferences.changed";
+        },
+        {
+            cell = PSSwitchCell;
+            default = 1;
+            defaults = "com.chasedavis.islandhub";
+            key = modulePrivacy;
+            label = "Privacy Radar";
+            PostNotification = "com.chasedavis.islandhub/preferences.changed";
+        },
+        {
+            cell = PSSwitchCell;
+            default = 0;
+            defaults = "com.chasedavis.islandhub";
+            key = moduleBusiness;
+            label = "Business & DevOps Pulse";
+            PostNotification = "com.chasedavis.islandhub/preferences.changed";
+        },
+        {
+            cell = PSGroupCell;
+            label = "Personal Modules";
+        },
+        {
+            cell = PSSwitchCell;
+            default = 1;
+            defaults = "com.chasedavis.islandhub";
+            key = moduleGym;
+            label = "Gym Island";
+            PostNotification = "com.chasedavis.islandhub/preferences.changed";
+        },
+        {
+            cell = PSSwitchCell;
+            default = 1;
+            defaults = "com.chasedavis.islandhub";
+            key = moduleClipboard;
+            label = "Clipboard Island";
+            PostNotification = "com.chasedavis.islandhub/preferences.changed";
+        },
+        {
+            cell = PSSwitchCell;
+            default = 1;
+            defaults = "com.chasedavis.islandhub";
+            key = moduleTransfers;
+            label = "Transfer Hub";
+            PostNotification = "com.chasedavis.islandhub/preferences.changed";
+        },
+        {
+            cell = PSSwitchCell;
+            default = 1;
+            defaults = "com.chasedavis.islandhub";
+            key = moduleBattery;
+            label = "Smart Battery";
+            PostNotification = "com.chasedavis.islandhub/preferences.changed";
+        },
+        {
+            cell = PSSwitchCell;
+            default = 1;
+            defaults = "com.chasedavis.islandhub";
+            key = moduleSwitcher;
+            label = "Island Switcher";
+            PostNotification = "com.chasedavis.islandhub/preferences.changed";
+        },
+        {
+            cell = PSSwitchCell;
+            default = 1;
+            defaults = "com.chasedavis.islandhub";
+            key = modulePrayer;
+            label = "Prayer / Bible Focus";
+            PostNotification = "com.chasedavis.islandhub/preferences.changed";
+        },
+        {
+            cell = PSSwitchCell;
+            default = 1;
+            defaults = "com.chasedavis.islandhub";
+            key = moduleHabits;
+            label = "Mood / Habit Streaks";
+            PostNotification = "com.chasedavis.islandhub/preferences.changed";
+        },
+        {
+            cell = PSSwitchCell;
+            default = 1;
+            defaults = "com.chasedavis.islandhub";
+            key = moduleEmergency;
+            label = "Emergency Island";
+            PostNotification = "com.chasedavis.islandhub/preferences.changed";
+        },
+        {
+            cell = PSGroupCell;
+            label = "Theme Engine";
+        },
+        {
+            cell = PSLinkListCell;
+            default = 4;
+            defaults = "com.chasedavis.islandhub";
+            detail = PSListItemsController;
+            key = palette;
+            label = "Theme";
+            validTitles = ("Island Blue", "Gold Founder", "Mint Glass", "Red Alert", "Violet Pulse");
+            validValues = (0, 1, 2, 3, 4);
+            PostNotification = "com.chasedavis.islandhub/preferences.changed";
+        },
+        {
+            cell = PSSliderCell;
+            default = 0.72;
+            defaults = "com.chasedavis.islandhub";
+            key = glowStrength;
+            label = "Glow Strength";
+            min = 0;
+            max = 1;
+            showValue = 1;
+            PostNotification = "com.chasedavis.islandhub/preferences.changed";
+        },
+        {
+            cell = PSSliderCell;
+            default = 0;
+            defaults = "com.chasedavis.islandhub";
+            key = verticalOffset;
+            label = "Vertical Offset";
+            min = -18;
+            max = 58;
+            showValue = 1;
+            PostNotification = "com.chasedavis.islandhub/preferences.changed";
+        },
+        {
+            cell = PSSliderCell;
+            default = 174;
+            defaults = "com.chasedavis.islandhub";
+            key = compactWidth;
+            label = "Compact Width";
+            min = 130;
+            max = 260;
+            showValue = 1;
+            PostNotification = "com.chasedavis.islandhub/preferences.changed";
+        },
+        {
+            cell = PSSliderCell;
+            default = 266;
+            defaults = "com.chasedavis.islandhub";
+            key = expandedHeight;
+            label = "Expanded Height";
+            min = 210;
+            max = 360;
+            showValue = 1;
+            PostNotification = "com.chasedavis.islandhub/preferences.changed";
+        },
+        {
+            cell = PSGroupCell;
+            footerText = "Reset Settings clears this tweak's saved values. Disable Safely turns IslandHub off.";
+        },
+        {
+            action = resetTweakSettings;
+            cell = PSButtonCell;
+            label = "Reset Settings";
+        },
+        {
+            action = setSafeDefaults;
+            cell = PSButtonCell;
+            label = "Disable Safely";
+        },
+        {
+            action = respring;
+            cell = PSButtonCell;
+            label = "Respring";
+        }
+    );
+}

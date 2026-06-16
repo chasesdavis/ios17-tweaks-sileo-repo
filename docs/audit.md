@@ -1,6 +1,6 @@
 # Audit
 
-Generated: 2026-06-16T00:53:09Z
+Generated: 2026-06-16T03:36:08Z
 
 ## Static Tweak Checks
 
@@ -23,6 +23,8 @@ Generated: 2026-06-16T00:53:09Z
 | HomeScreenZenPro | pass | pass | pass | pass | present | pass | pass | iphoneos-arm64e |
 | IconLabelPro | pass | pass | pass | pass | present | pass | n/a | iphoneos-arm64e |
 | IslandCommandPro | pass | pass | pass | pass | present | pass | pass | iphoneos-arm64e |
+| IslandHub | pass | pass | pass | review | present | pass | pass | iphoneos-arm64e |
+| IslandInbox | pass | pass | pass | pass | present | pass | pass | iphoneos-arm64e |
 | KineticBadges | pass | pass | pass | pass | present | pass | n/a | iphoneos-arm64e |
 | LiquidFolders | pass | pass | pass | pass | present | pass | n/a | iphoneos-arm64e |
 | LockGlyph | pass | pass | pass | pass | present | pass | n/a | iphoneos-arm64e |
@@ -74,21 +76,23 @@ Generated: 2026-06-16T00:53:09Z
 19. HaloTouches
 20. HomeScreenZenPro
 21. IslandCommandPro
-22. LiquidFolders
-23. LockGlyph
-24. LockScreenAtmosphere
-25. MinimalCC
-26. NotificationForge
-27. PrismStatus
-28. QuietBadges
-29. ScreenshotFlashPlus
-30. SignalBloom
-31. SleepySpringBoard
-32. SnapGrid
-33. SpotifyReframe
-34. SpringBoardAutomations
-35. SpringTrails
-36. StatusLabPro
-37. WallpaperDepthTint
+22. IslandHub
+23. IslandInbox
+24. LiquidFolders
+25. LockGlyph
+26. LockScreenAtmosphere
+27. MinimalCC
+28. NotificationForge
+29. PrismStatus
+30. QuietBadges
+31. ScreenshotFlashPlus
+32. SignalBloom
+33. SleepySpringBoard
+34. SnapGrid
+35. SpotifyReframe
+36. SpringBoardAutomations
+37. SpringTrails
+38. StatusLabPro
+39. WallpaperDepthTint
 
 Install one tweak at a time, respring, verify SpringBoard stability, then proceed.
