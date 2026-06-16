@@ -4,7 +4,7 @@
         {
             cell = PSGroupCell;
             label = "Power";
-            footerText = "Native-first Spotify refinement. Experimental broad styling is off by default for better appearance and battery life.";
+            footerText = "Native-first Spotify refinement. No replacement player shell; this build only polishes the existing Spotify UI.";
         },
         {
             cell = PSSwitchCell;
@@ -48,39 +48,8 @@
         },
         {
             cell = PSGroupCell;
-            label = "Reframe Player";
-            footerText = "Custom UIKit player shell. The launcher is visible by default, but the shell never opens automatically.";
-        },
-        {
-            cell = PSSwitchCell;
-            default = 1;
-            defaults = "com.chasedavis.spotifyreframe";
-            key = reframePlayerEnabled;
-            label = "Enable Player";
-            PostNotification = "com.chasedavis.spotifyreframe/preferences.changed";
-        },
-        {
-            cell = PSSwitchCell;
-            default = 1;
-            defaults = "com.chasedavis.spotifyreframe";
-            key = reframePlayerLauncher;
-            label = "Show Player Launcher";
-            PostNotification = "com.chasedavis.spotifyreframe/preferences.changed";
-        },
-        {
-            cell = PSLinkListCell;
-            default = 0;
-            defaults = "com.chasedavis.spotifyreframe";
-            detail = PSListItemsController;
-            key = reframePlayerPlacement;
-            label = "Launcher Position";
-            validTitles = ("Top Right", "Top Left", "Lower Right", "Lower Left");
-            validValues = (0, 1, 2, 3);
-            PostNotification = "com.chasedavis.spotifyreframe/preferences.changed";
-        },
-        {
-            cell = PSGroupCell;
-            label = "Theme";
+            label = "Native Polish";
+            footerText = "These defaults tint and refine Spotify's own interface without replacing screens.";
         },
         {
             cell = PSLinkListCell;
@@ -106,7 +75,7 @@
         },
         {
             cell = PSSwitchCell;
-            default = 0;
+            default = 1;
             defaults = "com.chasedavis.spotifyreframe";
             key = tintPrimaryLabels;
             label = "Tint Key Labels";
@@ -114,7 +83,7 @@
         },
         {
             cell = PSSliderCell;
-            default = 0;
+            default = 0.08;
             defaults = "com.chasedavis.spotifyreframe";
             key = labelTintStrength;
             label = "Label Tint";
@@ -148,7 +117,7 @@
         },
         {
             cell = PSSliderCell;
-            default = 0;
+            default = 0.04;
             defaults = "com.chasedavis.spotifyreframe";
             key = cardFill;
             label = "Card Fill";
@@ -159,7 +128,7 @@
         },
         {
             cell = PSSliderCell;
-            default = 8;
+            default = 10;
             defaults = "com.chasedavis.spotifyreframe";
             key = cardRadius;
             label = "Card Radius";
@@ -193,7 +162,7 @@
         },
         {
             cell = PSSliderCell;
-            default = 4;
+            default = 10;
             defaults = "com.chasedavis.spotifyreframe";
             key = artworkRadius;
             label = "Artwork Radius";
@@ -204,7 +173,7 @@
         },
         {
             cell = PSSliderCell;
-            default = 0;
+            default = 0.08;
             defaults = "com.chasedavis.spotifyreframe";
             key = artworkGlow;
             label = "Artwork Glow";
@@ -227,7 +196,7 @@
         },
         {
             cell = PSSwitchCell;
-            default = 0;
+            default = 1;
             defaults = "com.chasedavis.spotifyreframe";
             key = controlTint;
             label = "Tint Controls";
@@ -250,23 +219,23 @@
         },
         {
             cell = PSSwitchCell;
-            default = 0;
+            default = 1;
             defaults = "com.chasedavis.spotifyreframe";
             key = tabBarGlass;
-            label = "Tab Bar Glass";
+            label = "Tab Bar Polish";
             PostNotification = "com.chasedavis.spotifyreframe/preferences.changed";
         },
         {
             cell = PSSwitchCell;
-            default = 0;
+            default = 1;
             defaults = "com.chasedavis.spotifyreframe";
             key = navBarGlass;
-            label = "Navigation Glass";
+            label = "Navigation Polish";
             PostNotification = "com.chasedavis.spotifyreframe/preferences.changed";
         },
         {
             cell = PSSliderCell;
-            default = 0;
+            default = 0.10;
             defaults = "com.chasedavis.spotifyreframe";
             key = chromeFill;
             label = "Chrome Fill";

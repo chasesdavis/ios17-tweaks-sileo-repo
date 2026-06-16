@@ -8,7 +8,7 @@ include $(THEOS)/makefiles/common.mk
 
 TWEAK_NAME = SpotifyReframe
 
-SpotifyReframe_FILES = Tweak.xm SpotifyReframePlayerView.m ../../shared/CDVisualTweakKit.m ../../shared/CDPremiumTweakKit.m
+SpotifyReframe_FILES = Tweak.xm ../../shared/CDVisualTweakKit.m ../../shared/CDPremiumTweakKit.m
 SpotifyReframe_CFLAGS = -fobjc-arc -Wno-deprecated-declarations -I../../shared
 SpotifyReframe_FRAMEWORKS = UIKit Foundation QuartzCore CoreGraphics
 

@@ -3,7 +3,6 @@
 #import <objc/runtime.h>
 #import "CDVisualTweakKit.h"
 #import "CDPremiumTweakKit.h"
-#import "SpotifyReframePlayerView.h"
 
 static NSString *const CDSpotifyReframeDomain = @"com.chasedavis.spotifyreframe";
 static char kCDSpotifyBackgroundLayerKey;
@@ -12,8 +11,6 @@ static char kCDSpotifyWindowGradientKey;
 static char kCDSpotifyLaunchBadgeKey;
 static char kCDSpotifySettingsButtonKey;
 static char kCDSpotifySettingsPanelKey;
-static char kCDSpotifyReframePlayerKey;
-static char kCDSpotifyReframePlayerLauncherKey;
 static char kCDSpotifyControlProxyKey;
 static char kCDSpotifyCardStyleKey;
 static char kCDSpotifyArtworkStyleKey;
@@ -27,8 +24,6 @@ static CFTimeInterval kCDSpotifyLastWindowRefresh = 0.0;
 
 static void CDSpotifyReapplyAllWindows(void);
 static void CDSpotifyOpenSettingsPanel(UIWindow *window);
-static void CDSpotifyShowReframePlayer(UIWindow *window, BOOL userInitiated);
-static void CDSpotifyDismissReframePlayer(UIWindow *window);
 
 @interface CDSpotifyReframeControlProxy : NSObject
 @property (nonatomic, copy) void (^handler)(id sender);
@@ -75,19 +70,6 @@ static BOOL CDSpotifyLowPowerMode(void) {
     return CDPremiumBool(CDSpotifyReframeDomain, @"lowPowerMode", YES);
 }
 
-static BOOL CDSpotifyReframePlayerEnabled(void) {
-    return CDPremiumBool(CDSpotifyReframeDomain, @"reframePlayerEnabled", YES);
-}
-
-static BOOL CDSpotifyReframePlayerLauncherEnabled(void) {
-    return CDPremiumBool(CDSpotifyReframeDomain, @"reframePlayerLauncher", YES);
-}
-
-static NSInteger CDSpotifyReframePlayerLauncherPlacement(void) {
-    NSInteger placement = CDPremiumInteger(CDSpotifyReframeDomain, @"reframePlayerPlacement", 0);
-    return MIN(MAX(placement, 0), 3);
-}
-
 static void CDSpotifySynchronizePreferences(void) {
     CFPreferencesAppSynchronize((__bridge CFStringRef)CDSpotifyReframeDomain);
 }
@@ -116,35 +98,32 @@ static NSDictionary<NSString *, id> *CDSpotifyCalmDefaults(void) {
         @"forceVisualMode": @NO,
         @"inAppSettings": @NO,
         @"launchBadge": @NO,
-        @"reframePlayerEnabled": @YES,
-        @"reframePlayerLauncher": @YES,
-        @"reframePlayerPlacement": @0,
         @"palette": @0,
         @"backgroundWash": @0.0,
         @"glassCards": @NO,
         @"cardDensity": @0,
-        @"cardFill": @0.0,
-        @"cardRadius": @8.0,
+        @"cardFill": @0.04,
+        @"cardRadius": @10.0,
         @"cardShadow": @0.0,
         @"styleArtwork": @YES,
-        @"artworkRadius": @4.0,
-        @"artworkGlow": @0.0,
+        @"artworkRadius": @10.0,
+        @"artworkGlow": @0.08,
         @"nowPlayingGlass": @NO,
-        @"controlTint": @NO,
+        @"controlTint": @YES,
         @"playerGlow": @0.0,
-        @"tintPrimaryLabels": @NO,
-        @"labelTintStrength": @0.0,
-        @"tabBarGlass": @NO,
-        @"navBarGlass": @NO,
-        @"chromeFill": @0.0,
-        @"profileVersion": @5
+        @"tintPrimaryLabels": @YES,
+        @"labelTintStrength": @0.08,
+        @"tabBarGlass": @YES,
+        @"navBarGlass": @YES,
+        @"chromeFill": @0.10,
+        @"profileVersion": @6
     };
 }
 
 static void CDSpotifyMigrateCalmDefaultsIfNeeded(void) {
     CDSpotifySynchronizePreferences();
     NSInteger currentProfile = CDPremiumInteger(CDSpotifyReframeDomain, @"profileVersion", 0);
-    if (currentProfile >= 5) {
+    if (currentProfile >= 6) {
         return;
     }
     NSDictionary<NSString *, id> *defaults = CDSpotifyCalmDefaults();
@@ -153,18 +132,21 @@ static void CDSpotifyMigrateCalmDefaultsIfNeeded(void) {
             CDSpotifySetPreferenceSilently(key, defaults[key]);
         }
     } else {
-        BOOL tweakEnabled = CDPremiumBool(CDSpotifyReframeDomain, @"enabled", YES);
-        if (tweakEnabled) {
-            CDSpotifySetPreferenceSilently(@"reframePlayerEnabled", @YES);
-            CDSpotifySetPreferenceSilently(@"reframePlayerLauncher", @YES);
-        }
-        CFTypeRef existingPlacement = CFPreferencesCopyAppValue(CFSTR("reframePlayerPlacement"), (__bridge CFStringRef)CDSpotifyReframeDomain);
-        if (!existingPlacement) {
-            CDSpotifySetPreferenceSilently(@"reframePlayerPlacement", @0);
-        } else {
-            CFRelease(existingPlacement);
-        }
-        CDSpotifySetPreferenceSilently(@"profileVersion", @5);
+        CDSpotifySetPreferenceSilently(@"glassCards", @NO);
+        CDSpotifySetPreferenceSilently(@"cardFill", @0.04);
+        CDSpotifySetPreferenceSilently(@"cardRadius", @10.0);
+        CDSpotifySetPreferenceSilently(@"styleArtwork", @YES);
+        CDSpotifySetPreferenceSilently(@"artworkRadius", @10.0);
+        CDSpotifySetPreferenceSilently(@"artworkGlow", @0.08);
+        CDSpotifySetPreferenceSilently(@"controlTint", @YES);
+        CDSpotifySetPreferenceSilently(@"tintPrimaryLabels", @YES);
+        CDSpotifySetPreferenceSilently(@"labelTintStrength", @0.08);
+        CDSpotifySetPreferenceSilently(@"tabBarGlass", @YES);
+        CDSpotifySetPreferenceSilently(@"navBarGlass", @YES);
+        CDSpotifySetPreferenceSilently(@"chromeFill", @0.10);
+        CDSpotifySetPreferenceSilently(@"nowPlayingGlass", @NO);
+        CDSpotifySetPreferenceSilently(@"forceVisualMode", @NO);
+        CDSpotifySetPreferenceSilently(@"profileVersion", @6);
     }
     CDSpotifySynchronizePreferences();
     kCDSpotifyStyleGeneration++;
@@ -324,108 +306,6 @@ static void CDSpotifyShowLaunchBadge(UIWindow *window) {
             }];
         });
     }];
-}
-
-static void CDSpotifyDismissReframePlayer(UIWindow *window) {
-    if (!window) {
-        window = CDVTKeyWindow();
-    }
-    UIView *player = objc_getAssociatedObject(window, &kCDSpotifyReframePlayerKey);
-    if (!player) {
-        return;
-    }
-    [UIView animateWithDuration:0.18 animations:^{
-        player.alpha = 0.0;
-        if (!CDSpotifyLowPowerMode() && !UIAccessibilityIsReduceMotionEnabled()) {
-            player.transform = CGAffineTransformMakeTranslation(0.0, 14.0);
-        }
-    } completion:^(__unused BOOL finished) {
-        [player removeFromSuperview];
-        objc_setAssociatedObject(window, &kCDSpotifyReframePlayerKey, nil, OBJC_ASSOCIATION_ASSIGN);
-    }];
-}
-
-static void CDSpotifyShowReframePlayer(UIWindow *window, BOOL userInitiated) {
-    if (!userInitiated || !CDSpotifyEnabled() || !CDSpotifyReframePlayerEnabled() || !CDSpotifyWindowIsAppWindow(window)) {
-        return;
-    }
-
-    UIView *existing = objc_getAssociatedObject(window, &kCDSpotifyReframePlayerKey);
-    if (existing) {
-        existing.frame = window.bounds;
-        [window bringSubviewToFront:existing];
-        return;
-    }
-
-    __weak UIWindow *weakWindow = window;
-    UIView *player = CDSpotifyCreateReframePlayerView(^{
-        CDSpotifyDismissReframePlayer(weakWindow ?: CDVTKeyWindow());
-    }, ^{
-        UIWindow *targetWindow = weakWindow ?: CDVTKeyWindow();
-        CDSpotifyDismissReframePlayer(targetWindow);
-        CDSpotifyOpenSettingsPanel(targetWindow);
-    });
-    player.frame = window.bounds;
-    player.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    player.alpha = 0.0;
-    BOOL reduceMotion = CDSpotifyLowPowerMode() || UIAccessibilityIsReduceMotionEnabled();
-    player.transform = reduceMotion ? CGAffineTransformIdentity : CGAffineTransformMakeTranslation(0.0, 18.0);
-    [window addSubview:player];
-    objc_setAssociatedObject(window, &kCDSpotifyReframePlayerKey, player, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-
-    [UIView animateWithDuration:reduceMotion ? 0.12 : 0.22 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
-        player.alpha = 1.0;
-        player.transform = CGAffineTransformIdentity;
-    } completion:nil];
-}
-
-static void CDSpotifyApplyReframePlayerLauncher(UIWindow *window) {
-    UIButton *button = objc_getAssociatedObject(window, &kCDSpotifyReframePlayerLauncherKey);
-    if (!CDSpotifyIsTarget() || !CDSpotifyEnabled() || !CDSpotifyReframePlayerEnabled() || !CDSpotifyReframePlayerLauncherEnabled() || !CDSpotifyWindowIsAppWindow(window)) {
-        [button removeFromSuperview];
-        objc_setAssociatedObject(window, &kCDSpotifyReframePlayerLauncherKey, nil, OBJC_ASSOCIATION_ASSIGN);
-        if (!CDSpotifyReframePlayerEnabled()) {
-            CDSpotifyDismissReframePlayer(window);
-        }
-        return;
-    }
-
-    if (!button) {
-        button = [UIButton buttonWithType:UIButtonTypeSystem];
-        button.accessibilityLabel = @"Open SpotifyReframe player";
-        [button setTitle:@"Player" forState:UIControlStateNormal];
-        button.titleLabel.font = [UIFont systemFontOfSize:13.0 weight:UIFontWeightBlack];
-        button.tintColor = [UIColor blackColor];
-        button.backgroundColor = CDSpotifyTint();
-        button.layer.cornerCurve = kCACornerCurveContinuous;
-        button.layer.cornerRadius = 15.0;
-        button.layer.borderWidth = 1.0;
-        button.layer.shadowColor = CDSpotifyTint().CGColor;
-        button.layer.shadowOpacity = 0.18;
-        button.layer.shadowRadius = 8.0;
-        button.layer.shadowOffset = CGSizeZero;
-        CDSpotifyAddControlHandler(button, UIControlEventTouchUpInside, ^(__unused id sender) {
-            CDSpotifyShowReframePlayer(window, YES);
-        });
-        [window addSubview:button];
-        objc_setAssociatedObject(window, &kCDSpotifyReframePlayerLauncherKey, button, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    }
-
-    CGFloat width = 74.0;
-    CGFloat height = 34.0;
-    CGFloat margin = 10.0;
-    CGFloat topY = MAX(82.0, window.safeAreaInsets.top + 78.0);
-    CGFloat lowerY = MIN(MAX(window.safeAreaInsets.top + 146.0, CGRectGetHeight(window.bounds) * 0.30), CGRectGetHeight(window.bounds) - window.safeAreaInsets.bottom - 210.0);
-    NSInteger placement = CDSpotifyReframePlayerLauncherPlacement();
-    BOOL left = placement == 1 || placement == 3;
-    BOOL lower = placement == 2 || placement == 3;
-    CGFloat x = left ? margin : CGRectGetWidth(window.bounds) - width - margin;
-    CGFloat y = lower ? lowerY : topY;
-    button.frame = CGRectMake(x, y, width, height);
-    button.autoresizingMask = (left ? UIViewAutoresizingFlexibleRightMargin : UIViewAutoresizingFlexibleLeftMargin) | UIViewAutoresizingFlexibleBottomMargin;
-    button.backgroundColor = CDSpotifyTint();
-    button.layer.borderColor = [[UIColor whiteColor] colorWithAlphaComponent:0.16].CGColor;
-    [window bringSubviewToFront:button];
 }
 
 static UILabel *CDSpotifyMakeSettingsLabel(NSString *text, UIFont *font, UIColor *color) {
@@ -607,27 +487,6 @@ static void CDSpotifyOpenSettingsPanel(UIWindow *window) {
     CDSpotifyAddSwitchRow(scrollView, &y, @"Force Visual Mode", @"Compatibility fallback; keep off unless normal styling is invisible.", @"forceVisualMode", NO);
     CDSpotifyAddSwitchRow(scrollView, &y, @"In-App Settings Button", @"Opt-in floating control. Off by default to avoid Spotify UI overlap.", @"inAppSettings", NO);
     CDSpotifyAddSwitchRow(scrollView, &y, @"Launch Badge", @"Debug-only load confirmation.", @"launchBadge", NO);
-    CDSpotifyAddSwitchRow(scrollView, &y, @"Reframe Player", @"Custom UIKit shell. It only opens when you tap the launcher.", @"reframePlayerEnabled", YES);
-    CDSpotifyAddSwitchRow(scrollView, &y, @"Player Launcher", @"Shows the Player button inside Spotify.", @"reframePlayerLauncher", YES);
-    CDSpotifyAddSegmentRow(scrollView, &y, @"Launcher Position", @"reframePlayerPlacement", @[@"Top R", @"Top L", @"Low R", @"Low L"], 0);
-
-    UIView *previewRow = CDSpotifyAddSettingsRow(scrollView, &y, @"Open Reframe Player", @"Turns the player shell on and shows it now.", 74.0);
-    UIButton *previewButton = [UIButton buttonWithType:UIButtonTypeSystem];
-    [previewButton setTitle:@"Open Player" forState:UIControlStateNormal];
-    previewButton.titleLabel.font = [UIFont systemFontOfSize:14.0 weight:UIFontWeightBlack];
-    previewButton.tintColor = [UIColor blackColor];
-    previewButton.backgroundColor = tint;
-    previewButton.layer.cornerCurve = kCACornerCurveContinuous;
-    previewButton.layer.cornerRadius = 16.0;
-    previewButton.frame = CGRectMake(14.0, 34.0, CGRectGetWidth(previewRow.bounds) - 28.0, 32.0);
-    previewButton.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    CDSpotifyAddControlHandler(previewButton, UIControlEventTouchUpInside, ^(__unused id sender) {
-        CDSpotifySetPreference(@"reframePlayerEnabled", @YES);
-        CDSpotifyDismissSettingsPanel(window);
-        CDSpotifyShowReframePlayer(window, YES);
-        CDSpotifyReapplyAllWindows();
-    });
-    [previewRow addSubview:previewButton];
 
     CDSpotifyAddSegmentRow(scrollView, &y, @"Accent Palette", @"palette", @[@"Green", @"Coral", @"Mint", @"Gold", @"Violet"], 0);
     CDSpotifyAddSliderRow(scrollView, &y, @"Background Wash", @"backgroundWash", 0.0, 0.0, 0.30, NO);
@@ -637,13 +496,13 @@ static void CDSpotifyOpenSettingsPanel(UIWindow *window) {
     CDSpotifyAddSwitchRow(scrollView, &y, @"Album Art Styling", @"Round covers and add a subtle accent stroke.", @"styleArtwork", YES);
     CDSpotifyAddSliderRow(scrollView, &y, @"Artwork Radius", @"artworkRadius", 4.0, 0.0, 18.0, YES);
     CDSpotifyAddSwitchRow(scrollView, &y, @"Now Playing Glass", @"Experimental. Off by default to avoid video and mini-player blocks.", @"nowPlayingGlass", NO);
-    CDSpotifyAddSwitchRow(scrollView, &y, @"Tint Controls", @"Apply the palette to playback controls and icons.", @"controlTint", NO);
+    CDSpotifyAddSwitchRow(scrollView, &y, @"Tint Controls", @"Apply the palette to playback controls and icons.", @"controlTint", YES);
     CDSpotifyAddSliderRow(scrollView, &y, @"Player Accent", @"playerGlow", 0.0, 0.0, 0.30, NO);
-    CDSpotifyAddSwitchRow(scrollView, &y, @"Tint Key Labels", @"Accent headings and primary Spotify labels.", @"tintPrimaryLabels", NO);
-    CDSpotifyAddSliderRow(scrollView, &y, @"Label Tint", @"labelTintStrength", 0.0, 0.0, 0.35, NO);
-    CDSpotifyAddSwitchRow(scrollView, &y, @"Tab Bar Glass", @"Experimental. Off by default for native Spotify tabs.", @"tabBarGlass", NO);
-    CDSpotifyAddSwitchRow(scrollView, &y, @"Navigation Glass", @"Apply tint and shadow to UIKit navigation bars when present.", @"navBarGlass", NO);
-    CDSpotifyAddSliderRow(scrollView, &y, @"Chrome Fill", @"chromeFill", 0.0, 0.0, 0.32, NO);
+    CDSpotifyAddSwitchRow(scrollView, &y, @"Tint Key Labels", @"Accent headings and primary Spotify labels.", @"tintPrimaryLabels", YES);
+    CDSpotifyAddSliderRow(scrollView, &y, @"Label Tint", @"labelTintStrength", 0.08, 0.0, 0.35, NO);
+    CDSpotifyAddSwitchRow(scrollView, &y, @"Tab Bar Polish", @"Tint Spotify's native tab icons without replacing the bar.", @"tabBarGlass", YES);
+    CDSpotifyAddSwitchRow(scrollView, &y, @"Navigation Polish", @"Apply subtle accent tint to native navigation chrome.", @"navBarGlass", YES);
+    CDSpotifyAddSliderRow(scrollView, &y, @"Chrome Fill", @"chromeFill", 0.10, 0.0, 0.32, NO);
 
     UIView *buttonRow = CDSpotifyAddSettingsRow(scrollView, &y, @"", @"", 58.0);
     UIButton *disableButton = [UIButton buttonWithType:UIButtonTypeSystem];
@@ -793,10 +652,6 @@ static void CDSpotifyReapplyAllWindows(void) {
     for (UIWindow *window in [UIApplication sharedApplication].windows) {
         CDSpotifyApplyWindowOverlay(window);
         CDSpotifyApplyInAppSettingsButton(window);
-        CDSpotifyApplyReframePlayerLauncher(window);
-        if (!CDSpotifyReframePlayerEnabled()) {
-            CDSpotifyDismissReframePlayer(window);
-        }
     }
 }
 
@@ -987,7 +842,6 @@ static void CDSpotifyApplyControlTint(UIView *view) {
         CDSpotifyApplyWindowOverlay(self.view.window);
     }
     CDSpotifyApplyInAppSettingsButton(self.view.window);
-    CDSpotifyApplyReframePlayerLauncher(self.view.window);
 }
 %end
 
@@ -998,7 +852,6 @@ static void CDSpotifyApplyControlTint(UIView *view) {
         CDSpotifyApplyWindowOverlay(self);
     }
     CDSpotifyApplyInAppSettingsButton(self);
-    CDSpotifyApplyReframePlayerLauncher(self);
 }
 - (void)layoutSubviews {
     %orig;
@@ -1007,7 +860,6 @@ static void CDSpotifyApplyControlTint(UIView *view) {
             CDSpotifyApplyWindowOverlay(self);
         }
         CDSpotifyApplyInAppSettingsButton(self);
-        CDSpotifyApplyReframePlayerLauncher(self);
     }
 }
 %end
