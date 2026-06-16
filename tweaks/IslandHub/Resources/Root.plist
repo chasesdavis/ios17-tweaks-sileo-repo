@@ -136,6 +136,17 @@
             PostNotification = "com.chasedavis.islandhub/preferences.changed";
         },
         {
+            cell = PSSliderCell;
+            default = 6;
+            defaults = "com.chasedavis.islandhub";
+            key = inboxQueueLimit;
+            label = "Inbox Queue Limit";
+            min = 3;
+            max = 12;
+            showValue = 1;
+            PostNotification = "com.chasedavis.islandhub/preferences.changed";
+        },
+        {
             cell = PSSwitchCell;
             default = 1;
             defaults = "com.chasedavis.islandhub";

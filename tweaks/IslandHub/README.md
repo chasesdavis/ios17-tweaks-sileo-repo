@@ -2,7 +2,7 @@
 
 IslandHub is a SpringBoard-only Dynamic Island-style command center for iOS 17 Bootstrap / roothide.
 
-Version `1.1.0-1` is the local modules tranche:
+Version `1.1.1-1` is the Inbox stability tranche:
 
 - Top Island overlay with compact and expanded states.
 - Priority stack for enabled modules.
@@ -18,6 +18,7 @@ Version `1.1.0-1` is the local modules tranche:
 - Contextual expanded actions for Inbox, Controls, Music, Focus, Battery, Clipboard, Transfers, Switcher, Gym, Prayer, Habits, ETA, Business, AI, and Emergency.
 - Local stateful modules for manual ETA timers, transfer progress, workout rest/set tracking, prayer timer, habit water/gratitude logging, business pulse, AI clipboard lens, and emergency armed/safe mode.
 - BulletinBoard capture hooks for Island Inbox where the SpringBoard notification publishing methods are available.
+- Island Inbox now dedupes repeated BulletinBoard publishes, stores a bounded recent-alert queue, and exposes an Inbox Queue Limit setting.
 - Low-frequency state polling that only rebuilds the Island when the visible stack changes.
 - Safe local Smart Battery card.
 - Clipboard card reads clipboard only when the clipboard changes or the user taps the Clipboard action.

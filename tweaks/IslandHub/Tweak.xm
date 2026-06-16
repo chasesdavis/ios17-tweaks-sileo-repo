@@ -68,6 +68,8 @@ static void CDIslandHubPrefsChanged(CFNotificationCenterRef center, void *observ
 @property (nonatomic, assign) NSInteger inboxCount;
 @property (nonatomic, copy) NSString *inboxPreview;
 @property (nonatomic, strong) NSDate *inboxActiveUntil;
+@property (nonatomic, strong) NSMutableArray<NSString *> *inboxPreviews;
+@property (nonatomic, strong) NSMutableDictionary<NSString *, NSDate *> *inboxSeenKeys;
 @property (nonatomic, strong) NSDate *transferActiveUntil;
 @property (nonatomic, assign) CGFloat transferProgress;
 @property (nonatomic, strong) NSDate *etaUntil;
@@ -853,6 +855,8 @@ static void CDIHFeedback(UIImpactFeedbackStyle style) {
     } else if (sender.tag == 1001) {
         self.inboxCount = 0;
         self.inboxPreview = @"Inbox cleared";
+        [self.inboxPreviews removeAllObjects];
+        [self.inboxSeenKeys removeAllObjects];
         self.inboxActiveUntil = nil;
         [self recordTrigger:@"Inbox cleared" module:@"inbox" priority:35 expand:NO];
     } else if (sender.tag == 1101) {
@@ -1082,14 +1086,51 @@ static void CDIHFeedback(UIImpactFeedbackStyle style) {
     if (!CDIHPrefsBool(@"autoInboxTriggers", YES) || !CDIHPrefsBool(@"moduleInbox", YES) || !bulletin) {
         return;
     }
+    if (![NSThread isMainThread]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self captureBulletin:bulletin];
+        });
+        return;
+    }
+
+    if (!self.inboxPreviews) {
+        self.inboxPreviews = [NSMutableArray array];
+    }
+    if (!self.inboxSeenKeys) {
+        self.inboxSeenKeys = [NSMutableDictionary dictionary];
+    }
+
+    NSDate *now = [NSDate date];
+    for (NSString *key in [self.inboxSeenKeys.allKeys copy]) {
+        NSDate *seenDate = self.inboxSeenKeys[key];
+        if (!seenDate || [now timeIntervalSinceDate:seenDate] > 180.0) {
+            [self.inboxSeenKeys removeObjectForKey:key];
+        }
+    }
+
+    NSString *stableID = CDIHStringFromObject(bulletin, @[@"bulletinID", @"recordID", @"publisherBulletinID", @"uniqueIdentifier", @"identifier"]);
+    NSString *section = CDIHStringFromObject(bulletin, @[@"sectionID", @"section", @"sectionDisplayName", @"publisher"]);
     NSString *title = CDIHStringFromObject(bulletin, @[@"title", @"header", @"sectionDisplayName"]);
     NSString *message = CDIHStringFromObject(bulletin, @[@"message", @"subtitle", @"body", @"content"]);
     NSString *preview = title.length && message.length ? [NSString stringWithFormat:@"%@: %@", title, message] : (title ?: message);
     if (!preview.length) {
         preview = @"New notification";
     }
-    self.inboxCount = MIN(99, self.inboxCount + 1);
+
+    NSString *dedupeKey = stableID.length ? stableID : [NSString stringWithFormat:@"%@|%@|%@", section ?: @"unknown", title ?: @"", message ?: @""];
+    NSDate *lastSeen = self.inboxSeenKeys[dedupeKey];
+    if (lastSeen && [now timeIntervalSinceDate:lastSeen] < 120.0) {
+        return;
+    }
+    self.inboxSeenKeys[dedupeKey] = now;
+
     self.inboxPreview = CDIHSingleLinePreview(preview, 64);
+    [self.inboxPreviews insertObject:self.inboxPreview atIndex:0];
+    NSInteger limit = MAX(3, MIN(12, CDIHPrefsInteger(@"inboxQueueLimit", 6)));
+    while ((NSInteger)self.inboxPreviews.count > limit) {
+        [self.inboxPreviews removeLastObject];
+    }
+    self.inboxCount = self.inboxPreviews.count;
     self.inboxActiveUntil = [[NSDate date] dateByAddingTimeInterval:CDIHTriggerDuration * 2.0];
     [self recordTrigger:@"Notification captured" module:@"inbox" priority:60 expand:CDIHPrefsBool(@"expandOnTrigger", NO)];
     [self refresh];
@@ -1129,8 +1170,13 @@ static void CDIHFeedback(UIImpactFeedbackStyle style) {
         [cards addObject:[self cardWithIdentifier:@"privacy" module:@"privacy" title:@"Privacy Radar" subtitle:subtitle symbol:@"shield.lefthalf.filled" priority:priority tint:CDVTColor(255, 88, 108, 1.0)]];
     }
     if (CDIHPrefsBool(@"moduleInbox", YES)) {
-        NSString *subtitle = inboxActive ? [NSString stringWithFormat:@"%ld queued · %@", (long)self.inboxCount, self.inboxPreview ?: @"Latest bulletin"] : @"Notification hook ready";
+        NSString *subtitle = inboxActive ? [NSString stringWithFormat:@"%ld queued · %@", (long)self.inboxCount, self.inboxPreview ?: @"Latest bulletin"] : @"No queued alerts";
         [cards addObject:[self cardWithIdentifier:@"inbox" module:@"inbox" title:@"Island Inbox" subtitle:subtitle symbol:@"tray.full.fill" priority:inboxActive ? 60 : 30 tint:CDVTColor(92, 214, 255, 1.0)]];
+        NSInteger previewRows = MIN(4, (NSInteger)self.inboxPreviews.count);
+        for (NSInteger idx = 0; idx < previewRows; idx++) {
+            NSString *preview = self.inboxPreviews[idx];
+            [cards addObject:[self cardWithIdentifier:[NSString stringWithFormat:@"inbox-%ld", (long)idx] module:@"inbox" title:idx == 0 ? @"Latest Alert" : [NSString stringWithFormat:@"Alert %ld", (long)idx + 1] subtitle:preview symbol:@"bell.badge.fill" priority:59 - idx tint:CDVTColor(92, 214, 255, 1.0)]];
+        }
     }
     if (CDIHPrefsBool(@"moduleCommand", YES)) {
         [cards addObject:[self cardWithIdentifier:@"command" module:@"command" title:@"Command Center" subtitle:@"Long press Island for controls" symbol:@"switch.2" priority:36 tint:CDVTColor(182, 121, 255, 1.0)]];
