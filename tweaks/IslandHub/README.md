@@ -2,13 +2,14 @@
 
 IslandHub is a SpringBoard-only Dynamic Island-style command center for iOS 17 Bootstrap / roothide.
 
-Version `1.0.0-1` is the safe MVP tranche:
+Version `1.0.1-1` is the safe MVP tranche:
 
 - Top Island overlay with compact and expanded states.
 - Priority stack for enabled modules.
 - Swipe left/right to cycle sections.
 - Tap to expand/collapse.
 - Long-press to open Command Center section.
+- Scene-attached overlay host sized to the Island frame for iOS 17 SpringBoard visibility.
 - Theme, glow, size, offset, haptics, and module toggles.
 - Safe local Smart Battery card.
 - Clipboard card reads clipboard only when the user taps the Clipboard action.

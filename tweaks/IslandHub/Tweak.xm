@@ -38,6 +38,7 @@ static void CDIslandHubPrefsChanged(CFNotificationCenterRef center, void *observ
 @interface CDIslandHubController : NSObject
 @property (nonatomic, strong) CDIslandHubWindow *window;
 @property (nonatomic, strong) CDIslandHubView *hubView;
+@property (nonatomic, strong) UIViewController *rootViewController;
 @property (nonatomic, strong) NSTimer *refreshTimer;
 @property (nonatomic, assign) BOOL focusRunning;
 @property (nonatomic, strong) NSDate *focusStartDate;
@@ -146,18 +147,6 @@ static void CDIHFeedback(UIImpactFeedbackStyle style) {
 }
 
 @implementation CDIslandHubWindow
-- (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event {
-    for (UIView *view in [self.subviews reverseObjectEnumerator]) {
-        if (view.hidden || view.alpha < 0.01 || !view.userInteractionEnabled) {
-            continue;
-        }
-        CGPoint converted = [view convertPoint:point fromView:self];
-        if ([view pointInside:converted withEvent:event]) {
-            return YES;
-        }
-    }
-    return NO;
-}
 @end
 
 @implementation CDIslandHubView
@@ -443,14 +432,29 @@ static void CDIHFeedback(UIImpactFeedbackStyle style) {
     if (self.window) {
         return;
     }
-    self.window = [[CDIslandHubWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    self.window = [[CDIslandHubWindow alloc] initWithFrame:CGRectMake(0.0, 0.0, 1.0, 1.0)];
+    if (@available(iOS 13.0, *)) {
+        for (UIScene *scene in [UIApplication sharedApplication].connectedScenes) {
+            if ([scene isKindOfClass:[UIWindowScene class]]) {
+                self.window.windowScene = (UIWindowScene *)scene;
+                break;
+            }
+        }
+    }
     self.window.windowLevel = UIWindowLevelStatusBar + 76.0;
     self.window.backgroundColor = [UIColor clearColor];
-    self.window.hidden = NO;
     self.window.userInteractionEnabled = YES;
+    self.window.clipsToBounds = NO;
+
+    self.rootViewController = [UIViewController new];
+    self.rootViewController.view.backgroundColor = [UIColor clearColor];
+    self.rootViewController.view.userInteractionEnabled = YES;
+    self.window.rootViewController = self.rootViewController;
 
     self.hubView = [[CDIslandHubView alloc] initWithFrame:CGRectZero];
-    [self.window addSubview:self.hubView];
+    self.hubView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [self.rootViewController.view addSubview:self.hubView];
+    self.window.hidden = NO;
 }
 
 - (void)refresh {
@@ -461,7 +465,6 @@ static void CDIHFeedback(UIImpactFeedbackStyle style) {
         }
         [self ensureWindow];
         self.window.hidden = NO;
-        self.window.frame = [UIScreen mainScreen].bounds;
         [self layoutHubAnimated:YES];
         [self.hubView reloadWithCards:[self currentCards]];
     });
@@ -483,7 +486,9 @@ static void CDIHFeedback(UIImpactFeedbackStyle style) {
     CGRect target = CGRectMake((screenWidth - width) / 2.0, top, width, height);
 
     void (^changes)(void) = ^{
-        self.hubView.frame = target;
+        self.window.frame = target;
+        self.rootViewController.view.frame = self.window.bounds;
+        self.hubView.frame = self.rootViewController.view.bounds;
     };
     if (animated) {
         [UIView animateWithDuration:0.22 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:changes completion:nil];
