@@ -55,13 +55,13 @@ Author: Chase Davis
 Section: Tweaks
 Tag: role::hacker
 Architecture: iphoneos-arm64e
-Version: 1.0.0-1
+Version: 1.0.1-1
 Installed-Size: 352
-Filename: debs/com.chasedavis.appguardpro_1.0.0-1_iphoneos-arm64e.deb
-Size: 13020
-MD5sum: acaa4f67a9f697997e63303201ca48b1
-SHA1: ccb72454961426a8dc921f765f4f3be0eef557d5
-SHA256: 0e622fa058517915a3585d533312f75e7074c9944fb1bfd521d1c097bc22fa1d
+Filename: debs/com.chasedavis.appguardpro_1.0.1-1_iphoneos-arm64e.deb
+Size: 14126
+MD5sum: bac30ebd98d3b9e206592900372d34f7
+SHA1: 14d726cc8d53eb4a51c1d52d8feea7b22067fe4e
+SHA256: fe4e8729053e6f934fcced2dfa65cab1256c0a6f6637240d6c4658148cb1b2e7
 
 Package: com.chasedavis.applaunchecho
 Name: AppLaunchEcho
