@@ -393,10 +393,10 @@ Architecture: iphoneos-arm64e
 Version: 1.0.0
 Installed-Size: 464
 Filename: debs/com.chasedavis.notchy_1.0.0_iphoneos-arm64e.deb
-Size: 46012
-MD5sum: 4fda69b07941ec134e22737b5a6974a7
-SHA1: 41f6342d8377bde7848050a8d28ca63ccfeca5c9
-SHA256: 6a491cc6440e3dfa620fec3092ee730e599bd5a8d82b3c12578fc10f17ff6139
+Size: 46638
+MD5sum: 37ab8150e8a85d5d1c875d3c60ea8572
+SHA1: 8f2a31070457e7d0f8ef0bc68c6ea09e7488e79f
+SHA256: 918f0d28fcfe52611e802c9c1e13df1e3e435593e1a7fbb6c717ad758df64c46
 
 Package: com.chasedavis.notificationforge
 Name: NotificationForge
