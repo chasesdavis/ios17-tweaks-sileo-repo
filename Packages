@@ -382,6 +382,22 @@ MD5sum: 8cb529ead06f2a9d553c2d1531bb0a23
 SHA1: d477427b81b794aff41f7811c7bb29f62ebcd65c
 SHA256: 10c6f57f468b669fa0693e3c71a909972bf3b6db9b5f4737eff0a64cf487e0db
 
+Package: com.chasedavis.notchy
+Name: Notchy
+Depends: mobilesubstrate, preferenceloader
+Description: Premium Dynamic Island: notifications through the island, battery ring, persistent Now Playing, custom presentables, per-app rules. Works on real Dynamic Island and notched devices.
+Maintainer: Chase Davis
+Author: Chase Davis
+Section: Tweaks
+Architecture: iphoneos-arm64e
+Version: 1.0.0
+Installed-Size: 464
+Filename: debs/com.chasedavis.notchy_1.0.0_iphoneos-arm64e.deb
+Size: 46012
+MD5sum: 4fda69b07941ec134e22737b5a6974a7
+SHA1: 41f6342d8377bde7848050a8d28ca63ccfeca5c9
+SHA256: 6a491cc6440e3dfa620fec3092ee730e599bd5a8d82b3c12578fc10f17ff6139
+
 Package: com.chasedavis.notificationforge
 Name: NotificationForge
 Depends: mobilesubstrate, preferenceloader
