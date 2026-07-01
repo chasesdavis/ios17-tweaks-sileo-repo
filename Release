@@ -5,16 +5,16 @@ Codename: ios17
 Architectures: iphoneos-arm64 iphoneos-arm64e
 Components: main
 Description: Local roothide Bootstrap tweak repo
-Date: Wed, 01 Jul 2026 18:36:27 UTC
+Date: Wed, 01 Jul 2026 18:51:13 UTC
 MD5Sum:
- b1e8435919503b12992f9f4b964a616f            22587 Packages
- 0ff8e6e2c72708e9d766db9936fc2cc5             6668 Packages.gz
- d3da8ff00f3a4923a6f65d0d8e5d2d2f             6192 Packages.xz
+ 654705283e9844b3eb809341bbc4f0f3            22587 Packages
+ 5703d8ae59c2cb033709cd42f434cf69             6672 Packages.gz
+ 2926d3bef23b326313081458b6080f43             6200 Packages.xz
 SHA1:
- ea86b4aae3ce9c3831d73c5a9b7bcdbc8419771c            22587 Packages
- 8c564209ab77a8b1e885e3102d94695b0c2a8d1f             6668 Packages.gz
- 88ae15667e286c62e44883202372a8fbe4a2a6bc             6192 Packages.xz
+ 4fca8205dc858a025ac614aabf9690013fc8db52            22587 Packages
+ d82ab23b132eefd2a26ff6ca0b3e711f11a6ffcc             6672 Packages.gz
+ f34d25c1ba0519132653d0ac383b33624d9925a5             6200 Packages.xz
 SHA256:
- 1ac59917d43adfc49380194b6929d79a99c6f448533a48ba2b8bf80008a96cbe            22587 Packages
- 5332f372c67062055186911f2c582020fdffc1eb679dc3586084778266a7781c             6668 Packages.gz
- de45a9e96da4bb94c5115eafcd4424957e2329ab6dba20e950c5b7f53c71c062             6192 Packages.xz
+ 8f026b42de4198d72aefff330a32e78c3f4246b4b564e5f3d173c77456dc33d4            22587 Packages
+ 19d7a08b52abe5a8735627b1f7124e310a240eb1d72792abd8197c6226fef6ca             6672 Packages.gz
+ 3a967712c527f9db3caae4dbbe8c72f8e39ce006328ba4a8e8f3c1647537753b             6200 Packages.xz

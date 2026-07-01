@@ -390,13 +390,13 @@ Maintainer: Chase Davis
 Author: Chase Davis
 Section: Tweaks
 Architecture: iphoneos-arm64e
-Version: 1.0.1
-Installed-Size: 464
-Filename: debs/com.chasedavis.notchy_1.0.1_iphoneos-arm64e.deb
-Size: 46470
-MD5sum: adf9ce3acdeacfd0cba8d6e5b355fe1b
-SHA1: 7c750d1fea85eb81474fee701c76bb77f84c8583
-SHA256: 770ad311c98d46abf544316bd9675f9d2fbc65281f64a39c1d266e9a9f9bd911
+Version: 0.9.0
+Installed-Size: 360
+Filename: debs/com.chasedavis.notchy_0.9.0_iphoneos-arm64e.deb
+Size: 19162
+MD5sum: f1d10dd077c7a1732afe1a176ddc880a
+SHA1: af772ee15b75a8bbbcd09d921e50dae20a8504cf
+SHA256: 956640350fb16744cc2f18d98e3e0dbdb8c0c6e67d7072d46f658f376575f999
 
 Package: com.chasedavis.notificationforge
 Name: NotificationForge
