@@ -46,6 +46,23 @@ MD5sum: 8aed6dee14f76b5e62c55b4e8b09efb1
 SHA1: 72471867bc593400cd7f603be3f383601de202f7
 SHA256: 68b93f220f7b5147b2923ff0e145d74fee0f76f7e4c428549ac8375d89b20878
 
+Package: com.chasedavis.appguardpro
+Name: AppGuard Pro
+Description: Per-app Face ID / passcode lock, hidden apps, and a fake-crash decoy for prying eyes. Built for iOS 15-17 RootHide.
+Depends: mobilesubstrate, preferenceloader
+Maintainer: Chase Davis
+Author: Chase Davis
+Section: Tweaks
+Tag: role::hacker
+Architecture: iphoneos-arm64e
+Version: 1.0.0-1
+Installed-Size: 352
+Filename: debs/com.chasedavis.appguardpro_1.0.0-1_iphoneos-arm64e.deb
+Size: 13020
+MD5sum: acaa4f67a9f697997e63303201ca48b1
+SHA1: ccb72454961426a8dc921f765f4f3be0eef557d5
+SHA256: 0e622fa058517915a3585d533312f75e7074c9944fb1bfd521d1c097bc22fa1d
+
 Package: com.chasedavis.applaunchecho
 Name: AppLaunchEcho
 Depends: mobilesubstrate
